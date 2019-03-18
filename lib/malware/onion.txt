@@ -1,0 +1,56 @@
+# Copyright (c) 2014-2018 Miroslav Stampar (@stamparm)
+# See the file 'LICENSE' for copying permission
+
+# Reference: http://malwaretips.com/threads/connects-to-tor-hidden-services-through-tor2web.42274/
+# Reference: http://darkspider.info/index.php?menu=list
+
+onion.gq
+onion.lt
+onion.cab
+onion.city
+onion.direct
+onion.link
+onion.nu
+tor2web.fi
+tor2web.blutmagie.de
+tor2web.org
+tor2web.ru
+tor-gateways.de
+
+# Reference: http://www.emergingthreats.net/products/etpro-ruleset/daily-ruleset-update-summary/daily-ruleset-update-summary-2015/03/11
+# Reference: http://www.emergingthreats.net/products/etpro-ruleset/daily-ruleset-update-summary/daily-ruleset-update-summary-2015/03/18
+
+t2w.pw
+toraccess.org
+onion.to
+forepaytobb.com
+onion.ca
+onion.sh
+onion.lu
+torwalletpay.com
+welcomoptions.com
+visatastor.com
+drezdonhoster.com
+tor4free.org
+tordomain.org
+welcome2tor.org
+torpovider.org
+way2tor.com
+torgateway.org
+tor-explorer.org
+2kjb9.net
+2kjb10.net
+42k0b13.net
+42kjb11.net
+
+# (note: just for (non-SOCKS) ONION domain lookups)
+
+.onion
+
+# Misc
+
+tor4u.net
+door2tor.org
+tor4pay.com
+pay4tor.com
+torsona.com
