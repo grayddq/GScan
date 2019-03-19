@@ -1,7 +1,7 @@
 # coding:utf-8
 import os, optparse, time, subprocess, sys, json
-from ip import *
-from common import *
+from lib.ip.ip import *
+from lib.common import *
 
 
 # 分析网络连接

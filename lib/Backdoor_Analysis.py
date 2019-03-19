@@ -1,6 +1,6 @@
 # coding:utf-8
 import os, optparse, time, sys, json
-from common import *
+from lib.common import *
 
 
 # 常规类后门检测

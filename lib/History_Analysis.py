@@ -1,7 +1,7 @@
 # coding:utf-8
 import os, optparse, time, re, sys, json
 from ip import *
-from common import *
+from lib.common import *
 
 
 # 分析用户历史操作记录

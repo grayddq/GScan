@@ -1,6 +1,6 @@
 # coding:utf-8
 import os, optparse, time, sys,json
-from common import *
+from lib.common import *
 
 
 # 分析主机文件类异常

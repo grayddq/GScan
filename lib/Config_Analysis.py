@@ -1,7 +1,7 @@
 # coding:utf-8
 import os, optparse, time, sys, json
-from common import *
-from ip import *
+from lib.common import *
+from lib.ip.ip import *
 
 
 # 配置安全类检测

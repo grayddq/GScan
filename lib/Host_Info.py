@@ -1,6 +1,6 @@
 # coding:utf-8
 import socket, os, time, platform, sys
-from common import *
+from lib.common import *
 
 
 class Host_Info:

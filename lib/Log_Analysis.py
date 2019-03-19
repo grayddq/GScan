@@ -1,7 +1,7 @@
 # coding:utf-8
 import os, optparse, time, json
 from SSHAnalysis import *
-from common import *
+from lib.common import *
 
 
 class Log_Analysis:
