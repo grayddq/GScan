@@ -115,7 +115,7 @@ class Proc_Analysis:
         for pid in hids_pid:
             self.process_backdoor.append(
                 {u'异常类型': u'进程隐藏', u'进程pid': pid,
-                 u'排查方式': u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid)})
+                 u'手工确认': u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid)})
             malice = True
         return suspicious, malice
 

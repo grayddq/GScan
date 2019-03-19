@@ -49,14 +49,14 @@ class File_Analysis:
                     if file in system_file:
                         self.file_malware.append(
                             {u'异常类型': u'文件完整性检测', u'可疑信息': infos[0], u'文件路径': fpath,
-                             u'排查方式': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
+                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
                         suspicious = True
                     else:
                         malware = self.analysis_file(fpath)
                         if malware:
                             self.file_malware.append(
                                 {u'异常类型': u'文件恶意特征', u'文件路径': fpath, u'恶意特征': malware,
-                                 u'排查方式': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
+                                 u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
                             malice = True
         return suspicious, malice
 
@@ -72,7 +72,7 @@ class File_Analysis:
                 if malware:
                     self.file_malware.append(
                         {u'异常类型': u'文件恶意特征', u'文件路径': fpath, u'恶意特征': malware,
-                         u'排查方式': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
+                         u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
                     malice = True
         return suspicious, malice
 
@@ -84,7 +84,7 @@ class File_Analysis:
             'find / -name " *" -o -name ". *" -o -name "..." -o -name ".." -o -name "." -o -name " " -print | grep -v "No such" |grep -v "Permission denied"').read().splitlines()
         for file in infos:
             self.file_malware.append(
-                {u'异常类型': u'文件异常隐藏', u'文件路径': file, u'排查方式': u'[1]ls -l %s [2]strings %s' % (file, file)})
+                {u'异常类型': u'文件异常隐藏', u'文件路径': file, u'手工确认': u'[1]ls -l %s [2]strings %s' % (file, file)})
             suspicious = True
         return suspicious, malice
 

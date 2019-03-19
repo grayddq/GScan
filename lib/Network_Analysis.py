@@ -77,7 +77,7 @@ class Network_Analysis:
         shell_process = os.popen("ip link | grep PROMISC").read().splitlines()
         if len(shell_process) > 0:
             self.network_malware.append(
-                {u'异常类型': u'网卡开启混杂模式', u'排查方式': u'ip link | grep PROMISC'})
+                {u'异常类型': u'网卡开启混杂模式', u'手工确认': u'ip link | grep PROMISC'})
             suspicious = True
         return suspicious, malice
 
