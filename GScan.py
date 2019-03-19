@@ -29,6 +29,12 @@ if __name__ == '__main__':
     parser.add_option("-l", "--log", dest="logdir", help=u"打包当前系统的所有安全日志，demo: -l /var/log/")
     options, _ = parser.parse_args()
     if options.scan:
+        #创建日志文件
+        mkfile()
+
+        file_write(progam)
+        file_write(u'\n开始扫描当前系统安全状态...\n')
+
         print(u'\033[1;32m开始扫描当前系统安全状态...\033[0m')
         # 主机信息获取
         Host_Info().run()

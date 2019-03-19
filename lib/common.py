@@ -1,5 +1,7 @@
 # coding:utf-8
 import os, sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 # 颜色打印
@@ -17,7 +19,7 @@ def pringf(strings, security=False, suspicious=False, malice=False):
         print(u'%s' % strings)
     sys.stdout.flush()
 
-
+#获取字符串宽度
 def get_str_width(string):
     widths = [
         (126, 1), (159, 0), (687, 1), (710, 0), (711, 1),
@@ -48,7 +50,7 @@ def get_str_width(string):
 
     return width
 
-
+#对齐字符串，返回对齐后字符串
 def align(string, width=40):
     width=40
     string_width = get_str_width(string)
@@ -56,25 +58,6 @@ def align(string, width=40):
         return string + ' ' * (width - string_width)
     else:
         return string
-
-
-'''
-# 字符串对齐
-def align(string, length=0):
-    if length == 0:
-        return string
-    slen = len(string)
-    re = string
-    if isinstance(string, str):
-        placeholder = ' '
-    else:
-        placeholder = u'　'
-    while slen < length:
-        re += placeholder
-        slen += 1
-    return re
-'''
-
 
 # 递归目录返回文件名列表
 def gci(filepath):
@@ -87,3 +70,20 @@ def gci(filepath):
         else:
             filename.append(os.path.join(filepath, fi_d))
     return filename
+
+#创建日志文件
+def mkfile():
+    if os.path.exists('/var/log/gscan/gscan.log'):
+        f = open('/var/log/gscan/gscan.log', "r+")
+        f.truncate()
+        f.close()
+    else:
+        if not os.path.exists('/var/log/gscan/'): os.mkdir('/var/log/gscan/')
+        f = open('/var/log/gscan/gscan.log', "w")
+        f.truncate()
+        f.close()
+
+#追加文件写入
+def file_write(content,logfile='/var/log/gscan/gscan.log'):
+    with open(logfile, 'a+') as f:
+        f.write(content + '\n')

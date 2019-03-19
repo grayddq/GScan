@@ -1,5 +1,6 @@
 # coding:utf-8
 import socket, os, time, platform, sys
+from common import *
 
 
 class Host_Info:
@@ -38,6 +39,7 @@ class Host_Info:
         print(u'系统版本：%s' % self.version)
         print(u'主机时间：%s' % self.time)
         sys.stdout.flush()
+        file_write(u'主机信息获取\n主机名：%s\n主机IP：%s\n系统版本：%s\n主机时间：%s\n' % (self.hostname, self.ip, self.version, self.time))
 
 
 if __name__ == '__main__':
