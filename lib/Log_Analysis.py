@@ -13,7 +13,7 @@ class Log_Analysis:
         correct_baopo_infos = SSH_Analysis(log_dir='/var/log/').correct_baopo_infos
         if len(correct_baopo_infos)>0:
             for info in correct_baopo_infos:
-                self.log_malware.append({'name':'sshlog','ip':info['ip'],'user':info['user'],'time':info['time']})
+                self.log_malware.append({u'日志类型':u'SSH日志',u'来源IP':info['ip'],u'被成功爆破用户':info['user'],u'时间':info['time']})
                 malice = True
         return suspicious, malice
 
@@ -34,7 +34,7 @@ class Log_Analysis:
 
         if len(self.log_malware) > 0:
             file_write('-' * 30+'\n')
-            file_write(u'日志分析如下：\n')
+            file_write(u'日志分析结果如下：\n')
             for info in self.log_malware:
                 file_write(str(info) + '\n')
             file_write('-' * 30 + '\n')
