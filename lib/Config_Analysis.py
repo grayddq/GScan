@@ -20,8 +20,7 @@ class Config_Analysis:
         for ip in shell_process:
             if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                 self.config_suspicious.append(
-                    {'config': 'dns servername: %s' % ip, 'name': 'abroad dns', 'description': 'abroad dns',
-                     'file': '/etc/resolv.conf'})
+                    {u'配置信息': u'DNS servername: %s' % ip, u'异常类型': u'境外dns', u'文件': u'/etc/resolv.conf'})
                 suspicious = True
         return suspicious, malice
 
@@ -31,7 +30,7 @@ class Config_Analysis:
         shell_process = os.popen("iptables -L -n| grep -v 'Chain'|grep 'ACCEPT'").read().splitlines()
         for iptables in shell_process:
             self.config_suspicious.append(
-                {'config': iptables, 'name': 'iptables ACCEPT', 'description': 'iptables ACCEPT', 'file': ''})
+                {u'配置信息': iptables, u'异常类型': u'存在iptables的ACCEPT策略', u'排查方式': '[1]iptables -L'})
             suspicious = True
         if os.path.exists('/etc/sysconfig/iptables'):
             with open('/etc/sysconfig/iptables') as f:
@@ -39,8 +38,8 @@ class Config_Analysis:
                     if len(line) > 5:
                         if (line[0] != '#') and ('ACCEPT' in line):
                             self.config_suspicious.append(
-                                {'config': line, 'name': 'iptables ACCEPT', 'description': 'iptables ACCEPT',
-                                 'file': '/etc/sysconfig/iptables'})
+                                {u'配置信息': line, u'异常类型': u'存在iptables的ACCEPT策略', u'文件': u'/etc/sysconfig/iptables',
+                                 u'排查方式': u'[1]cat /etc/sysconfig/iptables'})
                             suspicious = True
         return suspicious, malice
 

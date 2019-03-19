@@ -20,7 +20,7 @@ class User_Analysis:
         for user in shell_process:
             if user.replace("\n", "") != 'root':
                 self.user_malware.append(
-                    {'user': user.replace("\n", ""), 'description': 'root power', 'authorized_keys_user': ''})
+                    {u'用户': user.replace("\n", ""), u'异常描述': u'属于特权用户'})
                 suspicious = False
         return suspicious, malice
 
@@ -30,7 +30,7 @@ class User_Analysis:
         shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow").readlines()
         for user in shell_process2:
             self.user_malware.append(
-                {'user': user.replace("\n", ""), 'description': 'user empty password', 'authorized_keys': ''})
+                {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
             malice = True
         return suspicious, malice
 
@@ -41,7 +41,7 @@ class User_Analysis:
         for user in shell_process3:
             if user.replace("\n", "") != 'root':
                 self.user_malware.append(
-                    {'user': user.replace("\n", ""), 'description': 'sudo get root power', 'authorized_keys_user': ''})
+                    {u'用户': user.replace("\n", ""), u'异常描述': u'可通过sudo命令获取特权'})
                 suspicious = True
         return suspicious, malice
 
@@ -64,8 +64,8 @@ class User_Analysis:
         if os.path.exists(file):
             shell_process = os.popen("cat " + file + "|awk '{print $3}'").readlines()
             authorized_key = ' & '.join(shell_process).replace("\n", "")
-            self.user_malware.append({'user': user.replace("\n", ""), 'description': 'login certificate settings',
-                                      'authorized_keys_user': authorized_key})
+            self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
+                                      u'证书信息': authorized_key})
             suspicious = True
         return suspicious, malice
 
@@ -122,6 +122,7 @@ class User_Analysis:
             for info in self.user_malware:
                 file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
+
 
 if __name__ == '__main__':
     infos = User_Analysis()

@@ -39,7 +39,7 @@ class Network_Analysis:
              'description': 'Possible FreeBSD (FBRK) Rootkit default backdoor port'},
             {'protocol': 'tcp', 'port': '65535', 'description': 'FreeBSD Rootkit (FBRK) telnet port'}
         ]
-        #self.check_network()
+        # self.check_network()
 
     # 境外IP的链接
     def check_network_abroad(self):
@@ -52,7 +52,7 @@ class Network_Analysis:
             if (find(remote_ip)[0:2] != u'中国') and (find(remote_ip)[0:3] != u'局域网') and (
                     find(remote_ip)[0:4] != u'共享地址'):
                 self.network_malware.append(
-                    {'ip': remote_ip, 'port': remote_port, 'name': 'abroad ip', 'description': 'abroad ip'})
+                    {u'异常类型': u'境外IP链接', u'远程ip': remote_ip, u'远程port': remote_port})
                 suspicious = True
         return suspicious, malice
 
@@ -67,18 +67,17 @@ class Network_Analysis:
             for malware in self.port_malware:
                 if malware['port'] == remote_port:
                     self.network_malware.append(
-                        {'name': 'malware network', 'ip': remote_ip, 'port': remote_port,
-                         'description': malware['description']})
+                        {u'异常类型': u'恶意链接特征', u'远程ip': remote_ip, u'远程port': remote_port,
+                         u'异常特征': malware['description']})
                     suspicious = True
         return suspicious, malice
 
     def check_promisc(self):
         suspicious, malice = False, False
         shell_process = os.popen("ip link | grep PROMISC").read().splitlines()
-        if len(shell_process)>0:
+        if len(shell_process) > 0:
             self.network_malware.append(
-                {'name': 'network promisc', 'ip': '', 'port': '',
-                 'description': ''})
+                {u'异常类型': u'网卡开启混杂模式', u'排查方式': u'ip link | grep PROMISC'})
             suspicious = True
         return suspicious, malice
 

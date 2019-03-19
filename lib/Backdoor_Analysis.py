@@ -48,8 +48,7 @@ class Backdoor_Analysis:
         for info in infos:
             if not len(info) > 3: continue
             self.backdoor.append(
-                {'name': 'LD_PRELOAD backdoor', 'info': info, 'file': '', 'malware': '',
-                 'solve': '[1]echo $LD_PRELOAD \n[2]unset LD_PRELOAD'})
+                {u'异常类型': u'LD_PRELOAD 后门', u'异常信息': info, u'排查方式': u'[1]echo $LD_PRELOAD [2]unset LD_PRELOAD'})
             malice = True
         return suspicious, malice
 
@@ -61,9 +60,8 @@ class Backdoor_Analysis:
             for line in f:
                 if not len(line) > 3: continue
                 if line[0] != '#':
-                    self.backdoor.append({'name': 'ld.so.preload backdoor', 'info': line.replace("\n", ""),
-                                          'file': '/etc/ld.so.preload', 'solve': '[1]cat /etc/ld.so.preload',
-                                          'malware': ''})
+                    self.backdoor.append({u'异常类型': u'ld.so.preload 后门', u'异常信息': line.replace("\n", ""),
+                                          u'文件': u'/etc/ld.so.preload', u'排查方式': u'[1]cat /etc/ld.so.preload'})
                     malice = True
                     break
         return suspicious, malice
@@ -112,8 +110,8 @@ class Backdoor_Analysis:
             if os.path.exists('/proc/%s/exe' % pid):
                 if 'sshd' in os.readlink('/proc/%s/exe' % pid):
                     self.backdoor.append(
-                        {'name': 'SSH backdoor', 'info': '/porc/%s/exe' % pid, 'file': '/proc/%s/exe' % pid,
-                         'solve': '[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid), 'malware': ''})
+                        {u'异常类型': u'SSH 后门', u'异常信息': u'/porc/%s/exe' % pid, u'异常文件': u'/proc/%s/exe' % pid,
+                         u'排查方式': u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid)})
                     malice = True
         return suspicious, malice
 
@@ -123,8 +121,8 @@ class Backdoor_Analysis:
         infos = os.popen("file /usr/sbin/sshd").read().splitlines()
         if 'ELF' not in infos[0]:
             self.backdoor.append(
-                {'name': 'SSHwrapper backdoor', 'info': infos[0], 'file': '/usr/sbin/sshd',
-                 'solve': '[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd', 'malware': ''})
+                {u'异常类型': u'SSHwrapper 后门', u'异常信息': infos[0], u'文件': u'/usr/sbin/sshd',
+                 u'排查方式': u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd'})
             malice = True
         return suspicious, malice
 
@@ -136,8 +134,8 @@ class Backdoor_Analysis:
             for line in f:
                 if '/bin/bash' in line:
                     self.backdoor.append(
-                        {'name': 'inetd.conf backdoor', 'info': line, 'file': '/etc/inetd.conf',
-                         'solve': '[1]cat /etc/inetd.conf', 'malware': ''})
+                        {u'异常类型': u'inetd.conf 后门', u'异常信息': line, u'文件': u'/etc/inetd.conf',
+                         u'排查方式': u'[1]cat /etc/inetd.conf'})
                     malice = True
         return suspicious, malice
 
@@ -151,8 +149,8 @@ class Backdoor_Analysis:
                     if '/bin/bash' in line:
                         fpath = os.path.join('%s%s' % ('/etc/xinetd.conf/', file))
                         self.backdoor.append(
-                            {'name': 'xinetd.conf backdoor', 'info': line, 'file': '/etc/xinetd.conf/%s' % file,
-                             'solve': '[1]cat /etc/xinetd.conf/%s' % file, 'malware': ''})
+                            {u'异常类型': u'xinetd.conf 后门', u'异常信息': line, u'文件': u'/etc/xinetd.conf/%s' % file,
+                             u'排查方式': u'[1]cat /etc/xinetd.conf/%s' % file})
                         malice = True
         return suspicious, malice
 
@@ -165,16 +163,16 @@ class Backdoor_Analysis:
                 malware = self.analysis_file(path)
                 if malware:
                     self.backdoor.append(
-                        {'name': 'startup backdoor', 'file': path, 'info': '', 'malware': malware,
-                         'solve': '[1]cat %s' % path})
+                        {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
+                         u'排查方式': u'[1]cat %s' % path})
                     malice = True
                 continue
             for file in gci(path):
                 malware = self.analysis_file(file)
                 if malware:
                     self.backdoor.append(
-                        {'name': 'startup backdoor', 'file': file, 'info': '', 'malware': malware,
-                         'solve': '[1]cat %s' % file})
+                        {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
+                         u'排查方式': u'[1]cat %s' % file})
                     malice = True
         return suspicious, malice
 
@@ -209,7 +207,7 @@ class Backdoor_Analysis:
         suspicious, malice = False, False
         content = contents.replace('\n', '')
         if self.check_shell(content):
-            self.backdoor.append({'name': name, 'file': file, 'info': content, 'malware': 'bash shell', 'solve': solve})
+            self.backdoor.append({u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell', u'排查方式': solve})
             malice = True
         else:
             for file in content.split(' '):
@@ -217,7 +215,7 @@ class Backdoor_Analysis:
                 malware = self.analysis_file(file)
                 if malware:
                     self.backdoor.append(
-                        {'name': name, 'file': file, 'info': content, 'malware': malware, 'solve': solve})
+                        {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': malware, u'排查方式': solve})
                     malice = True
         return suspicious, malice
 
@@ -340,6 +338,7 @@ class Backdoor_Analysis:
             for info in self.backdoor:
                 file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
+
 
 if __name__ == '__main__':
     infos = Backdoor_Analysis()
