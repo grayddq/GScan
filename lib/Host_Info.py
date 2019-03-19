@@ -44,7 +44,7 @@ class Host_Info:
 
 if __name__ == '__main__':
     a = Host_Info()
-    print a.hostname
-    print a.ip
-    print a.version
-    print a.time
+    print(a.hostname)
+    print(a.ip)
+    print(a.version)
+    print(a.time)

@@ -22,7 +22,7 @@ if __name__ == '__main__':
                                                         
     
     '''
-    print progam
+    print(progam)
 
     parser = optparse.OptionParser()
     parser.add_option("-s", "--scan", dest="scan", help=u"扫描当前系统安全问题，demo: -s all")
