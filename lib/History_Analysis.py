@@ -40,7 +40,7 @@ class History_Analysis:
                     if re.search(self.lan_ip, line): continue
                     for ip in re.findall(self.ip_re, line):
                         if find(ip)[0:2] != u'中国':
-                            self.history.append({'user': user, 'cmd': line})
+                            self.history.append({u'用户名': user, u'异常执行记录': line})
                             suspicious = True
         return suspicious, malice
 
@@ -64,7 +64,7 @@ class History_Analysis:
             file_write('-' * 30 + '\n')
             file_write(u'可疑的操作记录如下：\n')
             for info in self.history:
-                file_write(str(info) + '\n')
+                file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
 
 

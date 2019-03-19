@@ -120,7 +120,7 @@ class User_Analysis:
             file_write('-' * 30 + '\n')
             file_write(u'可疑账户如下：\n')
             for info in self.user_malware:
-                file_write(str(info) + '\n')
+                file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
 
 if __name__ == '__main__':

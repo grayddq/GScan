@@ -122,7 +122,7 @@ class Network_Analysis:
             file_write('-' * 30 + '\n')
             file_write(u'可疑网络连接：\n')
             for info in self.network_malware:
-                file_write(str(info) + '\n')
+                file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
 
 

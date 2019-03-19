@@ -59,8 +59,7 @@ class Proc_Analysis:
                         if malware in str:
                             lnstr = os.readlink(filepath)
                             self.process_backdoor.append(
-                                {'user': '', 'pid': file, 'ppid': "", 'cmd': lnstr, 'cpu': '', 'mem': '',
-                                 'malware': malware})
+                                {u'异常类型': u'进程程序恶意特征', u'进程pid': file, u'进程cmd': lnstr, u'恶意特征': malware})
                             malice = True
         return suspicious, malice
 
@@ -72,8 +71,8 @@ class Proc_Analysis:
         for pro in shell_process:
             pro_info = pro.strip().split(' ', 3)
             self.process_backdoor.append(
-                {'user': pro_info[0], 'pid': pro_info[1], 'ppid': pro_info[2], 'cmd': pro_info[3].replace("\n", ""),
-                 'cpu': '', 'mem': '', 'malware': 'bash_shell'})
+                {u'异常类型': u'进程反弹shell特征', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'父进程ppid': pro_info[2],
+                 u'进程cmd': pro_info[3].replace("\n", ""), u'恶意特征': u'反弹shell'})
             malice = True
         return suspicious, malice
 
@@ -87,14 +86,16 @@ class Proc_Analysis:
             # cpu使用超过标准
             if float(pro_info[2]) > self.cpu:
                 self.process_backdoor.append(
-                    {'user': pro_info[0], 'pid': pro_info[1], 'ppid': "", 'cpu': pro_info[2], 'mem': pro_info[3],
-                     'cmd': pro_info[4].replace("\n", ""), 'malware': 'cpu'})
+                    {u'异常类型': u'CPU过载', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': "", u'CPU': pro_info[2],
+                     u'内存': pro_info[3],
+                     u'进程cmd': pro_info[4].replace("\n", "")})
                 suspicious = True
             # 内存使用超过标准
             if float(pro_info[3]) > self.mem:
                 self.process_backdoor.append(
-                    {'user': pro_info[0], 'pid': pro_info[1], 'ppid': "", 'cpu': pro_info[2], 'mem': pro_info[3],
-                     'cmd': pro_info[4].replace("\n", ""), 'malware': 'memory'})
+                    {u'异常类型': u'内存过载', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': "", u"CPU": pro_info[2],
+                     u"内存": pro_info[3],
+                     u'进程cmd': pro_info[4].replace("\n", "")})
                 suspicious = True
         return suspicious, malice
 
@@ -113,8 +114,8 @@ class Proc_Analysis:
         hids_pid = list(set(pid_pro_file).difference(set(pid_process)))
         for pid in hids_pid:
             self.process_backdoor.append(
-                {'user': '', 'pid': pid, 'ppid': "", 'cmd': '', 'cpu': '', 'mem': '', 'malware': 'hide process',
-                 'solve': "[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid)})
+                {u'异常类型': u'进程隐藏', u'进程pid': pid,
+                 u'排查方式': u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid)})
             malice = True
         return suspicious, malice
 
@@ -126,8 +127,8 @@ class Proc_Analysis:
         for pro in process:
             pro_info = pro.strip().split(' ', 3)
             self.process_backdoor.append(
-                {'user': pro_info[0], 'pid': pro_info[1], 'ppid': pro_info[2], 'cmd': pro_info[3].replace("\n", ""),
-                 'cpu': '', 'mem': '', 'malware': 'process_name'})
+                {u'异常类型': u'进程恶意程序', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': pro_info[2],
+                 u'进程cmd': pro_info[3].replace("\n", "")})
             suspicious = True
         return suspicious, malice
 
@@ -205,7 +206,7 @@ class Proc_Analysis:
             file_write('-' * 30 + '\n')
             file_write(u'恶意进程如下：：\n')
             for info in self.malware_infos:
-                file_write(str(info) + '\n')
+                file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
 
 

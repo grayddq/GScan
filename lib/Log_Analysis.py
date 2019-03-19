@@ -1,5 +1,5 @@
 # coding:utf-8
-import os, optparse, time
+import os, optparse, time, json
 from SSHAnalysis import *
 from common import *
 
@@ -11,12 +11,12 @@ class Log_Analysis:
     def check_sshlog(self):
         suspicious, malice = False, False
         correct_baopo_infos = SSH_Analysis(log_dir='/var/log/').correct_baopo_infos
-        if len(correct_baopo_infos)>0:
+        if len(correct_baopo_infos) > 0:
             for info in correct_baopo_infos:
-                self.log_malware.append({u'日志类型':u'SSH日志',u'来源IP':info['ip'],u'被成功爆破用户':info['user'],u'时间':info['time']})
+                self.log_malware.append(
+                    {u'日志类型': u'SSH日志', u'来源IP': info['ip'], u'被成功爆破用户': info['user'], u'时间': info['time']})
                 malice = True
         return suspicious, malice
-
 
     def run(self):
         print(u'\n开始日志类安全扫描')
@@ -33,11 +33,12 @@ class Log_Analysis:
             pringf(u'OK', security=True)
 
         if len(self.log_malware) > 0:
-            file_write('-' * 30+'\n')
+            file_write('-' * 30 + '\n')
             file_write(u'日志分析结果如下：\n')
             for info in self.log_malware:
                 file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
+
 
 if __name__ == '__main__':
     infos = Log_Analysis()

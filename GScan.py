@@ -31,7 +31,7 @@ if __name__ == '__main__':
     if options.scan:
         # 创建日志文件
         mkfile()
-        file_write(progam)
+        file_write(progam + '\n')
         file_write(u'\n开始扫描当前系统安全状态...\n')
         print(u'\033[1;32m开始扫描当前系统安全状态...\033[0m')
         # 主机信息获取
