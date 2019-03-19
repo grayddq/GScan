@@ -14,7 +14,7 @@ class Log_Analysis:
         if len(correct_baopo_infos) > 0:
             for info in correct_baopo_infos:
                 self.log_malware.append(
-                    {u'日志类型': u'SSH日志', u'来源IP': info['ip'], u'被成功爆破用户': info['user'], u'时间': info['time']})
+                    {u'日志类型': u'SSH被成功爆破', u'来源IP': info['ip'], u'用户': info['user'], u'爆破时间': info['time']})
                 malice = True
         return suspicious, malice
 

@@ -30,7 +30,7 @@ class Config_Analysis:
         shell_process = os.popen("iptables -L -n| grep -v 'Chain'|grep 'ACCEPT'").read().splitlines()
         for iptables in shell_process:
             self.config_suspicious.append(
-                {u'配置信息': iptables, u'异常类型': u'存在iptables的ACCEPT策略', u'手工确认': u'[1]iptables -L'})
+                {u'配置信息': iptables, u'异常类型': u'存在iptables ACCEPT策略', u'手工确认': u'[1]iptables -L'})
             suspicious = True
         if os.path.exists('/etc/sysconfig/iptables'):
             with open('/etc/sysconfig/iptables') as f:
@@ -38,7 +38,7 @@ class Config_Analysis:
                     if len(line) > 5:
                         if (line[0] != '#') and ('ACCEPT' in line):
                             self.config_suspicious.append(
-                                {u'配置信息': line, u'异常类型': u'存在iptables的ACCEPT策略', u'文件': u'/etc/sysconfig/iptables',
+                                {u'配置信息': line, u'异常类型': u'存在iptables ACCEPT策略', u'文件': u'/etc/sysconfig/iptables',
                                  u'手工确认': u'[1]cat /etc/sysconfig/iptables'})
                             suspicious = True
         return suspicious, malice
