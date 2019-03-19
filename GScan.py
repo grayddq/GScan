@@ -36,31 +36,22 @@ if __name__ == '__main__':
         print(u'\033[1;32m开始扫描当前系统安全状态...\033[0m')
         # 主机信息获取
         Host_Info().run()
-
         # 文件类安全检测
         File_Analysis().run()
-
         # 主机历史操作类扫描
         History_Analysis().run()
-
         # 主机进程类安全扫描
         Proc_Analysis().run()
-
         # 网络链接类安全扫描
         Network_Analysis().run()
-
         # 后门类扫描
         Backdoor_Analysis().run()
-
         # 账户类扫描
         User_Analysis().run()
-
         # 安全日志类
         Log_Analysis().run()
-
         # 安全配置类
         Config_Analysis().run()
-
         # 各类恶意挖矿扫描
 
         # WEBShell类扫描
