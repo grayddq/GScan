@@ -119,9 +119,11 @@ class Network_Analysis:
             pringf(u'OK', security=True)
 
         if len(self.network_malware) > 0:
+            file_write('-' * 30 + '\n')
             file_write(u'可疑网络连接：\n')
             for info in self.network_malware:
                 file_write(str(info) + '\n')
+            file_write('-' * 30 + '\n')
 
 
 if __name__ == '__main__':

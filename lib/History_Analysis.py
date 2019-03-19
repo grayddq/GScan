@@ -60,9 +60,13 @@ class History_Analysis:
             pringf(u'OK', security=True)
         sys.stdout.flush()
 
-        file_write(u'可疑的操作记录如下：\n')
-        for info in self.history:
-            file_write(str(info) + '\n')
+        if len(self.history) > 0:
+            file_write('-' * 30 + '\n')
+            file_write(u'可疑的操作记录如下：\n')
+            for info in self.history:
+                file_write(str(info) + '\n')
+            file_write('-' * 30 + '\n')
+
 
 if __name__ == '__main__':
     info = History_Analysis()

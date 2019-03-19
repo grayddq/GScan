@@ -202,9 +202,11 @@ class Proc_Analysis:
         self.process_backdoor = self.reRepeat(self.process_backdoor)
 
         if len(self.malware_infos) > 0:
+            file_write('-' * 30 + '\n')
             file_write(u'恶意进程如下：：\n')
             for info in self.malware_infos:
                 file_write(str(info) + '\n')
+            file_write('-' * 30 + '\n')
 
 
 if __name__ == '__main__':
