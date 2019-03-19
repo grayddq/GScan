@@ -36,7 +36,7 @@ class Log_Analysis:
             file_write('-' * 30+'\n')
             file_write(u'日志分析结果如下：\n')
             for info in self.log_malware:
-                file_write(str(info) + '\n')
+                file_write(json.dumps(info, ensure_ascii=False) + '\n')
             file_write('-' * 30 + '\n')
 
 if __name__ == '__main__':
