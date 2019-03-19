@@ -73,4 +73,4 @@ if __name__ == '__main__':
     info.run()
     print '可疑的操作记录如下：'
     for info in info.history:
-        print info
+        print(info)

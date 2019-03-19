@@ -215,4 +215,4 @@ if __name__ == '__main__':
     infos.run()
     print u"恶意进程如下："
     for info in infos.malware_infos:
-        print info
+        print(info)

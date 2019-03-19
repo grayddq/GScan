@@ -129,4 +129,4 @@ if __name__ == '__main__':
     infos.run()
     print u"可疑账户如下："
     for info in infos.user_malware:
-        print info
+        print(info)
