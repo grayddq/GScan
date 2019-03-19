@@ -47,6 +47,8 @@ class Config_Analysis:
     def run(self):
         print(u'\n开始配置类安全扫描')
         print align(u' [1]DNS设置扫描', 30) + u'[ ',
+        file_write(u'\n开始配置类安全扫描')
+        file_write(align(u' [1]DNS设置扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_dns()
         if malice:
@@ -57,6 +59,7 @@ class Config_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [2]防火墙设置扫描', 30) + u'[ ',
+        file_write(align(u' [2]防火墙设置扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_iptables()
         if malice:
@@ -66,6 +69,10 @@ class Config_Analysis:
         else:
             pringf(u'OK', security=True)
 
+        if len(self.config_suspicious)>0:
+            file_write(u'可疑配置类如下：\n')
+            for info in self.config_suspicious:
+                file_write(str(info) + '\n')
 
 if __name__ == '__main__':
     infos = Config_Analysis()

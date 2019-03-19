@@ -18,6 +18,7 @@ def pringf(strings, security=False, suspicious=False, malice=False):
     else:
         print(u'%s' % strings)
     sys.stdout.flush()
+    file_write((u'%s ' % strings) + ' ]\n')
 
 #获取字符串宽度
 def get_str_width(string):

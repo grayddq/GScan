@@ -119,6 +119,8 @@ class File_Analysis:
     def run(self):
         print(u'\n开始文件类安全扫描')
         print align(u' [1]系统文件完整性安全扫描', 30) + u'[ ',
+        file_write(u'\n开始文件类安全扫描\n')
+        file_write(align(u' [1]系统文件完整性安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 系统完整性检测
         suspicious, malice = self.check_system_integrity()
@@ -130,7 +132,7 @@ class File_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [2]系统临时目录安全扫描', 30) + u'[ ',
-        sys.stdout.flush()
+        file_write(align(u' [2]系统临时目录安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 临时目录文件扫描
         suspicious, malice = self.check_tmp()
@@ -142,6 +144,7 @@ class File_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [3]可疑隐藏文件扫描', 30) + u'[ ',
+        file_write(align(u' [3]可疑隐藏文件扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 临时目录文件扫描
         suspicious, malice = self.check_hide()
@@ -152,6 +155,11 @@ class File_Analysis:
         else:
             pringf(u'OK', security=True)
         sys.stdout.flush()
+
+        if len(self.file_malware) > 0:
+            file_write(u'文件检查异常如下：\n')
+            for info in self.file_malware:
+                file_write(str(info) + '\n')
 
 
 if __name__ == '__main__':

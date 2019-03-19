@@ -72,6 +72,8 @@ class User_Analysis:
     def run(self):
         print(u'\n开始账户类安全扫描')
         print align(u' [1]root权限账户安全扫描', 30) + u'[ ',
+        file_write(u'\n开始账户类安全扫描')
+        file_write(align(u' [1]root权限账户安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_user()
         if malice:
@@ -82,6 +84,7 @@ class User_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [2]空口令账户安全扫描', 30) + u'[ ',
+        file_write(align(u' [2]空口令账户安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_empty()
         if malice:
@@ -92,6 +95,7 @@ class User_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [3]sudoers文件权限账户安全扫描', 30) + u'[ ',
+        file_write(align(u' [3]sudoers文件权限账户安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_sudo()
         if malice:
@@ -102,6 +106,7 @@ class User_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [4]账户免密码证书安全扫描', 30) + u'[ ',
+        file_write(align(u' [4]账户免密码证书安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_authorized_keys()
         if malice:
@@ -111,6 +116,10 @@ class User_Analysis:
         else:
             pringf(u'OK', security=True)
 
+        if len(self.user_malware) > 0:
+            file_write(u'可疑账户如下：\n')
+            for info in self.user_malware:
+                file_write(str(info) + '\n')
 
 if __name__ == '__main__':
     infos = User_Analysis()

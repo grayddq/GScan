@@ -46,8 +46,9 @@ class History_Analysis:
 
     def run(self):
         print(u'\n开始主机历史操作类安全扫描')
-        sys.stdout.flush()
+        file_write(u'\n开始主机历史操作类安全扫描\n')
         print align(u' [1]所有历史操作的可疑记录', 30) + u'[ ',
+        file_write(align(u' [1]所有历史操作的可疑记录', 30) + u'[ ')
         sys.stdout.flush()
         # 系统完整性检测
         suspicious, malice = self.get_all_history()
@@ -59,6 +60,9 @@ class History_Analysis:
             pringf(u'OK', security=True)
         sys.stdout.flush()
 
+        file_write(u'可疑的操作记录如下：\n')
+        for info in self.history:
+            file_write(str(info) + '\n')
 
 if __name__ == '__main__':
     info = History_Analysis()

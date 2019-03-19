@@ -21,6 +21,8 @@ class Log_Analysis:
     def run(self):
         print(u'\n开始日志类安全扫描')
         print align(u' [1]SSH日志安全扫描', 30) + u'[ ',
+        file_write(u'\n开始日志类安全扫描')
+        file_write(align(u' [1]SSH日志安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_sshlog()
         if malice:
@@ -30,6 +32,10 @@ class Log_Analysis:
         else:
             pringf(u'OK', security=True)
 
+        if len(self.log_malware) > 0:
+            file_write(u'日志分析如下：\n')
+            for info in self.log_malware:
+                file_write(str(info) + '\n')
 
 if __name__ == '__main__':
     infos = Log_Analysis()

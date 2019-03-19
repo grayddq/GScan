@@ -85,6 +85,8 @@ class Network_Analysis:
     def run(self):
         print(u'\n开始网络链接类安全扫描')
         print align(u' [1]当前网络对外连接扫描', 30) + u'[ ',
+        file_write(u'\n开始网络链接类安全扫描\n')
+        file_write(align(u' [1]当前网络对外连接扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_network_abroad()
         if malice:
@@ -95,6 +97,7 @@ class Network_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [2]恶意特征类链接扫描', 30) + u'[ ',
+        file_write(align(u' [2]恶意特征类链接扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_net_suspicious()
         if malice:
@@ -105,6 +108,7 @@ class Network_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [3]网卡混杂模式扫描', 30) + u'[ ',
+        file_write(align(u' [3]网卡混杂模式扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_promisc()
         if malice:
@@ -113,6 +117,11 @@ class Network_Analysis:
             pringf(u'警告', suspicious=True)
         else:
             pringf(u'OK', security=True)
+
+        if len(self.network_malware) > 0:
+            file_write(u'可疑网络连接：\n')
+            for info in self.network_malware:
+                file_write(str(info) + '\n')
 
 
 if __name__ == '__main__':

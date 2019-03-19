@@ -142,6 +142,8 @@ class Proc_Analysis:
     def run(self):
         print(u'\n开始进程类安全扫描')
         print align(u' [1]CUP和内存类异常进程排查', 30) + u'[ ',
+        file_write(u'\n开始进程类安全扫描\n')
+        file_write(align(u' [1]CUP和内存类异常进程排查', 30) + u'[ ')
         sys.stdout.flush()
 
         # cpu和内存使用的可疑问题
@@ -154,6 +156,7 @@ class Proc_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [2]隐藏进程安全扫描', 30) + u'[ ',
+        file_write(align(u' [2]隐藏进程安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_hide_pro()
         if malice:
@@ -164,6 +167,7 @@ class Proc_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [3]反弹shell类进程扫描', 30) + u'[ ',
+        file_write(align(u' [3]反弹shell类进程扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.shell_analysis()
         if malice:
@@ -174,6 +178,7 @@ class Proc_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [4]恶意进程信息安全扫描', 30) + u'[ ',
+        file_write(align(u' [4]恶意进程信息安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.keyi_analysis()
         if malice:
@@ -184,6 +189,7 @@ class Proc_Analysis:
             pringf(u'OK', security=True)
 
         print align(u' [5]exe程序安全扫描', 30) + u'[ ',
+        file_write(align(u' [5]exe程序安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.exe_analysis()
         if malice:
@@ -194,6 +200,11 @@ class Proc_Analysis:
             pringf(u'OK', security=True)
 
         self.process_backdoor = self.reRepeat(self.process_backdoor)
+
+        if len(self.malware_infos) > 0:
+            file_write(u'恶意进程如下：：\n')
+            for info in self.malware_infos:
+                file_write(str(info) + '\n')
 
 
 if __name__ == '__main__':
