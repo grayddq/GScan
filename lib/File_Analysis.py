@@ -1,5 +1,5 @@
 # coding:utf-8
-import os, optparse, time, sys,json
+import os, optparse, time, sys, json
 from lib.common import *
 
 
@@ -117,7 +117,10 @@ class File_Analysis:
 
     def run(self):
         print(u'\n开始文件类安全扫描')
-        print align(u' [1]系统文件完整性安全扫描', 30) + u'[ ',
+        if sys.version_info < (3, 0):
+            print align(u' [1]系统文件完整性安全扫描', 30) + u'[ ',
+        else:
+            print(align(u' [1]系统文件完整性安全扫描', 30) + u'[ ', end = '')
         file_write(u'\n开始文件类安全扫描\n')
         file_write(align(u' [1]系统文件完整性安全扫描', 30) + u'[ ')
         sys.stdout.flush()
@@ -130,7 +133,10 @@ class File_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print align(u' [2]系统临时目录安全扫描', 30) + u'[ ',
+        if sys.version_info < (3, 0):
+            print align(u' [2]系统临时目录安全扫描', 30) + u'[ ',
+        else:
+            print(align(u' [2]系统临时目录安全扫描', 30) + u'[ ',end='')
         file_write(align(u' [2]系统临时目录安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 临时目录文件扫描
@@ -142,7 +148,10 @@ class File_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print align(u' [3]可疑隐藏文件扫描', 30) + u'[ ',
+        if sys.version_info < (3, 0):
+            print align(u' [3]可疑隐藏文件扫描', 30) + u'[ ',
+        else:
+            print(align(u' [3]可疑隐藏文件扫描', 30) + u'[ ',end='')
         file_write(align(u' [3]可疑隐藏文件扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 临时目录文件扫描
