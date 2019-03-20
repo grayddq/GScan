@@ -1,4 +1,5 @@
 # coding:utf-8
+from __future__ import print_function
 import os, optparse, time, subprocess, sys, json
 from lib.ip.ip import *
 from lib.common import *
@@ -83,7 +84,7 @@ class Network_Analysis:
 
     def run(self):
         print(u'\n开始网络链接类安全扫描')
-        print align(u' [1]当前网络对外连接扫描', 30) + u'[ ',
+        print(align(u' [1]当前网络对外连接扫描', 30) + u'[ ',end='')
         file_write(u'\n开始网络链接类安全扫描\n')
         file_write(align(u' [1]当前网络对外连接扫描', 30) + u'[ ')
         sys.stdout.flush()
@@ -95,7 +96,8 @@ class Network_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print align(u' [2]恶意特征类链接扫描', 30) + u'[ ',
+
+        print(align(u' [2]恶意特征类链接扫描', 30) + u'[ ',end='')
         file_write(align(u' [2]恶意特征类链接扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_net_suspicious()
@@ -106,7 +108,8 @@ class Network_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print align(u' [3]网卡混杂模式扫描', 30) + u'[ ',
+
+        print(align(u' [3]网卡混杂模式扫描', 30) + u'[ ',end='')
         file_write(align(u' [3]网卡混杂模式扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_promisc()

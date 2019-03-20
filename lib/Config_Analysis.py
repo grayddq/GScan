@@ -1,4 +1,5 @@
 # coding:utf-8
+from __future__ import print_function
 import os, optparse, time, sys, json
 from lib.common import *
 from lib.ip.ip import *
@@ -45,7 +46,7 @@ class Config_Analysis:
 
     def run(self):
         print(u'\n开始配置类安全扫描')
-        print align(u' [1]DNS设置扫描', 30) + u'[ ',
+        print(align(u' [1]DNS设置扫描', 30) + u'[ ',end='')
         file_write(u'\n开始配置类安全扫描\n')
         file_write(align(u' [1]DNS设置扫描', 30) + u'[ ')
         sys.stdout.flush()
@@ -57,7 +58,8 @@ class Config_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print align(u' [2]防火墙设置扫描', 30) + u'[ ',
+
+        print(align(u' [2]防火墙设置扫描', 30) + u'[ ',end='')
         file_write(align(u' [2]防火墙设置扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_iptables()

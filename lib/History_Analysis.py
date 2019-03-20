@@ -1,4 +1,5 @@
 # coding:utf-8
+from __future__ import print_function
 import os, optparse, time, re, sys, json
 from ip import *
 from lib.common import *
@@ -47,7 +48,7 @@ class History_Analysis:
     def run(self):
         print(u'\n开始主机历史操作类安全扫描')
         file_write(u'\n开始主机历史操作类安全扫描\n')
-        print align(u' [1]所有历史操作的可疑记录', 30) + u'[ ',
+        print(align(u' [1]所有历史操作的可疑记录', 30) + u'[ ',end='')
         file_write(align(u' [1]所有历史操作的可疑记录', 30) + u'[ ')
         sys.stdout.flush()
         # 系统完整性检测
