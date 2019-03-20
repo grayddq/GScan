@@ -1,7 +1,8 @@
 # coding:utf-8
+from __future__ import print_function
 import os, optparse, time, sys, json
 from lib.common import *
-from __future__ import print_function
+
 
 
 # 分析主机文件类异常
