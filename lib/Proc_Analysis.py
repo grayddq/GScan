@@ -214,7 +214,6 @@ class Proc_Analysis:
 if __name__ == '__main__':
     infos = Proc_Analysis()
     infos.run()
-    print
-    u"恶意进程如下："
+    print(u"恶意进程如下：")
     for info in infos.malware_infos:
         print(info)

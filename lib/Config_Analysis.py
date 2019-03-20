@@ -81,6 +81,6 @@ class Config_Analysis:
 if __name__ == '__main__':
     infos = Config_Analysis()
     infos.run()
-    print u"可疑配置类如下："
+    print(u"可疑配置类如下：")
     for info in infos.config_suspicious:
         print(info)

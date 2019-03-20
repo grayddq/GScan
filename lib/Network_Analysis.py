@@ -131,6 +131,6 @@ class Network_Analysis:
 if __name__ == '__main__':
     infos = Network_Analysis()
     infos.run()
-    print u"可疑网络连接："
+    print(u"可疑网络连接：")
     for info in infos.network_malware:
-        print info
+        print(info)

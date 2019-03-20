@@ -72,6 +72,6 @@ class History_Analysis:
 if __name__ == '__main__':
     info = History_Analysis()
     info.run()
-    print '可疑的操作记录如下：'
+    print('可疑的操作记录如下：')
     for info in info.history:
         print(info)

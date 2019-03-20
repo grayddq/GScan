@@ -344,8 +344,6 @@ class Backdoor_Analysis:
 if __name__ == '__main__':
     infos = Backdoor_Analysis()
     infos.run()
-    print
-    u"后门检查异常如下："
+    print(u"后门检查异常如下：")
     for info in infos.backdoor:
-        print
-        info
+        print(info)

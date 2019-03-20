@@ -169,7 +169,6 @@ if __name__ == '__main__':
     # File_Analysis().run()
     info = File_Analysis()
     info.run()
-    print
-    u"文件检查异常如下："
+    print(u"文件检查异常如下：")
     for info in info.file_malware:
         print(info)

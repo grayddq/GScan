@@ -128,7 +128,6 @@ class User_Analysis:
 if __name__ == '__main__':
     infos = User_Analysis()
     infos.run()
-    print
-    u"可疑账户如下："
+    print(u"可疑账户如下：")
     for info in infos.user_malware:
         print(info)

@@ -44,6 +44,6 @@ class Log_Analysis:
 if __name__ == '__main__':
     infos = Log_Analysis()
     infos.run()
-    print u"日志分析如下："
+    print(u"日志分析如下：")
     for info in infos.log_malware:
-        print info
+        print(info)
