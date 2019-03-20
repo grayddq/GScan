@@ -1,7 +1,7 @@
 # coding:utf-8
 from __future__ import print_function
 import os, optparse, time, re, sys, json
-from ip import *
+from lib.ip.ip import *
 from lib.common import *
 
 

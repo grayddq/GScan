@@ -1,7 +1,7 @@
 # coding:utf-8
 from __future__ import print_function
 import os, optparse, time, json
-from SSHAnalysis import *
+from lib.SSHAnalysis import *
 from lib.common import *
 
 
