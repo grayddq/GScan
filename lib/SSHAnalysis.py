@@ -113,7 +113,7 @@ if __name__ == '__main__':
     parser.add_option("-f", "--file", dest="file", help=u"target file，demo: -p /var/log/secure")
     options, _ = parser.parse_args()
     if options.dir or options.file:
-        print u'存在爆破且成功的信息：'
-        print SSH_Analysis(log=options.file, log_dir=options.dir).correct_baopo_infos
+        print(u'存在爆破且成功的信息：')
+        print(SSH_Analysis(log=options.file, log_dir=options.dir).correct_baopo_infos)
     else:
         parser.print_help()
