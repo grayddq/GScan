@@ -31,25 +31,28 @@ class Config_Analysis:
     # 检测防火墙设置
     def check_iptables(self):
         suspicious, malice = False, False
-        shell_process = os.popen("iptables -L -n| grep -v 'Chain'|grep 'ACCEPT'").read().splitlines()
-        for iptables in shell_process:
-            self.config_suspicious.append(
-                {u'配置信息': iptables, u'异常类型': u'存在iptables ACCEPT策略', u'手工确认': u'[1]iptables -L'})
-            suspicious = True
-        if os.path.exists('/etc/sysconfig/iptables'):
-            with open('/etc/sysconfig/iptables') as f:
-                for line in f:
-                    if len(line) > 5:
-                        if (line[0] != '#') and ('ACCEPT' in line):
-                            self.config_suspicious.append(
-                                {u'配置信息': line, u'异常类型': u'存在iptables ACCEPT策略', u'文件': u'/etc/sysconfig/iptables',
-                                 u'手工确认': u'[1]cat /etc/sysconfig/iptables'})
-                            suspicious = True
-        return suspicious, malice
+        try:
+            shell_process = os.popen("iptables -L -n| grep -v 'Chain'|grep 'ACCEPT'").read().splitlines()
+            for iptables in shell_process:
+                self.config_suspicious.append(
+                    {u'配置信息': iptables, u'异常类型': u'存在iptables ACCEPT策略', u'手工确认': u'[1]iptables -L'})
+                suspicious = True
+            if os.path.exists('/etc/sysconfig/iptables'):
+                with open('/etc/sysconfig/iptables') as f:
+                    for line in f:
+                        if len(line) > 5:
+                            if (line[0] != '#') and ('ACCEPT' in line):
+                                self.config_suspicious.append(
+                                    {u'配置信息': line, u'异常类型': u'存在iptables ACCEPT策略', u'文件': u'/etc/sysconfig/iptables',
+                                     u'手工确认': u'[1]cat /etc/sysconfig/iptables'})
+                                suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def run(self):
         print(u'\n开始配置类安全扫描')
-        print(align(u' [1]DNS设置扫描', 30) + u'[ ',end='')
+        print(align(u' [1]DNS设置扫描', 30) + u'[ ', end='')
         file_write(u'\n开始配置类安全扫描\n')
         file_write(align(u' [1]DNS设置扫描', 30) + u'[ ')
         sys.stdout.flush()
@@ -61,8 +64,7 @@ class Config_Analysis:
         else:
             pringf(u'OK', security=True)
 
-
-        print(align(u' [2]防火墙设置扫描', 30) + u'[ ',end='')
+        print(align(u' [2]防火墙设置扫描', 30) + u'[ ', end='')
         file_write(align(u' [2]防火墙设置扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_iptables()

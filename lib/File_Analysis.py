@@ -121,7 +121,7 @@ class File_Analysis:
                     if malware in str: return malware
             return ""
         except:
-            return
+            return ""
 
     # 分析字符串是否包含反弹shell特征
     def check_shell(self, content):

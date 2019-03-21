@@ -52,7 +52,7 @@ class Proc_Analysis:
         suspicious, malice = False, False
         try:
             self.get_malware_info()
-            if not os.path.exists('/proc/'): return
+            if not os.path.exists('/proc/'): return suspicious, malice
             for file in os.listdir('/proc/'):
                 if file.isdigit():
                     filepath = os.path.join('%s%s%s' % ('/proc/', file, '/exe'))
@@ -122,7 +122,7 @@ class Proc_Analysis:
             pid_process = os.popen("ps -ef | awk 'NR>1{print $2}'").read().splitlines()
             # 所有/proc目录的pid
             pid_pro_file = []
-            if not os.path.exists('/proc/'): return
+            if not os.path.exists('/proc/'): return False, False
             for file in os.listdir('/proc/'):
                 if file.isdigit():
                     pid_pro_file.append(file)
