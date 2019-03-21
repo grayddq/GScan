@@ -11,17 +11,20 @@ class Log_Analysis:
 
     def check_sshlog(self):
         suspicious, malice = False, False
-        correct_baopo_infos = SSH_Analysis(log_dir='/var/log/').correct_baopo_infos
-        if len(correct_baopo_infos) > 0:
-            for info in correct_baopo_infos:
-                self.log_malware.append(
-                    {u'日志类型': u'SSH被成功爆破', u'来源IP': info['ip'], u'用户': info['user'], u'爆破时间': info['time']})
-                malice = True
-        return suspicious, malice
+        try:
+            correct_baopo_infos = SSH_Analysis(log_dir='/var/log/').correct_baopo_infos
+            if len(correct_baopo_infos) > 0:
+                for info in correct_baopo_infos:
+                    self.log_malware.append(
+                        {u'日志类型': u'SSH被成功爆破', u'来源IP': info['ip'], u'用户': info['user'], u'爆破时间': info['time']})
+                    malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def run(self):
         print(u'\n开始日志类安全扫描')
-        print(align(u' [1]SSH日志安全扫描', 30) + u'[ ',end='')
+        print(align(u' [1]SSH日志安全扫描', 30) + u'[ ', end='')
         file_write(u'\n开始日志类安全扫描\n')
         file_write(align(u' [1]SSH日志安全扫描', 30) + u'[ ')
         sys.stdout.flush()

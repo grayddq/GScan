@@ -21,29 +21,33 @@ class History_Analysis:
 
     # 获取所有用户下的操作记录，是否存在恶意ip
     def get_all_history(self):
-        suspicious = False
-        malice = False
-        for dir in os.listdir('/home/'):
-            suspicious, malice = self.file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.bash_history')), dir)
-        suspicious2, malice2 = self.file_analysis('/root/.bash_history', 'root')
-        if suspicious2: suspicious = True
-        if malice2: malice = True
-        return suspicious, malice
+        suspicious,malice = False,False
+        try:
+            for dir in os.listdir('/home/'):
+                suspicious, malice = self.file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.bash_history')), dir)
+            suspicious2, malice2 = self.file_analysis('/root/.bash_history', 'root')
+            if suspicious2: suspicious = True
+            if malice2: malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析history文件的操作记录
     def file_analysis(self, file, user):
-        suspicious = False
-        malice = False
-        if os.path.exists(file):
-            with open(file) as f:
-                for line in f:
-                    if not re.search(self.ip_http, line): continue
-                    if re.search(self.lan_ip, line): continue
-                    for ip in re.findall(self.ip_re, line):
-                        if find(ip)[0:2] != u'中国':
-                            self.history.append({u'用户名': user, u'异常执行记录': line})
-                            suspicious = True
-        return suspicious, malice
+        suspicious,malice = False,False
+        try:
+            if os.path.exists(file):
+                with open(file) as f:
+                    for line in f:
+                        if not re.search(self.ip_http, line): continue
+                        if re.search(self.lan_ip, line): continue
+                        for ip in re.findall(self.ip_re, line):
+                            if find(ip)[0:2] != u'中国':
+                                self.history.append({u'用户名': user, u'异常执行记录': line})
+                                suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def run(self):
         print(u'\n开始主机历史操作类安全扫描')

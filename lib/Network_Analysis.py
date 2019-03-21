@@ -45,46 +45,55 @@ class Network_Analysis:
     # 境外IP的链接
     def check_network_abroad(self):
         suspicious, malice = False, False
-        shell_process = os.popen("netstat -ano | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
-        for nets in shell_process:
-            netinfo = nets.strip().split(' ')
-            protocol = netinfo[0]
-            remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
-            if (find(remote_ip)[0:2] != u'中国') and (find(remote_ip)[0:3] != u'局域网') and (
-                    find(remote_ip)[0:4] != u'共享地址'):
-                self.network_malware.append(
-                    {u'异常类型': u'境外IP链接', u'远程ip': remote_ip, u'远程port': remote_port})
-                suspicious = True
-        return suspicious, malice
+        try:
+            shell_process = os.popen("netstat -ano | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
+            for nets in shell_process:
+                netinfo = nets.strip().split(' ')
+                protocol = netinfo[0]
+                remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
+                if (find(remote_ip)[0:2] != u'中国') and (find(remote_ip)[0:3] != u'局域网') and (
+                        find(remote_ip)[0:4] != u'共享地址'):
+                    self.network_malware.append(
+                        {u'异常类型': u'境外IP链接', u'远程ip': remote_ip, u'远程port': remote_port})
+                    suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 可疑端口的链接
     def check_net_suspicious(self):
         suspicious, malice = False, False
-        shell_process = os.popen("netstat -ano | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
-        for nets in shell_process:
-            netinfo = nets.strip().split(' ')
-            protocol = netinfo[0]
-            remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
-            for malware in self.port_malware:
-                if malware['port'] == remote_port:
-                    self.network_malware.append(
-                        {u'异常类型': u'恶意链接特征', u'远程ip': remote_ip, u'远程port': remote_port,
-                         u'异常特征': malware['description']})
-                    suspicious = True
-        return suspicious, malice
+        try:
+            shell_process = os.popen("netstat -ano | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
+            for nets in shell_process:
+                netinfo = nets.strip().split(' ')
+                protocol = netinfo[0]
+                remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
+                for malware in self.port_malware:
+                    if malware['port'] == remote_port:
+                        self.network_malware.append(
+                            {u'异常类型': u'恶意链接特征', u'远程ip': remote_ip, u'远程port': remote_port,
+                             u'异常特征': malware['description']})
+                        suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def check_promisc(self):
         suspicious, malice = False, False
-        shell_process = os.popen("ip link | grep PROMISC").read().splitlines()
-        if len(shell_process) > 0:
-            self.network_malware.append(
-                {u'异常类型': u'网卡开启混杂模式', u'手工确认': u'ip link | grep PROMISC'})
-            suspicious = True
-        return suspicious, malice
+        try:
+            shell_process = os.popen("ip link | grep PROMISC").read().splitlines()
+            if len(shell_process) > 0:
+                self.network_malware.append(
+                    {u'异常类型': u'网卡开启混杂模式', u'手工确认': u'ip link | grep PROMISC'})
+                suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def run(self):
         print(u'\n开始网络链接类安全扫描')
-        print(align(u' [1]当前网络对外连接扫描', 30) + u'[ ',end='')
+        print(align(u' [1]当前网络对外连接扫描', 30) + u'[ ', end='')
         file_write(u'\n开始网络链接类安全扫描\n')
         file_write(align(u' [1]当前网络对外连接扫描', 30) + u'[ ')
         sys.stdout.flush()
@@ -96,8 +105,7 @@ class Network_Analysis:
         else:
             pringf(u'OK', security=True)
 
-
-        print(align(u' [2]恶意特征类链接扫描', 30) + u'[ ',end='')
+        print(align(u' [2]恶意特征类链接扫描', 30) + u'[ ', end='')
         file_write(align(u' [2]恶意特征类链接扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_net_suspicious()
@@ -108,8 +116,7 @@ class Network_Analysis:
         else:
             pringf(u'OK', security=True)
 
-
-        print(align(u' [3]网卡混杂模式扫描', 30) + u'[ ',end='')
+        print(align(u' [3]网卡混杂模式扫描', 30) + u'[ ', end='')
         file_write(align(u' [3]网卡混杂模式扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_promisc()

@@ -45,180 +45,223 @@ class Backdoor_Analysis:
     # LD_PRELOAD后门检测
     def check_LD_PRELOAD(self):
         suspicious, malice = False, False
-        infos = os.popen("echo $LD_PRELOAD").read().splitlines()
-        for info in infos:
-            if not len(info) > 3: continue
-            self.backdoor.append(
-                {u'异常类型': u'LD_PRELOAD 后门', u'异常信息': info, u'手工确认': u'[1]echo $LD_PRELOAD [2]unset LD_PRELOAD'})
-            malice = True
-        return suspicious, malice
+        try:
+            infos = os.popen("echo $LD_PRELOAD").read().splitlines()
+            for info in infos:
+                if not len(info) > 3: continue
+                self.backdoor.append(
+                    {u'异常类型': u'LD_PRELOAD 后门', u'异常信息': info, u'手工确认': u'[1]echo $LD_PRELOAD [2]unset LD_PRELOAD'})
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # ld.so.preload后门检测
     def check_ld_so_preload(self):
         suspicious, malice = False, False
-        if not os.path.exists('/etc/ld.so.preload'): return suspicious, malice
-        with open('/etc/ld.so.preload') as f:
-            for line in f:
-                if not len(line) > 3: continue
-                if line[0] != '#':
-                    self.backdoor.append({u'异常类型': u'ld.so.preload 后门', u'异常信息': line.replace("\n", ""),
-                                          u'文件': u'/etc/ld.so.preload', u'手工确认': u'[1]cat /etc/ld.so.preload'})
-                    malice = True
-                    break
-        return suspicious, malice
+        try:
+            if not os.path.exists('/etc/ld.so.preload'): return suspicious, malice
+            with open('/etc/ld.so.preload') as f:
+                for line in f:
+                    if not len(line) > 3: continue
+                    if line[0] != '#':
+                        self.backdoor.append({u'异常类型': u'ld.so.preload 后门', u'异常信息': line.replace("\n", ""),
+                                              u'文件': u'/etc/ld.so.preload', u'手工确认': u'[1]cat /etc/ld.so.preload'})
+                        malice = True
+                        break
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # PROMPT_COMMAND后门检测
     def check_PROMPT_COMMAND(self):
         suspicious, malice = False, False
-        infos = os.popen("echo $PROMPT_COMMAND").read().splitlines()
-        for info in infos:
-            suspicious2, malice2 = self.analysis_strings('PROMPT_COMMAND backdoor', 'ROMPT_COMMAND', info,
-                                                         '[1]echo $PROMPT_COMMAND')
-            if suspicious2: suspicious = True
-            if malice2: malice = True
-        return suspicious, malice
+        try:
+            infos = os.popen("echo $PROMPT_COMMAND").read().splitlines()
+            for info in infos:
+                suspicious2, malice2 = self.analysis_strings('PROMPT_COMMAND backdoor', 'ROMPT_COMMAND', info,
+                                                             '[1]echo $PROMPT_COMMAND')
+                if suspicious2: suspicious = True
+                if malice2: malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析cron定时任务后门
     def check_cron(self):
         suspicious, malice = False, False
-        cron_dir_list = ['/var/spool/cron/', '/etc/cron.d/', '/etc/cron.daily/', '/etc/cron.weekly/',
-                         '/etc/cron.hourly/', '/etc/cron.monthly/']
-        for cron in cron_dir_list:
-            files = [os.path.join(cron, i) for i in os.listdir(cron) if (not os.path.isdir(os.path.join(cron, i)))]
-            for file in files:
-                for i in open(file, 'r'):
-                    suspicious2, malice2 = self.analysis_strings('crontab backdoor', file, i, '[1]cat %s' % file)
-                    if suspicious2: suspicious = True
-                    if malice2: malice = True
-        return suspicious, malice
+        try:
+            cron_dir_list = ['/var/spool/cron/', '/etc/cron.d/', '/etc/cron.daily/', '/etc/cron.weekly/',
+                             '/etc/cron.hourly/', '/etc/cron.monthly/']
+            for cron in cron_dir_list:
+                files = [os.path.join(cron, i) for i in os.listdir(cron) if (not os.path.isdir(os.path.join(cron, i)))]
+                for file in files:
+                    for i in open(file, 'r'):
+                        suspicious2, malice2 = self.analysis_strings('crontab backdoor', file, i, '[1]cat %s' % file)
+                        if suspicious2: suspicious = True
+                        if malice2: malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析alias后门
     def check_alias(self):
         suspicious, malice = False, False
-        infos = os.popen("alias").read().splitlines()
-        for info in infos:
-            suspicious2, malice2 = self.analysis_strings('alias backdoor', "", info, '[1]alias')
-            if suspicious2: suspicious = True
-            if malice2: malice = True
-        return suspicious, malice
+        try:
+            infos = os.popen("alias").read().splitlines()
+            for info in infos:
+                suspicious2, malice2 = self.analysis_strings('alias backdoor', "", info, '[1]alias')
+                if suspicious2: suspicious = True
+                if malice2: malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析SSH后门
     def check_SSH(self):
         suspicious, malice = False, False
-        infos = os.popen("netstat -ntpl |grep -v ':22 '| awk '{if (NR>2){print $7}}'").read().splitlines()
-        for info in infos:
-            pid = info.split("/")[0]
-            if os.path.exists('/proc/%s/exe' % pid):
-                if 'sshd' in os.readlink('/proc/%s/exe' % pid):
-                    self.backdoor.append(
-                        {u'异常类型': u'SSH 后门', u'异常信息': u'/porc/%s/exe' % pid, u'异常文件': u'/proc/%s/exe' % pid,
-                         u'手工确认': u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid)})
-                    malice = True
-        return suspicious, malice
+        try:
+            infos = os.popen("netstat -ntpl |grep -v ':22 '| awk '{if (NR>2){print $7}}'").read().splitlines()
+            for info in infos:
+                pid = info.split("/")[0]
+                if os.path.exists('/proc/%s/exe' % pid):
+                    if 'sshd' in os.readlink('/proc/%s/exe' % pid):
+                        self.backdoor.append(
+                            {u'异常类型': u'SSH 后门', u'异常信息': u'/porc/%s/exe' % pid, u'异常文件': u'/proc/%s/exe' % pid,
+                             u'手工确认': u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid)})
+                        malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析SSH Server wrapper 后门
     def check_SSHwrapper(self):
         suspicious, malice = False, False
-        infos = os.popen("file /usr/sbin/sshd").read().splitlines()
-        if 'ELF' not in infos[0]:
-            self.backdoor.append(
-                {u'异常类型': u'SSHwrapper 后门', u'异常信息': infos[0], u'文件': u'/usr/sbin/sshd',
-                 u'手工确认': u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd'})
-            malice = True
-        return suspicious, malice
+        try:
+            infos = os.popen("file /usr/sbin/sshd").read().splitlines()
+            if 'ELF' not in infos[0]:
+                self.backdoor.append(
+                    {u'异常类型': u'SSHwrapper 后门', u'异常信息': infos[0], u'文件': u'/usr/sbin/sshd',
+                     u'手工确认': u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd'})
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析inetd后门
     def check_inetd(self):
         suspicious, malice = False, False
-        if not os.path.exists('/etc/inetd.conf'): return suspicious, malice
-        with open('/etc/inetd.conf') as f:
-            for line in f:
-                if '/bin/bash' in line:
-                    self.backdoor.append(
-                        {u'异常类型': u'inetd.conf 后门', u'异常信息': line, u'文件': u'/etc/inetd.conf',
-                         u'手工确认': u'[1]cat /etc/inetd.conf'})
-                    malice = True
-        return suspicious, malice
+        try:
+            if not os.path.exists('/etc/inetd.conf'): return suspicious, malice
+            with open('/etc/inetd.conf') as f:
+                for line in f:
+                    if '/bin/bash' in line:
+                        self.backdoor.append(
+                            {u'异常类型': u'inetd.conf 后门', u'异常信息': line, u'文件': u'/etc/inetd.conf',
+                             u'手工确认': u'[1]cat /etc/inetd.conf'})
+                        malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析xinetd后门
     def check_xinetd(self):
         suspicious, malice = False, False
-        if not os.path.exists('/etc/xinetd.conf/'): return suspicious, malice
-        for file in os.listdir('/etc/xinetd.conf/'):
-            with open(os.path.join('%s%s' % ('/etc/xinetd.conf/', file))) as f:
-                for line in f:
-                    if '/bin/bash' in line:
-                        fpath = os.path.join('%s%s' % ('/etc/xinetd.conf/', file))
-                        self.backdoor.append(
-                            {u'异常类型': u'xinetd.conf 后门', u'异常信息': line, u'文件': u'/etc/xinetd.conf/%s' % file,
-                             u'手工确认': u'[1]cat /etc/xinetd.conf/%s' % file})
-                        malice = True
-        return suspicious, malice
+        try:
+            if not os.path.exists('/etc/xinetd.conf/'): return suspicious, malice
+            for file in os.listdir('/etc/xinetd.conf/'):
+                with open(os.path.join('%s%s' % ('/etc/xinetd.conf/', file))) as f:
+                    for line in f:
+                        if '/bin/bash' in line:
+                            fpath = os.path.join('%s%s' % ('/etc/xinetd.conf/', file))
+                            self.backdoor.append(
+                                {u'异常类型': u'xinetd.conf 后门', u'异常信息': line, u'文件': u'/etc/xinetd.conf/%s' % file,
+                                 u'手工确认': u'[1]cat /etc/xinetd.conf/%s' % file})
+                            malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 系统启动项检测
     def check_startup(self):
         suspicious, malice = False, False
-        init_path = ['/etc/init.d/', '/etc/rc.d/', '/etc/rc.local']
-        for path in init_path:
-            if os.path.isfile(path):
-                malware = self.analysis_file(path)
-                if malware:
-                    self.backdoor.append(
-                        {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
-                         u'手工确认': u'[1]cat %s' % path})
-                    malice = True
-                continue
-            for file in gci(path):
-                malware = self.analysis_file(file)
-                if malware:
-                    self.backdoor.append(
-                        {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
-                         u'手工确认': u'[1]cat %s' % file})
-                    malice = True
-        return suspicious, malice
+        try:
+            init_path = ['/etc/init.d/', '/etc/rc.d/', '/etc/rc.local']
+            for path in init_path:
+                if os.path.isfile(path):
+                    malware = self.analysis_file(path)
+                    if malware:
+                        self.backdoor.append(
+                            {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
+                             u'手工确认': u'[1]cat %s' % path})
+                        malice = True
+                    continue
+                for file in gci(path):
+                    malware = self.analysis_file(file)
+                    if malware:
+                        self.backdoor.append(
+                            {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
+                             u'手工确认': u'[1]cat %s' % file})
+                        malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 获取配置文件的恶意域名等信息
     def get_malware_info(self):
-        if not os.path.exists('malware'): return
-        for file in os.listdir('./malware/'):
-            time.sleep(0.001)  # 防止cpu占用过大
-            with open(os.path.join('%s%s' % ('./malware/', file))) as f:
-                for line in f:
-                    if len(line) > 3:
-                        if line[0] != '#': self.malware_infos.append(line.strip().replace("\n", ""))
+        try:
+            if not os.path.exists('malware'): return
+            for file in os.listdir('./malware/'):
+                time.sleep(0.001)  # 防止cpu占用过大
+                with open(os.path.join('%s%s' % ('./malware/', file))) as f:
+                    for line in f:
+                        if len(line) > 3:
+                            if line[0] != '#': self.malware_infos.append(line.strip().replace("\n", ""))
+        except:
+            return
 
     # 分析文件是否包含恶意特征或者反弹shell问题
     def analysis_file(self, file):
-        strings = os.popen("strings %s" % file).readlines()
-        for str in strings:
-            if self.check_shell(str): return 'bash shell'
-            for malware in self.malware_infos:
-                if malware in str: return malware
-        return ""
+        try:
+            strings = os.popen("strings %s" % file).readlines()
+            for str in strings:
+                if self.check_shell(str): return 'bash shell'
+                for malware in self.malware_infos:
+                    if malware in str: return malware
+            return ""
+        except:
+            return ""
 
     # 分析字符串是否包含反弹shell特征
     def check_shell(self, content):
-        return True if (('bash' in content) and (
-                ('/dev/tcp/' in content) or ('telnet ' in content) or ('nc ' in content) or (
-                'exec ' in content) or ('curl ' in content) or ('wget ' in content) or ('lynx ' in content))) or (
-                               ".decode('base64')" in content) else False
+        try:
+            return True if (('bash' in content) and (
+                    ('/dev/tcp/' in content) or ('telnet ' in content) or ('nc ' in content) or (
+                    'exec ' in content) or ('curl ' in content) or ('wget ' in content) or ('lynx ' in content))) or (
+                                   ".decode('base64')" in content) else False
+        except:
+            return False
 
     # 分析一串字符串是否包含反弹shell或者存在的文件路径
     def analysis_strings(self, name, file, contents, solve):
         suspicious, malice = False, False
-        content = contents.replace('\n', '')
-        if self.check_shell(content):
-            self.backdoor.append({u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell', u'手工确认': solve})
-            malice = True
-        else:
-            for file in content.split(' '):
-                if not os.path.exists(file): continue
-                malware = self.analysis_file(file)
-                if malware:
-                    self.backdoor.append(
-                        {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': malware, u'手工确认': solve})
-                    malice = True
-        return suspicious, malice
+        try:
+            content = contents.replace('\n', '')
+            if self.check_shell(content):
+                self.backdoor.append(
+                    {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell', u'手工确认': solve})
+                malice = True
+            else:
+                for file in content.split(' '):
+                    if not os.path.exists(file): continue
+                    malware = self.analysis_file(file)
+                    if malware:
+                        self.backdoor.append(
+                            {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': malware, u'手工确认': solve})
+                        malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def run(self):
         print(u'\n开始rootkit类安全扫描')

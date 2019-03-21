@@ -17,58 +17,74 @@ class User_Analysis:
     # 检测root权限用户
     def check_user(self):
         suspicious, malice = False, False
-        shell_process = os.popen("awk -F: '$3==0 {print $1}' /etc/passwd").readlines()
-        for user in shell_process:
-            if user.replace("\n", "") != 'root':
-                self.user_malware.append(
-                    {u'用户': user.replace("\n", ""), u'异常描述': u'属于特权用户'})
-                suspicious = False
-        return suspicious, malice
+        try:
+            shell_process = os.popen("awk -F: '$3==0 {print $1}' /etc/passwd").readlines()
+            for user in shell_process:
+                if user.replace("\n", "") != 'root':
+                    self.user_malware.append(
+                        {u'用户': user.replace("\n", ""), u'异常描述': u'属于特权用户'})
+                    suspicious = False
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 检测空口令账户
     def check_empty(self):
         suspicious, malice = False, False
-        shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow").readlines()
-        for user in shell_process2:
-            self.user_malware.append(
-                {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
-            malice = True
-        return suspicious, malice
+        try:
+            shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow").readlines()
+            for user in shell_process2:
+                self.user_malware.append(
+                    {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 检测sudo权限异常账户
     def check_sudo(self):
         suspicious, malice = False, False
-        shell_process3 = os.popen("cat /etc/sudoers|grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").readlines()
-        for user in shell_process3:
-            if user.replace("\n", "") != 'root':
-                self.user_malware.append(
-                    {u'用户': user.replace("\n", ""), u'异常描述': u'可通过sudo命令获取特权'})
-                suspicious = True
-        return suspicious, malice
+        try:
+            shell_process3 = os.popen("cat /etc/sudoers|grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").readlines()
+            for user in shell_process3:
+                if user.replace("\n", "") != 'root' and user[0] != '%':
+                    self.user_malware.append(
+                        {u'用户': user.replace("\n", ""), u'异常描述': u'可通过sudo命令获取特权'})
+                    suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 获取用户免密登录的公钥
     def check_authorized_keys(self):
         suspicious, malice = False, False
-        for dir in os.listdir('/home/'):
-            suspicious2, malice2 = self.file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.ssh/authorized_keys')),
-                                                      dir)
+        try:
+            for dir in os.listdir('/home/'):
+                suspicious2, malice2 = self.file_analysis(
+                    os.path.join('%s%s%s' % ('/home/', dir, '/.ssh/authorized_keys')),
+                    dir)
+                if suspicious2: suspicious = True
+                if malice2: malice = True
+            suspicious2, malice2 = self.file_analysis('/root/.ssh/authorized_keys', 'root')
             if suspicious2: suspicious = True
             if malice2: malice = True
-        suspicious2, malice2 = self.file_analysis('/root/.ssh/authorized_keys', 'root')
-        if suspicious2: suspicious = True
-        if malice2: malice = True
-        return suspicious, malice
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 分析authorized_keys文件
     def file_analysis(self, file, user):
         suspicious, malice = False, False
-        if os.path.exists(file):
-            shell_process = os.popen("cat " + file + "|awk '{print $3}'").readlines()
-            authorized_key = ' & '.join(shell_process).replace("\n", "")
-            self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
-                                      u'证书信息': authorized_key})
-            suspicious = True
-        return suspicious, malice
+        try:
+            if os.path.exists(file):
+                shell_process = os.popen("cat " + file + "|awk '{print $3}'").readlines()
+                authorized_key = ' & '.join(shell_process).replace("\n", "")
+                self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
+                                          u'证书信息': authorized_key})
+                suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     def run(self):
         print(u'\n开始账户类安全扫描')
