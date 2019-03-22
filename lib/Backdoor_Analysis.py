@@ -264,10 +264,10 @@ class Backdoor_Analysis:
             return suspicious, malice
 
     def run(self):
-        print(u'\n开始rootkit类安全扫描')
-        print(align(u' [1]LD_PRELOAD rootkit检测', 30) + u'[ ', end='')
-        file_write(u'\n开始rootkit类安全扫描\n')
-        file_write(align(u' [1]LD_PRELOAD rootkit检测', 30) + u'[ ')
+        print(u'\n开始恶意后门类安全扫描')
+        print(align(u' [1]LD_PRELOAD 后门检测', 30) + u'[ ', end='')
+        file_write(u'\n开始后门类安全扫描\n')
+        file_write(align(u' [1]LD_PRELOAD 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_LD_PRELOAD()
         if malice:
@@ -277,8 +277,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [2]ld.so.preload rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [2]ld.so.preload rootkit检测', 30) + u'[ ')
+        print(align(u' [2]ld.so.preload 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [2]ld.so.preload 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_ld_so_preload()
         if malice:
@@ -288,8 +288,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [3]PROMPT_COMMAND rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [3]PROMPT_COMMAND rootkit检测', 30) + u'[ ')
+        print(align(u' [3]PROMPT_COMMAND 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [3]PROMPT_COMMAND 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_PROMPT_COMMAND()
         if malice:
@@ -299,8 +299,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [4]crontab rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [4]crontab rootkit检测', 30) + u'[ ')
+        print(align(u' [4]crontab 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [4]crontab 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_cron()
         if malice:
@@ -310,8 +310,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [5]alias rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [5]alias rootkit检测', 30) + u'[ ')
+        print(align(u' [5]alias 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [5]alias 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_SSH()
         if malice:
@@ -321,8 +321,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [6]ssh rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [6]ssh rootkit检测', 30) + u'[ ')
+        print(align(u' [6]ssh 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [6]ssh 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_SSH()
         if malice:
@@ -332,8 +332,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [7]SSH wrapper rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [7]SSH wrapper rootkit检测', 30) + u'[ ')
+        print(align(u' [7]SSH wrapper 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [7]SSH wrapper 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_SSHwrapper()
         if malice:
@@ -343,8 +343,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [8]inetd.conf rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [8]inetd.conf rootkit检测', 30) + u'[ ')
+        print(align(u' [8]inetd.conf 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [8]inetd.conf 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_inetd()
         if malice:
@@ -354,8 +354,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [9]xinetd.conf rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [9]xinetd.conf rootkit检测', 30) + u'[ ')
+        print(align(u' [9]xinetd.conf 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [9]xinetd.conf 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_xinetd()
         if malice:
@@ -365,8 +365,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [10]系统启动项rootkit检测', 30) + u'[ ', end='')
-        file_write(align(u' [10]系统启动项rootkit检测', 30) + u'[ ')
+        print(align(u' [10]系统启动项后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [10]系统启动项后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_startup()
         if malice:

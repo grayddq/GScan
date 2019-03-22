@@ -12,11 +12,11 @@ from lib.Config_Analysis import *
 from lib.Log_Analysis import *
 
 if __name__ == '__main__':
-    progam = '''
+    progam = u'''
   _______      _______.  ______      ___      .__   __. 
  /  _____|    /       | /      |    /   \     |  \ |  |    {version:v0.1}
 |  |  __     |   (----`|  ,----'   /  ^  \    |   \|  | 
-|  | |_ |     \   \    |  |       /  /_\  \   |  . `  | 
+|  | |_ |     \   \    |  |       /  /_\  \   |  . `  |    {author:咚咚呛}
 |  |__| | .----)   |   |  `----. /  _____  \  |  |\   | 
  \______| |_______/     \______|/__/     \__\ |__| \__|    http://grayddq.com
                                                         
@@ -25,7 +25,6 @@ if __name__ == '__main__':
     print(progam)
 
     parser = optparse.OptionParser()
-    parser.add_option("-s", "--scan", dest="scan", help=u"扫描当前系统安全问题，demo: -s all")
     parser.add_option("-l", "--log", dest="logdir", help=u"打包当前系统的所有安全日志，demo: -l /var/log/")
     options, _ = parser.parse_args()
     if options.scan:
