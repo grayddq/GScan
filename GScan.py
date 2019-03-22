@@ -56,6 +56,10 @@ if __name__ == '__main__':
 
         # WEBShell类扫描
 
+        # 输出报告
+        print(u'-' * 30)
+        print(u'\033[1;32m扫描完毕，扫描结果已记入到/var/log/gscan/gscan.log文件中，请及时查看\033[0m')
+
 
 
     elif options.logdir:
