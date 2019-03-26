@@ -51,9 +51,14 @@ if __name__ == '__main__':
         Log_Analysis().run()
         # 安全配置类
         Config_Analysis().run()
+        #rootkit检测
+
+
         # 各类恶意挖矿扫描
 
+
         # WEBShell类扫描
+
 
         # 输出报告
         print(u'-' * 30)
