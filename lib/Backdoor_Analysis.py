@@ -186,7 +186,8 @@ class Backdoor_Analysis:
     def check_startup(self):
         suspicious, malice = False, False
         try:
-            init_path = ['/etc/init.d/', '/etc/rc.d/', '/etc/rc.local']
+            init_path = ['/etc/init.d/', '/etc/rc.d/', '/etc/rc.local', '/usr/local/etc/rc.d',
+                         '/usr/local/etc/rc.local', '/etc/conf.d/local.start', '/etc/inittab']
             for path in init_path:
                 if os.path.isfile(path):
                     malware = self.analysis_file(path)

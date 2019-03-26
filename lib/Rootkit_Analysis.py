@@ -5,8 +5,9 @@ from lib.common import *
 
 
 # Rootkit检测,参考rkhunter
-# 1、
-# 2、
+# 1、扫描93类rootkit特征
+# 2、检查已知rootkit的kallsyms
+# 3、检查已知rootkit内核库文件
 
 
 class Rootkit_Analysis:
@@ -94,28 +95,29 @@ class Rootkit_Analysis:
 
         Abuse_Kit = {'name': 'Abuse Kit', 'file': ['/dev/mdev', '/usr/lib/libX.a'], 'dir': []}
 
-        Devil_Rootkit = {'name': '', 'file': ['/var/lib/games/.src', '/dev/dsx', '/dev/caca', '/dev/pro', '/bin/bye',
-                                              '/bin/homedir', '/usr/bin/xfss', '/usr/sbin/tzava',
-                                              '/usr/doc/tar/.../.dracusor/stuff/holber',
-                                              '/usr/doc/tar/.../.dracusor/stuff/sense',
-                                              '/usr/doc/tar/.../.dracusor/stuff/clear',
-                                              '/usr/doc/tar/.../.dracusor/stuff/tzava',
-                                              '/usr/doc/tar/.../.dracusor/stuff/citeste',
-                                              '/usr/doc/tar/.../.dracusor/stuff/killrk',
-                                              '/usr/doc/tar/.../.dracusor/stuff/searchlog',
-                                              '/usr/doc/tar/.../.dracusor/stuff/gaoaza',
-                                              '/usr/doc/tar/.../.dracusor/stuff/cleaner',
-                                              '/usr/doc/tar/.../.dracusor/stuff/shk',
-                                              '/usr/doc/tar/.../.dracusor/stuff/srs',
-                                              '/usr/doc/tar/.../.dracusor/utile.tgz',
-                                              '/usr/doc/tar/.../.dracusor/webpage', '/usr/doc/tar/.../.dracusor/getpsy',
-                                              '/usr/doc/tar/.../.dracusor/getbnc',
-                                              '/usr/doc/tar/.../.dracusor/getemech',
-                                              '/usr/doc/tar/.../.dracusor/localroot.sh',
-                                              '/usr/doc/tar/.../.dracusor/stuff/old/sense'],
+        Devil_Rootkit = {'name': 'Devil Rootkit',
+                         'file': ['/var/lib/games/.src', '/dev/dsx', '/dev/caca', '/dev/pro', '/bin/bye',
+                                  '/bin/homedir', '/usr/bin/xfss', '/usr/sbin/tzava',
+                                  '/usr/doc/tar/.../.dracusor/stuff/holber',
+                                  '/usr/doc/tar/.../.dracusor/stuff/sense',
+                                  '/usr/doc/tar/.../.dracusor/stuff/clear',
+                                  '/usr/doc/tar/.../.dracusor/stuff/tzava',
+                                  '/usr/doc/tar/.../.dracusor/stuff/citeste',
+                                  '/usr/doc/tar/.../.dracusor/stuff/killrk',
+                                  '/usr/doc/tar/.../.dracusor/stuff/searchlog',
+                                  '/usr/doc/tar/.../.dracusor/stuff/gaoaza',
+                                  '/usr/doc/tar/.../.dracusor/stuff/cleaner',
+                                  '/usr/doc/tar/.../.dracusor/stuff/shk',
+                                  '/usr/doc/tar/.../.dracusor/stuff/srs',
+                                  '/usr/doc/tar/.../.dracusor/utile.tgz',
+                                  '/usr/doc/tar/.../.dracusor/webpage', '/usr/doc/tar/.../.dracusor/getpsy',
+                                  '/usr/doc/tar/.../.dracusor/getbnc',
+                                  '/usr/doc/tar/.../.dracusor/getemech',
+                                  '/usr/doc/tar/.../.dracusor/localroot.sh',
+                                  '/usr/doc/tar/.../.dracusor/stuff/old/sense'],
                          'dir': ['/usr/doc/tar/.../.dracusor']}
 
-        Diamorphine_LKM = {'name': '', 'file': [], 'dir': [],
+        Diamorphine_LKM = {'name': 'Diamorphine LKM', 'file': [], 'dir': [],
                            'ksyms': ['diamorphine', 'module_hide', 'module_hidden', 'is_invisible', 'hacked_getdents',
                                      'hacked_kill']}
 
@@ -245,7 +247,7 @@ class Rootkit_Analysis:
 
         Jynx2_Rootkit = {'name': 'Jynx2 Rootkit', 'file': ['/XxJynx/reality.so'], 'dir': ['/XxJynx']}
 
-        KBeast_Rootkit = {'name': '',
+        KBeast_Rootkit = {'name': 'KBeast Rootkit',
                           'file': ['/usr/_h4x_/ipsecs-kbeast-v1.ko', '/usr/_h4x_/_h4x_bd', '/usr/_h4x_/acctlog'],
                           'dir': ['/usr/_h4x_'],
                           'ksyms': ['h4x_delete_module', 'h4x_getdents64', 'h4x_kill', 'h4x_open', 'h4x_read',
@@ -498,7 +500,7 @@ class Rootkit_Analysis:
                           'file': ['/usr/man/.sman/sk/backsh', '/usr/man/.sman/sk/izbtrag', '/usr/man/.sman/sk/sksniff',
                                    '/var/www/cgi-bin/cgiback.cgi'], 'dir': ['/usr/man/.sman/sk'], 'ksyms': []}
 
-        TBD_FILES = {'name': 'Telnet Backdoor', 'file': ['/usr/lib/.tbd'], 'dir': [], 'ksyms': []}
+        TBD_FILES = {'name': 'TBD(Telnet Backdoor)', 'file': ['/usr/lib/.tbd'], 'dir': [], 'ksyms': []}
 
         TELEKIT_FILES = {'name': 'TeLeKiT Rootkit',
                          'file': ['/usr/man/man3/.../TeLeKiT/bin/sniff', '/usr/man/man3/.../TeLeKiT/bin/telnetd',
@@ -542,7 +544,6 @@ class Rootkit_Analysis:
                           'file': ['bin/.ls', '/bin/.ps', '/bin/.netstat', '/usr/bin/.nop', '/usr/bin/.who'], 'dir': [],
                           'ksyms': []}
 
-        # {'name': '', 'file': [], 'dir': [], 'ksyms': []}
         TURTLE_FILES = {'name': 'Turtle Rootkit', 'file': ['/dev/turtle2dev'], 'dir': [], 'ksyms': []}
 
         TUXTENDO_FILES = {'name': 'Tuxtendo Rootkit',
@@ -558,17 +559,84 @@ class Rootkit_Analysis:
                                    '/dev/tux/backup/updatedb', '/dev/tux/backup/vdir'],
                           'dir': ['/dev/tux', '/dev/tux/ssh2', '/dev/tux/backup'], 'ksyms': []}
 
+        URK_FILES = {'name': 'Universal Rootkit',
+                     'file': ['/dev/prom/sn.l', '/usr/lib/ldlibps.so', '/usr/lib/ldlibnet.so', '/dev/pts/01/uconf.inv',
+                              '/dev/pts/01/cleaner', '/dev/pts/01/bin/psniff', '/dev/pts/01/bin/du',
+                              '/dev/pts/01/bin/ls', '/dev/pts/01/bin/passwd', '/dev/pts/01/bin/ps',
+                              '/dev/pts/01/bin/psr', '/dev/pts/01/bin/su', '/dev/pts/01/bin/find',
+                              '/dev/pts/01/bin/netstat', '/dev/pts/01/bin/ping', '/dev/pts/01/bin/strings',
+                              '/dev/pts/01/bin/bash', '/usr/man/man1/xxxxxxbin/du', '/usr/man/man1/xxxxxxbin/ls',
+                              '/usr/man/man1/xxxxxxbin/passwd', '/usr/man/man1/xxxxxxbin/ps',
+                              '/usr/man/man1/xxxxxxbin/psr', '/usr/man/man1/xxxxxxbin/su',
+                              '/usr/man/man1/xxxxxxbin/find', '/usr/man/man1/xxxxxxbin/netstat',
+                              '/usr/man/man1/xxxxxxbin/ping', '/usr/man/man1/xxxxxxbin/strings',
+                              '/usr/man/man1/xxxxxxbin/bash', '/tmp/conf.inv'],
+                     'dir': ['/dev/prom', '/dev/pts/01', '/dev/pts/01/bin', '/usr/man/man1/xxxxxxbin'], 'ksyms': []}
 
+        VCKIT_FILES = {'name': 'VcKit Rootkit', 'file': [],
+                       'dir': ['/usr/include/linux/modules/lib.so', '/usr/include/linux/modules/lib.so/bin'],
+                       'ksyms': []}
 
+        VAMPIRE_FILES = {'name': 'Vampire Rootkit', 'file': [], 'dir': [],
+                         'ksyms': ['new_getdents', 'old_getdents', 'should_hide_file_name', 'should_hide_task_name']}
 
+        VOLC_FILES = {'name': 'Volc Rootkit',
+                      'file': ['/usr/bin/volc', '/usr/lib/volc/backdoor/divine', '/usr/lib/volc/linsniff',
+                               '/etc/rc.d/rc1.d/S25sysconf', '/etc/rc.d/rc2.d/S25sysconf', '/etc/rc.d/rc3.d/S25sysconf',
+                               '/etc/rc.d/rc4.d/S25sysconf', '/etc/rc.d/rc5.d/S25sysconf'],
+                      'dir': ['/var/spool/.recent', '/var/spool/.recent/.files', '/usr/lib/volc',
+                              '/usr/lib/volc/backup'], 'ksyms': []}
 
+        WEAPONX_FILES = {'name': 'weaponX', 'file': ['/System/Library/Extensions/WeaponX.kext'], 'dir': ['/tmp/...'],
+                         'ksyms': []}
 
+        XZIBIT_FILES = {'name': 'Xzibit Rootkit',
+                        'file': ['/dev/dsx', '/dev/caca', '/dev/ida/.inet/linsniffer', '/dev/ida/.inet/logclear',
+                                 '/dev/ida/.inet/sense', '/dev/ida/.inet/sl2', '/dev/ida/.inet/sshdu',
+                                 '/dev/ida/.inet/s', '/dev/ida/.inet/ssh_host_key', '/dev/ida/.inet/ssh_random_seed',
+                                 '/dev/ida/.inet/sl2new.c', '/dev/ida/.inet/tcp.log', '/home/httpd/cgi-bin/becys.cgi',
+                                 '/usr/local/httpd/cgi-bin/becys.cgi', '/usr/local/apache/cgi-bin/becys.cgi',
+                                 '/www/httpd/cgi-bin/becys.cgi', '/www/cgi-bin/becys.cgi'],
+                        'dir': ['/dev/ida/.inet'], 'ksyms': []}
 
+        XORGSUNOS_FILES = {'name': 'X-Org SunOS Rootkit',
+                           'file': ['/usr/lib/libX.a/bin/tmpfl', '/usr/lib/libX.a/bin/rps', '/usr/bin/srload',
+                                    '/usr/lib/libX.a/bin/sparcv7/rps', '/usr/sbin/modcheck'],
+                           'dir': ['/usr/lib/libX.a', '/usr/lib/libX.a/bin', '/usr/lib/libX.a/bin/sparcv7',
+                                   '/usr/share/man...'], 'ksyms': []}
 
+        ZARWT_FILES = {'name': 'zaRwT.KiT Rootkit',
+                       'file': ['/dev/rd/s/sendmeil', '/dev/ttyf', '/dev/ttyp', '/dev/ttyn', '/rk/tulz'],
+                       'dir': ['/rk', '/dev/rd/s'], 'ksyms': []}
 
+        ZK_FILES = {'name': 'ZK Rootkit',
+                    'file': ['/usr/share/.zk/zk', '/usr/X11R6/.zk/xfs', '/usr/X11R6/.zk/echo', '/etc/1ssue.net',
+                             '/etc/sysconfig/console/load.zk'],
+                    'dir': ['/usr/share/.zk', '/usr/X11R6/.zk'], 'ksyms': []}
 
+        LOGIN_BACKDOOR_FILES = {'name': 'Miscellaneous login backdoors', 'file': ['/bin/.login', '/sbin/.login'],
+                                'dir': [], 'ksyms': []}
 
+        self.LKM_BADNAMES = ['adore.o', 'bkit-adore.o', 'cleaner.o', 'flkm.o', 'knark.o', 'modhide.o', 'mod_klgr.o',
+                             'phide_mod.o', 'vlogger.o', 'p2.ko', 'rpldev.o', 'xC.o', 'strings.o', 'wkmr26.o']
 
-
+        self.rootkit_rules = []
+        self.rootkit_rules = [W55808A, Adore_Rootkit, AjaKit_Rootkit, aPa_Kit_Rootkit, Apache_Worm, Ambient_Rootkit,
+                              Balaur_Rootkit, Beastkit_Rootkit, beX2_Rootkit, BOBkit_Rootkit
+                              OSX_Boonana_A_Trojan, cb_Rootkit, CiNIK_Worm, CX_Rootkit, Abuse_Kit, Devil_Rootkit,
+                              Diamorphine_LKM, Dica_Kit_Rootkit, Dreams_Rootkit, Duarawkz_Rootkit, Ebury_sshd_backdoor,
+                              ENYE_LKM, Flea_Rootkit, FreeBSD_Rootkit, Fu_Rootkit, Fuckit_Rootkit, GasKit_Rootkit,
+                              Heroin_LKM, HjC_Kit_Rootkit, ignoKit_Rootkit, iLLogiC_Rootkit, OSX_Inqtana, OSX_Inqtana2,
+                              OSX_Inqtana3, IntoXonia_NG_Rootkit, Irix_Rootkit, Jynx_Rootkit, Jynx2_Rootkit,
+                              KBeast_Rootkit, OSX_Keydnap_backdoor, Kitko_Rootkit, KNARK_FILES, KOMPLEX_FILES,
+                              LINUXV_FILES, LION_FILES, LOCKIT_FILES, MOKES_FILES, MRK_FILES, MOODNT_FILES, NIO_FILES,
+                              OHHARA_FILES, OPTICKIT_FILES, OSXRK_FILES, OZ_FILES, PHALANX_FILES, PHALANX2_FILES,
+                              PORTACELO_FILES, PROTON_FILES, REDSTORM_FILES, RHSHARPES_FILES, RSHA_FILES,
+                              SHUTDOWN_FILES, SCALPER_FILES, SHV4_FILES, SHV5_FILES, SINROOTKIT_FILES, SLAPPER_FILES,
+                              SNEAKIN_FILES, WANUKDOOR_FILES, WANUKWORM_FILES, SPANISH_FILES, SUCKIT_FILES, NSDAP_FILES,
+                              SUNOSROOTKIT_FILES, SUPERKIT_FILES, TBD_FILES, TELEKIT_FILES, TOGROOT_FILES, TORN_FILES,
+                              TRNKIT_FILES, TROJANIT_FILES, TURTLE_FILES, TUXTENDO_FILES, URK_FILES, VCKIT_FILES,
+                              VAMPIRE_FILES, VOLC_FILES, WEAPONX_FILES, XZIBIT_FILES, XORGSUNOS_FILES, ZARWT_FILES,
+                              ZK_FILES, LOGIN_BACKDOOR_FILES, SUSPICIOUS_DIRS]
 
         return
