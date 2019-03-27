@@ -88,7 +88,7 @@ class File_Analysis:
         suspicious, malice = False, False
         try:
             infos = os.popen(
-                'find / -name " *" -o -name ". *" -o -name "..." -o -name ".." -o -name "." -o -name " " -print | grep -v "No such" |grep -v "Permission denied"').read().splitlines()
+                'find / -type f -name " *" -o -name ". *" -o -name "..." -o -name ".." -o -name "." -o -name " " -print | grep -v "No such" |grep -v "Permission denied"').read().splitlines()
             for file in infos:
                 self.file_malware.append(
                     {u'异常类型': u'文件异常隐藏', u'文件路径': file, u'手工确认': u'[1]ls -l %s [2]strings %s' % (file, file)})
@@ -121,7 +121,7 @@ class File_Analysis:
                     if malware in str: return malware
             return ""
         except:
-            return ""
+            return
 
     # 分析字符串是否包含反弹shell特征
     def check_shell(self, content):
@@ -131,7 +131,7 @@ class File_Analysis:
                     'exec ' in content) or ('curl ' in content) or ('wget ' in content) or ('lynx ' in content))) or (
                                    ".decode('base64')" in content) else False
         except:
-            return False
+
 
     def run(self):
         print(u'\n开始文件类安全扫描')

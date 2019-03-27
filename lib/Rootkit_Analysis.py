@@ -6,14 +6,18 @@ from lib.common import *
 
 # Rootkit检测,参考rkhunter
 # 1、扫描93类rootkit特征
-# 2、检查已知rootkit的kallsyms
+# 2、检查已知rootkit的内核符号表
 # 3、检查已知rootkit内核库文件
 
 
 class Rootkit_Analysis:
     def __init__(self):
-        # {'name': '', 'file': [], 'dir': []}
-        W55808A = {'name': '55808 Variant A', 'file': ['/tmp/.../r', '/tmp/.../a'], 'dir': []}
+        # 恶意rootkit输出
+        self.rootkit = []
+        # 集合内核符号表
+        self.kallsyms = []
+        # 各类rootkit特征，file、dir代表其特征、
+        W55808A = {'name': '55808 Variant A', 'file': ['/tmp/.../r', '/tmp/.../a'], 'dir': [], 'ksyms': []}
         Adore_Rootkit = {'name': 'Adore Rootkit',
                          'file': ['/usr/secure', '/usr/doc/sys/qrt', '/usr/doc/sys/run', '/usr/doc/sys/crond',
                                   '/usr/sbin/kfd', '/usr/doc/kern/var',
@@ -21,34 +25,34 @@ class Rootkit_Analysis:
                                   '/var/log/ssh/old'],
                          'dir': ['/lib/security/.config/ssh', '/usr/doc/kern', '/usr/doc/backup', '/usr/doc/backup/txt',
                                  '/lib/backup', '/lib/backup/txt', '/usr/doc/work', '/usr/doc/sys', '/var/log/ssh',
-                                 '/usr/doc/.spool', '/usr/lib/kterm']}
+                                 '/usr/doc/.spool', '/usr/lib/kterm'], 'ksyms': []}
 
         AjaKit_Rootkit = {'name': 'AjaKit Rootkit',
                           'file': ['/dev/tux/.addr', '/dev/tux/.proc', '/dev/tux/.file', '/lib/.libgh-gh/cleaner',
                                    '/lib/.libgh-gh/Patch/patch', '/lib/.libgh-gh/sb0k'],
-                          'dir': ['/dev/tux', '/lib/.libgh-gh']}
+                          'dir': ['/dev/tux', '/lib/.libgh-gh'], 'ksyms': []}
 
-        aPa_Kit_Rootkit = {'name': 'aPa Kit Rootkit', 'file': ['/usr/share/.aPa'], 'dir': []}
+        aPa_Kit_Rootkit = {'name': 'aPa Kit Rootkit', 'file': ['/usr/share/.aPa'], 'dir': [], 'ksyms': []}
 
-        Apache_Worm = {'name': 'Apache Worm', 'file': ['/bin/.log'], 'dir': []}
+        Apache_Worm = {'name': 'Apache Worm', 'file': ['/bin/.log'], 'dir': [], 'ksyms': []}
 
         Ambient_Rootkit = {'name': 'Ambient Rootkit',
                            'file': ['/usr/lib/.ark?', '/dev/ptyxx/.log', '/dev/ptyxx/.file', '/dev/ptyxx/.proc',
                                     '/dev/ptyxx/.addr'],
-                           'dir': ['/dev/ptyxx']}
+                           'dir': ['/dev/ptyxx'], 'ksyms': []}
 
         Balaur_Rootkit = {'name': 'Balaur Rootkit', 'file': ['/usr/lib/liblog.o'],
-                          'dir': ['/usr/lib/.kinetic', '/usr/lib/.egcs', '/usr/lib/.wormie']}
+                          'dir': ['/usr/lib/.kinetic', '/usr/lib/.egcs', '/usr/lib/.wormie'], 'ksyms': []}
 
         Beastkit_Rootkit = {'name': 'Beastkit Rootkit',
                             'file': ['/usr/sbin/arobia', '/usr/sbin/idrun', '/usr/lib/elm/arobia/elm',
                                      '/usr/lib/elm/arobia/elm/hk', '/usr/lib/elm/arobia/elm/hk.pub',
                                      '/usr/lib/elm/arobia/elm/sc', '/usr/lib/elm/arobia/elm/sd.pp',
                                      '/usr/lib/elm/arobia/elm/sdco', '/usr/lib/elm/arobia/elm/srsd'],
-                            'dir': ['/lib/ldd.so/bktools']}
+                            'dir': ['/lib/ldd.so/bktools'], 'ksyms': []}
 
         beX2_Rootkit = {'name': 'beX2 Rootkit', 'file': ['/usr/info/termcap.info-5.gz', '/usr/bin/sshd2'],
-                        'dir': ['/usr/include/bex']}
+                        'dir': ['/usr/include/bex'], 'ksyms': []}
 
         BOBkit_Rootkit = {'name': 'BOBkit Rootkit',
                           'file': ['/usr/sbin/ntpsx', '/usr/sbin/.../bkit-ava', '/usr/sbin/.../bkit-d',
@@ -63,12 +67,13 @@ class Rootkit_Analysis:
                                    '/usr/lib/.../pstree', '/usr/lib/.../slocate', '/usr/lib/.../du',
                                    '/usr/lib/.../top'],
                           'dir': ['/usr/sbin/...', '/usr/include/...', '/usr/include/.../.tmp', '/usr/lib/...',
-                                  '/usr/lib/.../.ssh', '/usr/lib/.../bkit-ssh', '/usr/lib/.bkit-', '/tmp/.bkp']}
+                                  '/usr/lib/.../.ssh', '/usr/lib/.../bkit-ssh', '/usr/lib/.bkit-', '/tmp/.bkp'],
+                          'ksyms': []}
 
         OSX_Boonana_A_Trojan = {'name': 'OSX Boonana-A Trojan',
                                 'file': ['/Library/StartupItems/OSXDriverUpdates/OSXDriverUpdates',
                                          '/Library/StartupItems/OSXDriverUpdates/StartupParameters.plist'],
-                                'dir': ['/var/root/.jnana']}
+                                'dir': ['/var/root/.jnana'], 'ksyms': []}
 
         cb_Rootkit = {'name': 'cb Rootkit',
                       'file': ['/dev/srd0', '/lib/libproc.so.2.0.6', '/dev/mounnt', '/etc/rc.d/init.d/init',
@@ -83,17 +88,17 @@ class Rootkit_Analysis:
                                '/usr/bin/.zeen/..%/curatare/chattr', '/usr/bin/.zeen/..%/curatare/ps',
                                '/usr/bin/.zeen/..%/curatare/pstree', '/usr/bin/.system/..%/.x/xC.o'],
                       'dir': ['/usr/bin/.zeen', '/usr/bin/.zeen/..%/curatare', '/usr/bin/.zeen/..%/scan',
-                              '/usr/bin/.system/..%']}
+                              '/usr/bin/.system/..%'], 'ksyms': []}
 
-        CiNIK_Worm = {'name': 'CiNIK Worm', 'file': ['/tmp/.cinik'], 'dir': ['/tmp/.font-unix/.cinik']}
+        CiNIK_Worm = {'name': 'CiNIK Worm', 'file': ['/tmp/.cinik'], 'dir': ['/tmp/.font-unix/.cinik'], 'ksyms': []}
 
         CX_Rootkit = {'name': 'CX Rootkit',
                       'file': ['/usr/lib/ldlibso', '/usr/lib/configlibso', '/usr/lib/shklibso', '/usr/lib/randomlibso',
                                '/usr/lib/ldlibstrings.so', '/usr/lib/ldlibdu.so', '/usr/lib/ldlibns.so',
                                '/usr/include/db'],
-                      'dir': ['/usr/include/cxk']}
+                      'dir': ['/usr/include/cxk'], 'ksyms': []}
 
-        Abuse_Kit = {'name': 'Abuse Kit', 'file': ['/dev/mdev', '/usr/lib/libX.a'], 'dir': []}
+        Abuse_Kit = {'name': 'Abuse Kit', 'file': ['/dev/mdev', '/usr/lib/libX.a'], 'dir': [], 'ksyms': []}
 
         Devil_Rootkit = {'name': 'Devil Rootkit',
                          'file': ['/var/lib/games/.src', '/dev/dsx', '/dev/caca', '/dev/pro', '/bin/bye',
@@ -115,7 +120,7 @@ class Rootkit_Analysis:
                                   '/usr/doc/tar/.../.dracusor/getemech',
                                   '/usr/doc/tar/.../.dracusor/localroot.sh',
                                   '/usr/doc/tar/.../.dracusor/stuff/old/sense'],
-                         'dir': ['/usr/doc/tar/.../.dracusor']}
+                         'dir': ['/usr/doc/tar/.../.dracusor'], 'ksyms': []}
 
         Diamorphine_LKM = {'name': 'Diamorphine LKM', 'file': [], 'dir': [],
                            'ksyms': ['diamorphine', 'module_hide', 'module_hidden', 'is_invisible', 'hacked_getdents',
@@ -128,7 +133,7 @@ class Rootkit_Analysis:
                                      '/var/run/...dica/secure', '/var/run/...dica/rdx', '/var/run/...dica/va',
                                      '/var/run/...dica/cl.sh', '/var/run/...dica/last.log', '/usr/bin/.etc',
                                      '/etc/sshd_config', '/etc/ssh_host_key', '/etc/ssh_random_seed'],
-                            'dir': ['/var/run/...dica', '/var/run/...dica/mh', '/var/run/...dica/scan']}
+                            'dir': ['/var/run/...dica', '/var/run/...dica/mh', '/var/run/...dica/scan'], 'ksyms': []}
 
         Dreams_Rootkit = {'name': 'Dreams Rootkit',
                           'file': ['/dev/ttyoa', '/dev/ttyof', '/dev/ttyop', '/usr/bin/sense', '/usr/bin/sl2',
@@ -138,19 +143,20 @@ class Rootkit_Analysis:
                                    '/usr/lib/libshtift/ifconfig', '/usr/include/linseed.h', '/usr/include/linpid.h',
                                    '/usr/include/linkey.h', '/usr/include/linconf.h', '/usr/include/iceseed.h',
                                    '/usr/include/icepid.h', '/usr/include/icekey.h', '/usr/include/iceconf.h'],
-                          'dir': ['/dev/ida/.hpd', '/usr/lib/libshtift']}
+                          'dir': ['/dev/ida/.hpd', '/usr/lib/libshtift'], 'ksyms': []}
 
         Duarawkz_Rootkit = {'name': 'Duarawkz Rootkit', 'file': ['/usr/bin/duarawkz/loginpass'],
-                            'dir': ['/usr/bin/duarawkz']}
+                            'dir': ['/usr/bin/duarawkz'], 'ksyms': []}
 
         Ebury_sshd_backdoor = {'name': 'Ebury sshd backdoor',
                                'file': ['/lib/libns2.so', '/lib64/libns2.so', '/lib/libns5.so', '/lib64/libns5.so',
                                         '/lib/libpw3.so', '/lib64/libpw3.so', '/lib/libpw5.so', '/lib64/libpw5.so',
                                         '/lib/libsbr.so', '/lib64/libsbr.so', '/lib/libslr.so', '/lib64/libslr.so',
                                         '/lib/tls/libkeyutils.so.1', '/lib64/tls/libkeyutils.so.1'],
-                               'dir': []}
+                               'dir': [], 'ksyms': []}
 
-        ENYE_LKM = {'name': 'ENYE LKM', 'file': ['/etc/.enyelkmHIDE^IT.ko', '/etc/.enyelkmOCULTAR.ko'], 'dir': []}
+        ENYE_LKM = {'name': 'ENYE LKM', 'file': ['/etc/.enyelkmHIDE^IT.ko', '/etc/.enyelkmOCULTAR.ko'], 'dir': [],
+                    'ksyms': []}
 
         Flea_Rootkit = {'name': 'Flea Rootkit', 'file': ['/etc/ld.so.hash', '/lib/security/.config/ssh/sshd_config',
                                                          '/lib/security/.config/ssh/ssh_host_key',
@@ -159,7 +165,7 @@ class Rootkit_Analysis:
                                                          '/usr/lib/ldlibns.so', '/usr/lib/ldlibps.so',
                                                          '/usr/lib/ldlibpst.so',
                                                          '/usr/lib/ldlibdu.so', '/usr/lib/ldlibct.so'],
-                        'dir': ['/lib/security/.config/ssh', '/dev/..0', '/dev/..0/backup']}
+                        'dir': ['/lib/security/.config/ssh', '/dev/..0', '/dev/..0/backup'], 'ksyms': []}
 
         FreeBSD_Rootkit = {'name': 'FreeBSD Rootkit',
                            'file': ['/dev/ptyp', '/dev/ptyq', '/dev/ptyr', '/dev/ptys', '/dev/ptyt',
@@ -170,9 +176,10 @@ class Rootkit_Analysis:
                                     '/usr/lib/.fx/setrgrp.2', '/usr/lib/.fx/TOHIDE', '/usr/lib/.fx/cons.saver',
                                     '/usr/lib/.fx/adore/ava/ava', '/usr/lib/.fx/adore/adore/adore.ko', '/bin/sysback',
                                     '/usr/local/bin/sysback'],
-                           'dir': ['/dev/fd/.88', '/dev/fd/.99', '/usr/lib/.fx', '/usr/lib/.fx/adore']}
+                           'dir': ['/dev/fd/.88', '/dev/fd/.99', '/usr/lib/.fx', '/usr/lib/.fx/adore'], 'ksyms': []}
 
-        Fu_Rootkit = {'name': 'Fu Rootkit', 'file': ['/sbin/xc', '/usr/include/ivtype.h', '/bin/.lib'], 'dir': []}
+        Fu_Rootkit = {'name': 'Fu Rootkit', 'file': ['/sbin/xc', '/usr/include/ivtype.h', '/bin/.lib'], 'dir': [],
+                      'ksyms': []}
 
         Fuckit_Rootkit = {'name': 'Fuckit Rootkit',
                           'file': ['/lib/libproc.so.2.0.7', '/dev/proc/.bash_profile', '/dev/proc/.bashrc',
@@ -181,21 +188,22 @@ class Rootkit_Analysis:
                                    '/dev/proc/fuckit/config/rkconf', '/dev/proc/fuckit/config/password',
                                    '/dev/proc/fuckit/config/progs', '/dev/proc/fuckit/system-bins/init',
                                    '/usr/lib/libcps.a', '/usr/lib/libtty.a'],
-                          'dir': ['/dev/proc', '/dev/proc/fuckit', '/dev/proc/fuckit/system-bins', '/dev/proc/toolz']}
+                          'dir': ['/dev/proc', '/dev/proc/fuckit', '/dev/proc/fuckit/system-bins', '/dev/proc/toolz'],
+                          'ksyms': []}
 
         GasKit_Rootkit = {'name': 'GasKit Rootkit', 'file': ['/dev/dev/gaskit/sshd/sshdd'],
-                          'dir': ['/dev/dev', '/dev/dev/gaskit', '/dev/dev/gaskit/sshd']}
+                          'dir': ['/dev/dev', '/dev/dev/gaskit', '/dev/dev/gaskit/sshd'], 'ksyms': []}
 
         Heroin_LKM = {'name': 'Heroin LKM', 'file': [], 'dir': [], 'ksyms': ['heroin']}
 
-        HjC_Kit_Rootkit = {'name': 'HjC Kit Rootkit', 'file': [], 'dir': ['/dev/.hijackerz']}
+        HjC_Kit_Rootkit = {'name': 'HjC Kit Rootkit', 'file': [], 'dir': ['/dev/.hijackerz'], 'ksyms': []}
 
         ignoKit_Rootkit = {'name': 'ignoKit Rootkit',
                            'file': ['/lib/defs/p', '/lib/defs/q', '/lib/defs/r', '/lib/defs/s', '/lib/defs/t',
                                     '/usr/lib/defs/p', '/usr/lib/defs/q', '/usr/lib/defs/r', '/usr/lib/defs/s',
                                     '/usr/lib/defs/t', '/usr/lib/.libigno/pkunsec',
                                     '/usr/lib/.libigno/.igno/psybnc/psybnc'],
-                           'dir': ['/usr/lib/.libigno', '/usr/lib/.libigno/.igno']}
+                           'dir': ['/usr/lib/.libigno', '/usr/lib/.libigno/.igno'], 'ksyms': []}
 
         iLLogiC_Rootkit = {'name': 'iLLogiC Rootkit',
                            'file': ['/dev/kmod', '/dev/dos', '/usr/lib/crth.o', '/usr/lib/crtz.o', '/etc/ld.so.hash',
@@ -215,37 +223,37 @@ class Rootkit_Analysis:
                                     '/lib/security/.config/bin/ping', '/lib/security/.config/bin/passwd'],
                            'dir': ['/lib/security/.config', '/lib/security/.config/ssh', '/lib/security/.config/bin',
                                    '/lib/security/.config/backup', '/root/%%%/.dir', '/root/%%%/.dir/mass-scan',
-                                   '/root/%%%/.dir/flood']}
+                                   '/root/%%%/.dir/flood'], 'ksyms': []}
 
         OSX_Inqtana = {'name': 'OSX Inqtana Variant A',
                        'file': ['/Users/w0rm-support.tgz', '/Users/InqTest.class', '/Users/com.openbundle.plist',
                                 '/Users/com.pwned.plist', '/Users/libavetanaBT.jnilib'],
-                       'dir': ['/Users/de', '/Users/javax']}
+                       'dir': ['/Users/de', '/Users/javax'], 'ksyms': []}
 
         OSX_Inqtana2 = {'name': 'OSX Inqtana Variant B',
                         'file': ['/Users/w0rms.love.apples.tgz', '/Users/InqTest.class', '/Users/InqTest.java',
                                  '/Users/libavetanaBT.jnilib', '/Users/InqTanaHandler', '/Users/InqTanaHandler.bundle'],
-                        'dir': ['/Users/de', '/Users/javax']}
+                        'dir': ['/Users/de', '/Users/javax'], 'ksyms': []}
 
         OSX_Inqtana3 = {'name': 'OSX Inqtana Variant C',
                         'file': ['/Users/applec0re.tgz', '/Users/InqTest.class', '/Users/InqTest.java',
                                  '/Users/libavetanaBT.jnilib', '/Users/environment.plist', '/Users/pwned.c',
                                  '/Users/pwned.dylib'],
-                        'dir': ['/Users/de', '/Users/javax']}
+                        'dir': ['/Users/de', '/Users/javax'], 'ksyms': []}
 
         IntoXonia_NG_Rootkit = {'name': 'IntoXonia-NG Rootkit', 'file': [], 'dir': [],
                                 'ksyms': ['funces', 'ixinit', 'tricks', 'kernel_unlink', 'rootme', 'hide_module',
                                           'find_sys_call_tbl']}
 
         Irix_Rootkit = {'name': 'Irix Rootkit', 'file': [],
-                        'dir': ['/dev/pts/01', '/dev/pts/01/backup', '/dev/pts/01/etc', '/dev/pts/01/tmp']}
+                        'dir': ['/dev/pts/01', '/dev/pts/01/backup', '/dev/pts/01/etc', '/dev/pts/01/tmp'], 'ksyms': []}
 
         Jynx_Rootkit = {'name': 'Jynx Rootkit',
                         'file': ['/xochikit/bc', '/xochikit/ld_poison.so', '/omgxochi/bc', '/omgxochi/ld_poison.so',
                                  '/var/local/^^/bc', '/var/local/^^/ld_poison.so'],
-                        'dir': ['/xochikit', '/omgxochi', '/var/local/^^']}
+                        'dir': ['/xochikit', '/omgxochi', '/var/local/^^'], 'ksyms': []}
 
-        Jynx2_Rootkit = {'name': 'Jynx2 Rootkit', 'file': ['/XxJynx/reality.so'], 'dir': ['/XxJynx']}
+        Jynx2_Rootkit = {'name': 'Jynx2 Rootkit', 'file': ['/XxJynx/reality.so'], 'dir': ['/XxJynx'], 'ksyms': []}
 
         KBeast_Rootkit = {'name': 'KBeast Rootkit',
                           'file': ['/usr/_h4x_/ipsecs-kbeast-v1.ko', '/usr/_h4x_/_h4x_bd', '/usr/_h4x_/acctlog'],
@@ -258,15 +266,15 @@ class Rootkit_Analysis:
                                          '/Volumes/Transmission/Transmission.app/Contents/Resources/License.rtf',
                                          '/Library/LaunchAgents/com.apple.iCloud.sync.daemon.plist',
                                          '/Library/LaunchAgents/com.geticloud.icloud.photo.plist'],
-                                'dir': ['/Library/Application%Support/com.apple.iCloud.sync.daemon/']}
+                                'dir': ['/Library/Application%Support/com.apple.iCloud.sync.daemon/'], 'ksyms': []}
 
-        Kitko_Rootkit = {'name': 'Kitko Rootkit', 'file': [], 'dir': ['/usr/src/redhat/SRPMS/...']}
+        Kitko_Rootkit = {'name': 'Kitko Rootkit', 'file': [], 'dir': ['/usr/src/redhat/SRPMS/...'], 'ksyms': []}
 
-        KNARK_FILES = {'name': 'Knark Rootkit', 'file': ['/proc/knark/pids'], 'dir': ['/proc/knark']}
+        KNARK_FILES = {'name': 'Knark Rootkit', 'file': ['/proc/knark/pids'], 'dir': ['/proc/knark'], 'ksyms': []}
 
         KOMPLEX_FILES = {'name': 'OSX Komplex Trojan',
                          'file': ['/Users/Shared/.local/kextd', '/Users/Shared/com.apple.updates.plist',
-                                  '/Users/Shared/start.sh'], 'dir': []}
+                                  '/Users/Shared/start.sh'], 'dir': [], 'ksyms': []}
 
         LINUXV_FILES = {'name': 'ld-linuxv rootkit', 'file': ['/lib/ld-linuxv.so.1'],
                         'dir': ['/var/opt/_so_cache', '/var/opt/_so_cache/ld', '/var/opt/_so_cache/lc']}
@@ -281,7 +289,7 @@ class Rootkit_Analysis:
                                                     '/dev/.lib/lib/1i0n.sh', '/dev/.lib/lib/lib/netstat',
                                                     '/dev/.lib/lib/lib/dev/.1addr', '/dev/.lib/lib/lib/dev/.1logz',
                                                     '/dev/.lib/lib/lib/dev/.1proc', '/dev/.lib/lib/lib/dev/.1file'],
-                      'dir': []}
+                      'dir': [], 'ksyms': []}
 
         LOCKIT_FILES = {'name': 'Lockit Rootkit',
                         'file': ['/usr/lib/libmen.oo/.LJK2/ssh_config', '/usr/lib/libmen.oo/.LJK2/ssh_host_key',
@@ -304,27 +312,27 @@ class Rootkit_Analysis:
                                  '/usr/lib/libmen.oo/.LJK2/modules/RK1hidem.c',
                                  '/usr/lib/libmen.oo/.LJK2/modules/RK1phide',
                                  '/usr/lib/libmen.oo/.LJK2/sshconfig/RK1ssh'],
-                        'dir': ['/usr/lib/libmen.oo/.LJK2']}
+                        'dir': ['/usr/lib/libmen.oo/.LJK2'], 'ksyms': []}
 
         MOKES_FILES = {'name': 'Mokes backdoor', 'file': [
             '/tmp/ss0-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9].sst',
             '/tmp/aa0-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9].aat',
             '/tmp/kk0-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9].kkt',
             '/tmp/dd0-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9].ddt'],
-                       'dir': []}
+                       'dir': [], 'ksyms': []}
 
         MRK_FILES = {'name': 'MRK RootKit',
                      'file': ['/dev/ida/.inet/pid', '/dev/ida/.inet/ssh_host_key', '/dev/ida/.inet/ssh_random_seed',
-                              '/dev/ida/.inet/tcp.log'], 'dir': ['/dev/ida/.inet', '/var/spool/cron/.sh']}
+                              '/dev/ida/.inet/tcp.log'], 'dir': ['/dev/ida/.inet', '/var/spool/cron/.sh'], 'ksyms': []}
 
         MOODNT_FILES = {'name': 'Mood-NT Rootkit',
                         'file': ['/sbin/init__mood-nt-_-_cthulhu', '/_cthulhu/mood-nt.init', '/_cthulhu/mood-nt.conf',
-                                 '/_cthulhu/mood-nt.sniff'], 'dir': ['/_cthulhu']}
+                                 '/_cthulhu/mood-nt.sniff'], 'dir': ['/_cthulhu'], 'ksyms': []}
 
         NIO_FILES = {'name': 'Ni0 Rootkit',
                      'file': ['/var/lock/subsys/...datafile.../...net...', '/var/lock/subsys/...datafile.../...port...',
                               '/var/lock/subsys/...datafile.../...ps...', '/var/lock/subsys/...datafile.../...file...'],
-                     'dir': ['/tmp/waza', '/var/lock/subsys/...datafile...', '/usr/sbin/es']}
+                     'dir': ['/tmp/waza', '/var/lock/subsys/...datafile...', '/usr/sbin/es'], 'ksyms': []}
 
         OHHARA_FILES = {'name': 'Ohhara Rootkit',
                         'file': ['/var/lock/subsys/...datafile.../...datafile.../in.smbd.log'],
@@ -332,66 +340,66 @@ class Rootkit_Analysis:
                                 '/var/lock/subsys/...datafile.../...datafile.../bin',
                                 '/var/lock/subsys/...datafile.../...datafile.../usr/bin',
                                 '/var/lock/subsys/...datafile.../...datafile.../usr/sbin',
-                                '/var/lock/subsys/...datafile.../...datafile.../lib/security']}
+                                '/var/lock/subsys/...datafile.../...datafile.../lib/security'], 'ksyms': []}
 
         OPTICKIT_FILES = {'name': 'Optic Kit Rootkit', 'file': [],
-                          'dir': ['/dev/tux', '/usr/bin/xchk', '/usr/bin/xsf', '/usr/bin/ssh2d']}
+                          'dir': ['/dev/tux', '/usr/bin/xchk', '/usr/bin/xsf', '/usr/bin/ssh2d'], 'ksyms': []}
 
         OSXRK_FILES = {'name': 'OSXRK',
                        'file': ['/dev/.rk/nc', '/dev/.rk/diepu', '/dev/.rk/backd', '/Library/StartupItems/opener',
                                 '/Library/StartupItems/opener.sh', '/System/Library/StartupItems/opener',
                                 '/System/Library/StartupItems/opener.sh'],
-                       'dir': ['/dev/.rk', '/Users/LDAP-daemon', '/tmp/.work']}
+                       'dir': ['/dev/.rk', '/Users/LDAP-daemon', '/tmp/.work'], 'ksyms': []}
 
-        OZ_FILES = {'name': 'Oz Rootkit', 'file': ['/dev/.oz/.nap/rkit/terror'], 'dir': ['/dev/.oz']}
+        OZ_FILES = {'name': 'Oz Rootkit', 'file': ['/dev/.oz/.nap/rkit/terror'], 'dir': ['/dev/.oz'], 'ksyms': []}
 
         PHALANX_FILES = {'name': 'Phalanx Rootkit',
                          'file': ['/uNFuNF', '/etc/host.ph1', '/bin/host.ph1', '/usr/share/.home.ph1/phalanx',
                                   '/usr/share/.home.ph1/cb', '/usr/share/.home.ph1/kebab'],
-                         'dir': ['/usr/share/.home.ph1', '/usr/share/.home.ph1/tty']}
+                         'dir': ['/usr/share/.home.ph1', '/usr/share/.home.ph1/tty'], 'ksyms': []}
 
         PHALANX2_FILES = {'name': 'Phalanx2 Rootkit',
                           'file': ['/etc/khubd.p2/.p2rc', '/etc/khubd.p2/.phalanx2', '/etc/khubd.p2/.sniff',
                                    '/etc/khubd.p2/sshgrab.py', '/etc/lolzz.p2/.p2rc', '/etc/lolzz.p2/.phalanx2',
                                    '/etc/lolzz.p2/.sniff', '/etc/lolzz.p2/sshgrab.py', '/etc/cron.d/zupzzplaceholder',
                                    '/usr/lib/zupzz.p2/.p-2.3d', '/usr/lib/zupzz.p2/.p2rc'],
-                          'dir': ['/etc/khubd.p2', '/etc/lolzz.p2', '/usr/lib/zupzz.p2']}
+                          'dir': ['/etc/khubd.p2', '/etc/lolzz.p2', '/usr/lib/zupzz.p2'], 'ksyms': []}
 
         PORTACELO_FILES = {'name': 'Portacelo Rootkit',
                            'file': ['/var/lib/.../.ak', '/var/lib/.../.hk', '/var/lib/.../.rs', '/var/lib/.../.p',
                                     '/var/lib/.../getty', '/var/lib/.../lkt.o', '/var/lib/.../show',
                                     '/var/lib/.../nlkt.o', '/var/lib/.../ssshrc', '/var/lib/.../sssh_equiv',
                                     '/var/lib/.../sssh_known_hosts', '/var/lib/.../sssh_pid ~/.sssh/known_hosts'],
-                           'dir': []}
+                           'dir': [], 'ksyms': []}
 
         PROTON_FILES = {'name': 'OSX Proton backdoor', 'file': ['Library/LaunchAgents/com.apple.xpcd.plist',
                                                                 '/Library/LaunchAgents/com.Eltima.UpdaterAgent.plist',
                                                                 '/Library/.rand/updateragent.app', '/tmp/Updater.app'],
-                        'dir': ['/Library/.rand', '/Library/.cachedir', '/Library/.random']}
+                        'dir': ['/Library/.rand', '/Library/.cachedir', '/Library/.random'], 'ksyms': []}
 
         REDSTORM_FILES = {'name': 'R3dstorm Toolkit',
                           'file': ['/var/log/tk02/see_all', '/var/log/tk02/.scris', '/bin/.../sshd/sbin/sshd1',
                                    '/bin/.../hate/sk', '/bin/.../see_all'],
-                          'dir': ['/var/log/tk02', '/var/log/tk02/old', '/bin/...']}
+                          'dir': ['/var/log/tk02', '/var/log/tk02/old', '/bin/...'], 'ksyms': []}
 
         RHSHARPES_FILES = {'name': 'RH-Sharpe Rootkit',
                            'file': ['/bin/lps', '/usr/bin/lpstree', '/usr/bin/ltop', '/usr/bin/lkillall',
                                     '/usr/bin/ldu', '/usr/bin/lnetstat', '/usr/bin/wp', '/usr/bin/shad',
                                     '/usr/bin/vadim', '/usr/bin/slice', '/usr/bin/cleaner', '/usr/include/rpcsvc/du'],
-                           'dir': []}
+                           'dir': [], 'ksyms': []}
 
         RSHA_FILES = {'name': 'RSHA Rootkit',
                       'file': ['/bin/kr4p', '/usr/bin/n3tstat', '/usr/bin/chsh2', '/usr/bin/slice2',
                                '/usr/src/linux/arch/alpha/lib/.lib/.1proc', '/etc/rc.d/arch/alpha/lib/.lib/.1addr'],
-                      'dir': ['/etc/rc.d/rsha', '/etc/rc.d/arch/alpha/lib/.lib']}
+                      'dir': ['/etc/rc.d/rsha', '/etc/rc.d/arch/alpha/lib/.lib'], 'ksyms': []}
 
         SHUTDOWN_FILES = {'name': 'Shutdown Rootkit',
                           'file': ['/usr/man/man5/..%/.dir/scannah/asus', '/usr/man/man5/..%/.dir/see',
                                    '/usr/man/man5/..%/.dir/nscd', '/usr/man/man5/..%/.dir/alpd', '/etc/rc.d/rc.local%'],
                           'dir': ['/usr/man/man5/..%/.dir', '/usr/man/man5/..%/.dir/scannah',
-                                  '/etc/rc.d/rc0.d/..%/.dir']}
+                                  '/etc/rc.d/rc0.d/..%/.dir'], 'ksyms': []}
 
-        SCALPER_FILES = {'name': 'Scalper Worm', 'file': ['/tmp/.a', '/tmp/.uua'], 'dir': []}
+        SCALPER_FILES = {'name': 'Scalper Worm', 'file': ['/tmp/.a', '/tmp/.uua'], 'dir': [], 'ksyms': []}
 
         SHV4_FILES = {'name': 'SHV4 Rootkit',
                       'file': ['/etc/ld.so.hash', '/lib/libext-2.so.7', '/lib/lidps1.so', '/lib/libproc.a',
@@ -401,7 +409,7 @@ class Rootkit_Analysis:
                                '/lib/security/.config/ssh/ssh_random_seed', '/usr/include/file.h',
                                '/usr/include/hosts.h', '/usr/include/lidps1.so', '/usr/include/log.h',
                                '/usr/include/proc.h', '/usr/sbin/xntps', '/dev/srd0'],
-                      'dir': ['/lib/ldd.so', '/lib/security/.config', '/lib/security/.config/ssh']}
+                      'dir': ['/lib/ldd.so', '/lib/security/.config', '/lib/security/.config/ssh'], 'ksyms': []}
 
         SHV5_FILES = {'name': 'SHV5 Rootkit',
                       'file': ['/etc/sh.conf', '/lib/libproc.a', '/lib/libproc.so.2.0.6', '/lib/lidps1.so',
@@ -410,20 +418,21 @@ class Rootkit_Analysis:
                                '/lib/libsh.so/shhk', '/lib/libsh.so/shhk.pub', '/lib/libsh.so/shrs',
                                '/usr/lib/libsh/.bashrc', '/usr/lib/libsh/shsb', '/usr/lib/libsh/hide',
                                '/usr/lib/libsh/.sniff/shsniff', '/usr/lib/libsh/.sniff/shp', '/dev/srd0'],
-                      'dir': ['/lib/libsh.so', '/usr/lib/libsh', '/usr/lib/libsh/utilz', '/usr/lib/libsh/.backup']}
+                      'dir': ['/lib/libsh.so', '/usr/lib/libsh', '/usr/lib/libsh/utilz', '/usr/lib/libsh/.backup'],
+                      'ksyms': []}
 
         SINROOTKIT_FILES = {'name': 'Sin Rootkit',
                             'file': ['/dev/.haos/haos1/.f/Denyed', '/dev/ttyoa', '/dev/ttyof', '/dev/ttyop',
                                      '/dev/ttyos', '/usr/lib/.lib', '/usr/lib/sn/.X', '/usr/lib/sn/.sys',
                                      '/usr/lib/ld/.X', '/usr/man/man1/...', '/usr/man/man1/.../.m',
                                      '/usr/man/man1/.../.w'],
-                            'dir': ['/usr/lib/sn', '/usr/lib/man1/...', '/dev/.haos']}
+                            'dir': ['/usr/lib/sn', '/usr/lib/man1/...', '/dev/.haos'], 'ksyms': []}
 
         SLAPPER_FILES = {'name': 'Slapper Worm',
                          'file': ['/tmp/.bugtraq', '/tmp/.uubugtraq', '/tmp/.bugtraq.c', '/tmp/httpd', '/tmp/.unlock',
-                                  '/tmp/update', '/tmp/.cinik', '/tmp/.b'], 'dir': []}
+                                  '/tmp/update', '/tmp/.cinik', '/tmp/.b'], 'dir': [], 'ksyms': []}
 
-        SNEAKIN_FILES = {'name': 'Sneakin Rootkit', 'file': [], 'dir': ['/tmp/.X11-unix/.../rk']}
+        SNEAKIN_FILES = {'name': 'Sneakin Rootkit', 'file': [], 'dir': ['/tmp/.X11-unix/.../rk'], 'ksyms': []}
 
         WANUKDOOR_FILES = {'name': 'Solaris Wanuk backdoor',
                            'file': ['/var/adm/sa/.adm/.lp-door.i86pc', '/var/adm/sa/.adm/.lp-door.sun4',
@@ -433,7 +442,7 @@ class Rootkit_Analysis:
                                     '/var/spool/lp/admins/lpusers', '/var/spool/lp/admins/lpfilter',
                                     '/var/spool/lp/admins/lpstat', '/var/spool/lp/admins/lpd',
                                     '/var/spool/lp/admins/lpsched', '/var/spool/lp/admins/lpc'],
-                           'dir': ['/var/adm/sa/.adm']}
+                           'dir': ['/var/adm/sa/.adm'], 'ksyms': []}
 
         WANUKWORM_FILES = {'name': 'Solaris Wanuk Worm',
                            'file': ['/var/adm/.adm', '/var/adm/.i86pc', '/var/adm/.sun4', '/var/adm/sa/.adm',
@@ -459,7 +468,7 @@ class Rootkit_Analysis:
                                     '/var/spool/lp/admins/.lp/lpusers', '/var/spool/lp/admins/.lp/lpfilter',
                                     '/var/spool/lp/admins/.lp/lpstat', '/var/spool/lp/admins/.lp/lpd',
                                     '/var/spool/lp/admins/.lp/lpsched', '/var/spool/lp/admins/.lp/lpc'],
-                           'dir': ['/var/adm/sa/.adm', '/var/spool/lp/admins/.lp']}
+                           'dir': ['/var/adm/sa/.adm', '/var/spool/lp/admins/.lp'], 'ksyms': []}
 
         SPANISH_FILES = {'name': 'Spanish Rootkit',
                          'file': ['/dev/ptyq', '/bin/ad', '/bin/ava', '/bin/server', '/usr/sbin/rescue',
@@ -467,7 +476,7 @@ class Rootkit_Analysis:
                                   '/usr/share/.../linsniffer', '/usr/share/.../charbd', '/usr/share/.../charbd2',
                                   '/usr/share/.../charbd3', '/usr/share/.../charbd4', '/usr/man/tmp/update.tgz',
                                   '/var/lib/rpm/db.rpm', '/var/cache/man/.cat', '/var/spool/lpd/remote/.lpq'],
-                         'dir': ['/usr/share/...']}
+                         'dir': ['/usr/share/...'], 'ksyms': []}
 
         SUCKIT_FILES = {'name': 'Suckit Rootkit',
                         'file': ['/sbin/initsk12', '/sbin/initxrk', '/usr/bin/null', '/usr/share/locale/sk/.sk12/sk',
@@ -622,7 +631,7 @@ class Rootkit_Analysis:
 
         self.rootkit_rules = []
         self.rootkit_rules = [W55808A, Adore_Rootkit, AjaKit_Rootkit, aPa_Kit_Rootkit, Apache_Worm, Ambient_Rootkit,
-                              Balaur_Rootkit, Beastkit_Rootkit, beX2_Rootkit, BOBkit_Rootkit
+                              Balaur_Rootkit, Beastkit_Rootkit, beX2_Rootkit, BOBkit_Rootkit,
                               OSX_Boonana_A_Trojan, cb_Rootkit, CiNIK_Worm, CX_Rootkit, Abuse_Kit, Devil_Rootkit,
                               Diamorphine_LKM, Dica_Kit_Rootkit, Dreams_Rootkit, Duarawkz_Rootkit, Ebury_sshd_backdoor,
                               ENYE_LKM, Flea_Rootkit, FreeBSD_Rootkit, Fu_Rootkit, Fuckit_Rootkit, GasKit_Rootkit,
@@ -639,4 +648,99 @@ class Rootkit_Analysis:
                               VAMPIRE_FILES, VOLC_FILES, WEAPONX_FILES, XZIBIT_FILES, XORGSUNOS_FILES, ZARWT_FILES,
                               ZK_FILES, LOGIN_BACKDOOR_FILES, SUSPICIOUS_DIRS]
 
+    # 获取内核符号表
+    def get_kmsinfo(self):
+        # cat /proc/kallsyms |awk '{print $3}'
+        if os.path.exists('/proc/kallsyms'):
+            self.kallsyms = os.popen("cat /proc/kallsyms |awk '{print $3}'").read().splitlines()
+            return
+        elif os.path.exists('/proc/ksyms'):
+            self.kallsyms = os.popen("cat /proc/ksyms").read().splitlines()
         return
+
+    # 检测rootkit规则特征
+    def check_rootkit_rules(self, rootkit_info):
+        suspicious, malice = False, False
+        for file in rootkit_info['file']:
+            if os.path.exists(file):
+                self.rootkit.append(
+                    {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件特征', u'恶意文件': file,
+                     u'参考对应rootkit规则': rootkit_info})
+                malice = True
+                return suspicious, malice
+        for dir in rootkit_info['file']:
+            if os.path.exists(dir):
+                self.rootkit.append(
+                    {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件夹特征', u'恶意文件夹': dir,
+                     u'参考对应rootkit规则': rootkit_info})
+                malice = True
+                return suspicious, malice
+
+        self.get_kmsinfo()
+        for kms in self.kallsyms:
+            for ksyms in rootkit_info['ksyms']:
+                if ksyms in kms:
+                    self.rootkit.append(
+                        {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'内核符号表特征', u'恶意内核信息': ksyms,
+                         u'参考对应rootkit规则': rootkit_info})
+                    malice = True
+                    return suspicious, malice
+        return suspicious, malice
+
+    # 检测恶意so文件
+    def check_bad_LKM(self):
+        suspicious, malice = False, False
+        try:
+            infos = os.popen('find /lib/modules/ -name "*.so" -o -name "*.ko"  -o -name "*.ko.xz"').read().splitlines()
+            for file in infos:
+                for lkm in self.LKM_BADNAMES:
+                    if lkm in file:
+                        malice = True
+                        self.rootkit.append(
+                            {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'lib库中发现恶意的so文件', u'恶意文件信息': file,
+                             u'参考对应rootkit规则': self.LKM_BADNAMES})
+                        return suspicious, malice
+        except:
+            return suspicious, malice
+
+    def run(self):
+        print(u'\n开始Rootkit类安全扫描')
+        file_write(u'\n开始Rootkit类安全扫描\n')
+        sys.stdout.flush()
+        i = 0
+        for rootkit_info in self.rootkit_rules:
+            i += 1
+            print(align(u' [%d]%s' % (i, rootkit_info['name']), 30) + u'[ ', end='')
+            file_write(align(u' [%d]%s' % (i, rootkit_info['name']), 30) + u'[ ')
+            sys.stdout.flush()
+            suspicious, malice = self.check_rootkit_rules(rootkit_info)
+            if malice:
+                pringf(u'存在风险', malice=True)
+            elif suspicious and (not malice):
+                pringf(u'警告', suspicious=True)
+            else:
+                pringf(u'OK', security=True)
+
+        print(align(u' [%d]检测内核模块名称' % i + 1, 30) + u'[ ', end='')
+        suspicious, malice = self.check_bad_LKM()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        if len(self.rootkit) > 0:
+            file_write('-' * 30)
+            file_write(u'Rootkit类安全扫描如下：\n')
+            for info in self.rootkit:
+                file_write(json.dumps(info, ensure_ascii=False) + '\n')
+            file_write('-' * 30)
+
+
+if __name__ == '__main__':
+    info = Rootkit_Analysis()
+    info.run()
+    print(u"Rootkit类安全扫描如下：")
+    for info in info.rootkit:
+        print(info)
