@@ -131,7 +131,7 @@ class File_Analysis:
                     'exec ' in content) or ('curl ' in content) or ('wget ' in content) or ('lynx ' in content))) or (
                                    ".decode('base64')" in content) else False
         except:
-
+            return False
 
     def run(self):
         print(u'\n开始文件类安全扫描')
