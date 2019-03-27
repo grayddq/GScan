@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.add_option("-l", "--log", dest="logdir", help=u"打包当前系统的所有安全日志，demo: -l /var/log/")
     options, _ = parser.parse_args()
-    if options.scan:
+    if not options.logdir:
         # 创建日志文件
         mkfile()
         file_write(progam + '\n')
@@ -61,8 +61,6 @@ if __name__ == '__main__':
         # 输出报告
         print(u'-' * 30)
         print(u'\033[1;32m扫描完毕，扫描结果已记入到/var/log/gscan/gscan.log文件中，请及时查看\033[0m')
-
-
 
     elif options.logdir:
         print(u'\033[1;32m开始备份整个系统安全日志...\033[0m\n')
