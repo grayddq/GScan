@@ -672,7 +672,7 @@ class Rootkit_Analysis:
                          u'参考对应rootkit规则': rootkit_info})
                     malice = True
                     return suspicious, malice
-            for dir in rootkit_info['file']:
+            for dir in rootkit_info['dir']:
                 if os.path.exists(dir):
                     self.rootkit.append(
                         {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件夹特征', u'恶意文件夹': dir,
