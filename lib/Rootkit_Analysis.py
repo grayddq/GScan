@@ -277,7 +277,7 @@ class Rootkit_Analysis:
                                   '/Users/Shared/start.sh'], 'dir': [], 'ksyms': []}
 
         LINUXV_FILES = {'name': 'ld-linuxv rootkit', 'file': ['/lib/ld-linuxv.so.1'],
-                        'dir': ['/var/opt/_so_cache', '/var/opt/_so_cache/ld', '/var/opt/_so_cache/lc']}
+                        'dir': ['/var/opt/_so_cache', '/var/opt/_so_cache/ld', '/var/opt/_so_cache/lc'], 'ksyms': []}
 
         LION_FILES = {'name': 'Lion Worm', 'file': ['/bin/in.telnetd', '/bin/mjy', '/usr/man/man1/man1/lib/.lib/mjy',
                                                     '/usr/man/man1/man1/lib/.lib/in.telnetd',
@@ -646,46 +646,52 @@ class Rootkit_Analysis:
                               SUNOSROOTKIT_FILES, SUPERKIT_FILES, TBD_FILES, TELEKIT_FILES, TOGROOT_FILES, TORN_FILES,
                               TRNKIT_FILES, TROJANIT_FILES, TURTLE_FILES, TUXTENDO_FILES, URK_FILES, VCKIT_FILES,
                               VAMPIRE_FILES, VOLC_FILES, WEAPONX_FILES, XZIBIT_FILES, XORGSUNOS_FILES, ZARWT_FILES,
-                              ZK_FILES, LOGIN_BACKDOOR_FILES, SUSPICIOUS_DIRS]
+                              ZK_FILES, LOGIN_BACKDOOR_FILES]
 
     # 获取内核符号表
     def get_kmsinfo(self):
-        # cat /proc/kallsyms |awk '{print $3}'
-        if os.path.exists('/proc/kallsyms'):
-            self.kallsyms = os.popen("cat /proc/kallsyms |awk '{print $3}'").read().splitlines()
+        try:
+            # cat /proc/kallsyms |awk '{print $3}'
+            if os.path.exists('/proc/kallsyms'):
+                self.kallsyms = os.popen("cat /proc/kallsyms |awk '{print $3}'").read().splitlines()
+                return
+            elif os.path.exists('/proc/ksyms'):
+                self.kallsyms = os.popen("cat /proc/ksyms").read().splitlines()
             return
-        elif os.path.exists('/proc/ksyms'):
-            self.kallsyms = os.popen("cat /proc/ksyms").read().splitlines()
-        return
+        except:
+            return
 
     # 检测rootkit规则特征
     def check_rootkit_rules(self, rootkit_info):
         suspicious, malice = False, False
-        for file in rootkit_info['file']:
-            if os.path.exists(file):
-                self.rootkit.append(
-                    {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件特征', u'恶意文件': file,
-                     u'参考对应rootkit规则': rootkit_info})
-                malice = True
-                return suspicious, malice
-        for dir in rootkit_info['file']:
-            if os.path.exists(dir):
-                self.rootkit.append(
-                    {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件夹特征', u'恶意文件夹': dir,
-                     u'参考对应rootkit规则': rootkit_info})
-                malice = True
-                return suspicious, malice
-
-        self.get_kmsinfo()
-        for kms in self.kallsyms:
-            for ksyms in rootkit_info['ksyms']:
-                if ksyms in kms:
+        try:
+            for file in rootkit_info['file']:
+                if os.path.exists(file):
                     self.rootkit.append(
-                        {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'内核符号表特征', u'恶意内核信息': ksyms,
+                        {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件特征', u'恶意文件': file,
                          u'参考对应rootkit规则': rootkit_info})
                     malice = True
                     return suspicious, malice
-        return suspicious, malice
+            for dir in rootkit_info['file']:
+                if os.path.exists(dir):
+                    self.rootkit.append(
+                        {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'文件夹特征', u'恶意文件夹': dir,
+                         u'参考对应rootkit规则': rootkit_info})
+                    malice = True
+                    return suspicious, malice
+
+            self.get_kmsinfo()
+            for kms in self.kallsyms:
+                for ksyms in rootkit_info['ksyms']:
+                    if ksyms in kms:
+                        self.rootkit.append(
+                            {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'内核符号表特征', u'恶意内核信息': ksyms,
+                             u'参考对应rootkit规则': rootkit_info})
+                        malice = True
+                        return suspicious, malice
+            return suspicious, malice
+        except:
+            return suspicious, malice
 
     # 检测恶意so文件
     def check_bad_LKM(self):
@@ -694,12 +700,13 @@ class Rootkit_Analysis:
             infos = os.popen('find /lib/modules/ -name "*.so" -o -name "*.ko"  -o -name "*.ko.xz"').read().splitlines()
             for file in infos:
                 for lkm in self.LKM_BADNAMES:
-                    if lkm in file:
+                    if lkm == os.path.basename(file):
                         malice = True
                         self.rootkit.append(
-                            {u'Rootkit名称': rootkit_info['name'], u'触犯规则': u'lib库中发现恶意的so文件', u'恶意文件信息': file,
+                            {u'Rootkit名称': u'恶意的内核模块', u'触犯规则': u'lib库中发现恶意的so文件', u'恶意文件信息': file,
                              u'参考对应rootkit规则': self.LKM_BADNAMES})
                         return suspicious, malice
+            return suspicious, malice
         except:
             return suspicious, malice
 
@@ -721,7 +728,7 @@ class Rootkit_Analysis:
             else:
                 pringf(u'OK', security=True)
 
-        print(align(u' [%d]检测内核模块名称' % i + 1, 30) + u'[ ', end='')
+        print(align(u' [%d]检测内核模块名称' % (i + 1), 30) + u'[ ', end='')
         suspicious, malice = self.check_bad_LKM()
         if malice:
             pringf(u'存在风险', malice=True)
@@ -742,5 +749,6 @@ if __name__ == '__main__':
     info = Rootkit_Analysis()
     info.run()
     print(u"Rootkit类安全扫描如下：")
+    print(len(info.rootkit))
     for info in info.rootkit:
         print(info)

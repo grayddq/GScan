@@ -10,6 +10,7 @@ from lib.User_Analysis import *
 from lib.common import *
 from lib.Config_Analysis import *
 from lib.Log_Analysis import *
+from lib.Rootkit_Analysis import *
 
 if __name__ == '__main__':
     progam = u'''
@@ -51,14 +52,11 @@ if __name__ == '__main__':
         Log_Analysis().run()
         # 安全配置类
         Config_Analysis().run()
-        #rootkit检测
-
-
+        # rootkit检测
+        Rootkit_Analysis().run()
         # 各类恶意挖矿扫描
 
-
         # WEBShell类扫描
-
 
         # 输出报告
         print(u'-' * 30)
