@@ -729,6 +729,8 @@ class Rootkit_Analysis:
                 pringf(u'OK', security=True)
 
         print(align(u' [%d]检测内核模块名称' % (i + 1), 30) + u'[ ', end='')
+        file_write(align(u' [%d]检测内核模块名称' % (i + 1), 30) + u'[ ')
+        sys.stdout.flush()
         suspicious, malice = self.check_bad_LKM()
         if malice:
             pringf(u'存在风险', malice=True)
