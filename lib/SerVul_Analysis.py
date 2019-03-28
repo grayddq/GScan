@@ -12,19 +12,15 @@ class SerVul_Analysis:
         return
 
     def check_redis(self):
+        suspicious, malice = False, False
         conf_file = '/etc/redis.conf'
-        redis_pass = False
         if not os.path.exists(conf_file):
-            return False
+            return suspicious, malice
         # 打开日志文件
         f = open(conf_file, 'r')
         for i in f:
             if 'requirepass' == i.strip()[0:11]:
-                redis_pass = True
-        if not redis_pass:
-            print(u"存在redis未授权访问风险")
-
-
-
+                return suspicious, malice
+        return True, malice
 
 
