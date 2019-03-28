@@ -226,7 +226,7 @@ class Backdoor_Analysis:
         try:
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
-                if self.check_shell(str): return 'bash shell'
+                if self.check_shell(str): return u'反弹shell类'
                 for malware in self.malware_infos:
                     if malware in str: return malware
             return ""
@@ -262,7 +262,7 @@ class Backdoor_Analysis:
             content = contents.replace('\n', '')
             if self.check_shell(content):
                 self.backdoor.append(
-                    {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell', u'手工确认': solve})
+                    {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell类', u'手工确认': solve})
                 malice = True
             else:
                 for file in content.split(' '):
