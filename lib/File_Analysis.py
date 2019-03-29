@@ -5,10 +5,10 @@ from lib.common import *
 
 
 # 分析主机文件类异常
-# 1、判断系统文件完整性
-# 2、临时目录文件扫描
-# 3、用户目录文件扫描
-# 4、可疑隐藏文件扫描
+# 1、系统可执行文件扫描
+# 3、临时目录文件扫描
+# 4、用户目录文件扫描
+# 5、可疑隐藏文件扫描
 
 class File_Analysis:
     def __init__(self):
@@ -44,23 +44,13 @@ class File_Analysis:
         binary_list = ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/']
         try:
             for dir in binary_list:
-                for file in os.listdir(dir):
-                    fpath = os.path.join('%s%s' % (dir, file))
-                    infos = os.popen("rpm -qf %s" % fpath).read().splitlines()
-                    if len(infos) > 0:
-                        if 'is not owned by any package' in infos[0]:
-                            if file in system_file:
-                                self.file_malware.append(
-                                    {u'异常类型': u'文件完整性检测', u'可疑信息': infos[0], u'文件路径': fpath,
-                                     u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
-                                suspicious = True
-                            else:
-                                malware = self.analysis_file(fpath)
-                                if malware:
-                                    self.file_malware.append(
-                                        {u'异常类型': u'文件恶意特征', u'文件路径': fpath, u'恶意特征': malware,
-                                         u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
-                                    malice = True
+                for file in gci(dir):
+                    malware = self.analysis_file(file)
+                    if malware:
+                        self.file_malware.append(
+                            {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
+                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (file, file)})
+                        malice = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -84,8 +74,8 @@ class File_Analysis:
         except:
             return suspicious, malice
 
-    # 检查所有临时目录文件
-    def check_user_file(self):
+    # 检查所有用户目录文件
+    def check_user_dir(self):
         suspicious, malice = False, False
         dir_list = ['/home/', '/root/']
         try:
@@ -132,15 +122,16 @@ class File_Analysis:
     # 分析文件是否包含恶意特征或者反弹shell问题
     def analysis_file(self, file):
         try:
-            if not os.path.exists(file) or os.path.getsize(file) == 0: return ""
+            if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
+                    round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
-                if check_shell(str): return 'bash shell'
+                if check_shell(str): return u'反弹shell类'
                 for malware in self.malware_infos:
                     if malware in str: return malware
             return ""
         except:
-            return
+            return ""
 
     def run(self):
         print(u'\n开始文件类安全扫描')
@@ -169,8 +160,20 @@ class File_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [3]可疑隐藏文件扫描', 30) + u'[ ', end='')
-        file_write(align(u' [3]可疑隐藏文件扫描', 30) + u'[ ')
+        print(align(u' [3]各用户目录安全扫描', 30) + u'[ ', end='')
+        file_write(align(u' [3]各用户目录安全扫描', 30) + u'[ ')
+        sys.stdout.flush()
+        # 临时目录文件扫描
+        suspicious, malice = self.check_user_dir()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        print(align(u' [4]可疑隐藏文件扫描', 30) + u'[ ', end='')
+        file_write(align(u' [4]可疑隐藏文件扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 临时目录文件扫描
         suspicious, malice = self.check_hide()
