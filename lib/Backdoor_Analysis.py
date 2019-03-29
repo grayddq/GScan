@@ -224,6 +224,8 @@ class Backdoor_Analysis:
     # 分析文件是否包含恶意特征或者反弹shell问题
     def analysis_file(self, file):
         try:
+            if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
+                    round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
                 if check_shell(str): return u'反弹shell类'
