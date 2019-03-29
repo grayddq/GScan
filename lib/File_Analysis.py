@@ -7,7 +7,8 @@ from lib.common import *
 # 分析主机文件类异常
 # 1、判断系统文件完整性
 # 2、临时目录文件扫描
-# 3、可疑隐藏文件扫描
+# 3、用户目录文件扫描
+# 4、可疑隐藏文件扫描
 
 class File_Analysis:
     def __init__(self):
@@ -79,6 +80,24 @@ class File_Analysis:
                                 {u'异常类型': u'文件恶意特征', u'文件路径': fpath, u'恶意特征': malware,
                                  u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
                             malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # 检查所有临时目录文件
+    def check_user_file(self):
+        suspicious, malice = False, False
+        dir_list = ['/home/', '/root/']
+        try:
+            for dir in dir_list:
+                if not os.path.exists(dir): continue
+                for file in gci(dir):
+                    malware = self.analysis_file(file)
+                    if malware:
+                        self.file_malware.append(
+                            {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
+                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (file, file)})
+                        malice = True
             return suspicious, malice
         except:
             return suspicious, malice
