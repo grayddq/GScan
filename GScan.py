@@ -56,8 +56,6 @@ if __name__ == '__main__':
         Rootkit_Analysis().run()
         # 各类恶意挖矿扫描
 
-        # 各类已知应用服务漏洞的扫描
-
         # WEBShell类扫描
 
         # 输出报告

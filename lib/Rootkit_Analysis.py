@@ -7,7 +7,7 @@ from lib.common import *
 # Rootkit检测,规则参考rkhunter
 # 1、扫描93类rootkit特征
 # 2、检查已知rootkit的内核符号表
-# 3、检查已知rootkit内核库文件
+# 3、检查已知rootkit内核文件
 
 
 class Rootkit_Analysis:

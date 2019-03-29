@@ -10,95 +10,85 @@
 
 ## Support ##
 
-以下为程序提供的CheckList检测点
+以下为程序CheckList项
 
 	1、主机信息获取
 	2、文件类安全扫描
-	 2.1、主机系统文件完整性检测
-	 2.2、临时目录文件安全检测
-	 2.3、用户目录文件扫描
-	 2.4、可疑隐藏文件扫描
-	3、用户历史操作类
-	4、
-
-技术细节如下：
-
-	1、调用Masscan进行快速扫描
-	2、调用Nmap进行端口服务名称判断
-	3、以IP+端口+服务名称为标准，与上一次的结果向比较，判断增加和减少服务
-	4、为防止漏报，减少的服务进行二次nmap扫描，判断是否漏扫
-	5、针对结果进行弱口令扫描
-	6、发送所有结果到email
+	  2.1、系统可执行文件安全扫描
+	  2.2、临时目录文件安全扫描
+	  2.3、用户目录文件扫描
+	  2.4、可疑隐藏文件扫描
+	3、各用户历史操作类
+	  3.1、可疑ip下载类
+	  3.2、反弹shell执行类
+	  3.3、下载执行类
+	4、进程类安全检测
+	  4.1、CUP和内存使用异常进程排查
+	  4.2、隐藏进程安全扫描
+	  4.3、反弹shell类进程扫描
+	  4.4、恶意名进程安全扫描
+	  4.5、进程对应可执行文件安全扫描
+	5、网络类安全检测
+	  5.1、对外链接类，境外IP类
+	  5.2、恶意IP链接扫描
+	  5.3、可疑端口类链接扫描
+	  5.4、网卡混杂模式检测
+	6、后门类检测
+	  6.1、LD_PRELOAD后门检测
+	  6.2、ld.so.preload后门检测
+	  6.3、PROMPT_COMMAND后门检测
+	  6.4、Crontab后门检测
+	  6.5、Alias后门
+	  6.6、SSH 后门检测
+	  6.7、SSH wrapper 后门检测
+	  6.8、inetd.conf 后门检测
+	  6.9、xinetd.conf 后门检测
+	  6.10、系统启动项后门检测
+	7、账户类安全排查
+	  7.1、检查root权限账户
+	  7.2、查看系统中是否存在空口令账户
+	  7.3、检查sudoers文件用户权限
+	  7.4、查看各账户下登录公钥
+	8、日志类安全分析
+	  8.1、SSH登陆日志
+	9、安全配置类分析
+	  9.1、DNS配置检测
+	  9.2、Iptables防火墙配置检测
+	10、Rootkit分析
+	  10.1、各类已知rootkit文件类特征
+	  10.2、检查已知rootkit内核符号表
+	  10.3、检查已知rootkit内核文件
+	11.WebShell类文件扫描
+	  11.1、WebShell类文件扫描
+	  
+	  
 
 ## Test Environment ##
 
->CentOS Linux release 7.3.1611 (Core)
+>系统：CentOS 6、7 
+>
+>python 2.x 3.x
+>
+>注：其他系统并未做兼容性测试，检测结果未知
 
 ## Dependencies ##
-> sudo yum install nmap
+> root# git clone https://github.com/grayddq/GScan.git
 >
-> sudo yum install hydra (hydra v8.0+ 版支持redis服务)
+> root# cd GScan
 > 
-> yum install git gcc make libpcap-devel.x86_64
-> 
-> wget https://github.com/robertdavidgraham/masscan/archive/1.0.4.tar.gz
-> 
-> tar -zxvf 1.0.4.tar.gz
-> 
-> cd masscan-1.0.4/
-> 
-> make
->
-> cp bin/masscan /bin/masscan
->
-> git clone https://github.com/grayddq/PublicMonitors.git
->
-> sudo pip install -r requirements.txt
+> root# sudo python GScan.py
+
 
 ## Tree ##
 
-	PubilcAssetInfo
-	----conf   #配置目录
-	----lib    #模块库文件
-	----log    #日志目录
-	----out    #输出目录
-	----tmp    #临时目录
-	----PublicMonitors.py   #主程序
-	
+	GScan
+	----lib        #模块库文件
+	----GScan.py   #主程序
 
-## Config ##
-
-配置目录：./conf/info.conf
-
-	[OPTIONS]
-	#IP列表文件目录
-	ip_file = conf/ip.txt
-	#弱口令账户和密码，不填写则代表不进行弱口令扫描。pass.txt默认包含top100密码
-	db_user = conf/user.txt
-	db_pass = conf/pass.txt
-	#扫描类型，monitors / weakpass /all
-	#monitors 代表最终不进行弱口令扫描
-	#weakpass 针对最后的一次扫描结果进行弱口令扫描
-	#all      代表端口监听后进行弱口令扫描
-	type = all
-	
-	[Masscan]
-	#Masscan扫描器的发包数量，越大越快但漏扫量越多，1M～=2000，
-	rate = 2000
-	
-	[Email]
-	#不填写则代表不发送邮箱通知
-	#发送的邮箱账户和密码
-	user = 
-	pass = 
-	#目标邮箱
-	target_email = 
-	#smtp的server名称，如163邮箱则填写smtp.163.com
-	smtp_server = 
 
 ## Log ##
 
-日志目录默认：./conf/info.conf
+日志及结果目录默认：/var/log/gscan/gscan.log
 
 
 ## Screenshot ##

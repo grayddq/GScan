@@ -135,9 +135,9 @@ class File_Analysis:
 
     def run(self):
         print(u'\n开始文件类安全扫描')
-        print(align(u' [1]系统文件完整性安全扫描', 30) + u'[ ', end='')
+        print(align(u' [1]系统可执行文件安全扫描', 30) + u'[ ', end='')
         file_write(u'\n开始文件类安全扫描\n')
-        file_write(align(u' [1]系统文件完整性安全扫描', 30) + u'[ ')
+        file_write(align(u' [1]系统可执行文件安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         # 系统完整性检测
         suspicious, malice = self.check_system_integrity()
