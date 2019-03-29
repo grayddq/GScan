@@ -116,22 +116,12 @@ class File_Analysis:
             if not os.path.exists(file) or os.path.getsize(file) == 0: return ""
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
-                if self.check_shell(str): return 'bash shell'
+                if check_shell(str): return 'bash shell'
                 for malware in self.malware_infos:
                     if malware in str: return malware
             return ""
         except:
             return
-
-    # 分析字符串是否包含反弹shell特征
-    def check_shell(self, content):
-        try:
-            return True if (('bash' in content) and (
-                    ('/dev/tcp/' in content) or ('telnet ' in content) or ('nc ' in content) or (
-                    'exec ' in content) or ('curl ' in content) or ('wget ' in content) or ('lynx ' in content))) or (
-                                   ".decode('base64')" in content) else False
-        except:
-            return False
 
     def run(self):
         print(u'\n开始文件类安全扫描')

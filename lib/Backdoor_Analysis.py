@@ -226,41 +226,19 @@ class Backdoor_Analysis:
         try:
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
-                if self.check_shell(str): return u'反弹shell类'
+                if check_shell(str): return u'反弹shell类'
                 for malware in self.malware_infos:
                     if malware in str: return malware
             return ""
         except:
             return ""
 
-    # 分析字符串是否包含反弹shell或者恶意下载执行的特征
-    def check_shell(self, content):
-        try:
-            # 反弹shell类
-            if (('bash' in content) and (('/dev/tcp/' in content) or ('telnet ' in content) or ('nc ' in content) or (
-                    ('exec ' in content) and ('socket' in content)) or ('curl ' in content) or ('wget ' in content) or (
-                                                 'lynx ' in content))) or (".decode('base64')" in content):
-                return True
-            elif ('/dev/tcp/' in content) and (('exec ' in content) or ('ksh -c' in content)):
-                return True
-            elif ('exec ' in content) and (('socket.' in content) or (".decode('base64')" in content)):
-                return True
-            # 下载执行类
-            elif (('wget ' in content) or ('curl ' in content)) and ((' -O ' in content) or (' -s ' in content)) and (
-                    ' http' in content) and (
-                    ('php ' in content) or ('perl' in content) or ('python ' in content) or ('sh ' in content) or (
-                    'bash ' in content)):
-                return True
-            return False
-        except:
-            return False
-
     # 分析一串字符串是否包含反弹shell或者存在的文件路径
     def analysis_strings(self, name, file, contents, solve):
         suspicious, malice = False, False
         try:
             content = contents.replace('\n', '')
-            if self.check_shell(content):
+            if check_shell(content):
                 self.backdoor.append(
                     {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell类', u'手工确认': solve})
                 malice = True
