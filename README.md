@@ -1,16 +1,16 @@
 # GScan v0.1
 
-本程序旨在为安全应急响应人员在主机的排查提供便利，实现主机侧安全Checklist的自动化，用于快速主机安全点排查。
+本程序旨在为安全应急响应人员对Linux主机排查时提供便利，实现主机侧安全Checklist的自动化，用于快速主机安全点排查。
 
-## Author ##
+## 作者 ##
 
 咚咚呛 
 
 如有其他建议，可联系微信280495355
 
-## Support ##
+## CheckList检测项 ##
 
-以下为程序CheckList项
+自动化程序的CheckList项如下：
 
 	1、主机信息获取
 	2、文件类安全扫描
@@ -63,15 +63,13 @@
 	  
 	  
 
-## Test Environment ##
+## 测试环境 ##
 
->系统：CentOS 6、7 
->
->python 2.x 3.x
+>系统：CentOS (6、7) + python (2.x 3.x)
 >
 >注：其他系统并未做兼容性测试，检测结果未知
 
-## Dependencies ##
+## 部署和执行 ##
 > root# git clone https://github.com/grayddq/GScan.git
 >
 > root# cd GScan
@@ -79,32 +77,33 @@
 > root# sudo python GScan.py
 
 
-## Tree ##
+## 程序说明 ##
 
 	GScan
-	----lib        #模块库文件
-	----GScan.py   #主程序
+	----GScan.py                #主程序
+	----lib                     #模块库文件
+	-------Host_Info.py         #主机信息获取
+	-------File_Analysis.py     #文件类安全检测
+	-------History_Analysis.py  #用户历史操作类
+	-------Proc_Analysis.py     #进程类安全检测
+	-------Network_Analysis.py  #网络类安全检测
+	-------Backdoor_Analysis.py #后门类检测
+	-------User_Analysis.py     #账户类安全排查
+	-------Log_Analysis.py      #日志类安全分析
+	-------Config_Analysis.py   #安全配置类分析
+	-------Rootkit_Analysis.py  #Rootkit分析
+	-------    #WebShell类文件检测
+	-------ip                   #ip地址定位库
+	-------malware              #各类恶意特征库
+
+	
 
 
-## Log ##
+## 日志结果 ##
 
 日志及结果目录默认：/var/log/gscan/gscan.log
 
 
-## Screenshot ##
+## 运行截图 ##
 
 ![Screenshot](pic/111.png)
-
-## output ##
-
-输出目录默认：./out/
-
-![Screenshot](pic/444.png)
-
-![Screenshot](pic/555.png)
-
-## email ##
-
-![Screenshot](pic/222.png)
-
-![Screenshot](pic/333.png)
