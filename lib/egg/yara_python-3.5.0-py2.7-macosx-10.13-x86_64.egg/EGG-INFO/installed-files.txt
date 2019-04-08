@@ -1,0 +1,7 @@
+../yara.so
+.
+PKG-INFO
+not-zip-safe
+SOURCES.txt
+top_level.txt
+dependency_links.txt
