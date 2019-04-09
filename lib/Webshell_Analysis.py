@@ -1,17 +1,19 @@
 # coding:utf-8
+from __future__ import print_function
 # from lib.common import *
 from common import *
 import os, platform, sys
 
 
 # 分析主机上webshell类文件
-# 1、提取tomcat的web目录，进行安全扫描
-# 2、提取jetty的web目录，进行安全扫描
-# 3、提取nginx的web目录，进行安全扫描
+# 1、提取nginx的web目录，进行安全扫描
+# 2、提取tomcat的web目录，进行安全扫描
+# 3、提取jetty的web目录，进行安全扫描
 # 4、提取apache的web目录，进行安全扫描
-# 5、提取jboss的web目录，进行安全扫描
-# 6、提取weblogic的web目录，进行安全扫描
-# 7、提取resin的web目录，进行安全扫描
+# 5、提取resin的web目录，进行安全扫描
+# 6、提取jboss的web目录，进行安全扫描
+# 7、提取weblogic的web目录，进行安全扫描
+# 8、提取lighttpd的web目录，进行安全扫描
 
 
 class Webshell_Analysis:
@@ -49,9 +51,9 @@ class Webshell_Analysis:
                 matches = self.yararule.match(data=fp.read())
                 if len(matches):
                     self.webshell_list.append(file)
-                else: print file
 
-    def run(self):
+    def init_scan(self):
+        suspicious, malice = False, False
         DEPENDENT_LIBRARIES_2_6 = "/egg/yara_python-3.5.0-py2.6-linux-2.32-x86_64.egg"
         DEPENDENT_LIBRARIES_3_10 = "/egg/yara_python-3.5.0-py2.7-linux-3.10-x86_64.egg"
         DEPENDENT_LIBRARIES_4_20 = "/egg/yara_python-3.8.1-py2.7-linux-4.20-x86_64.egg"
@@ -71,13 +73,33 @@ class Webshell_Analysis:
         elif _kernel.startswith('17.'):
             sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_17)
         else:
-            print(u'不支持此内核的Webshell扫描')
-            return
+            pringf(u'跳过', suspicious=True)
+            return True, malice
         import yara
 
         # 编译规则
         self.yararule = self.getRules(yara)
         self.scan_web()
+
+        if len(self.webshell_list) > 0:
+            malice = True
+        return suspicious, malice
+
+    def run(self):
+        print(u'\n开始Webshell安全扫描')
+        print(align(u' [1]Webshell安全扫描', 30) + u'[ ', end='')
+        file_write(u'\n开始Webshell安全扫描\n')
+        file_write(align(u' [1]Webshell安全扫描', 30) + u'[ ')
+        sys.stdout.flush()
+
+        suspicious, malice = self.init_scan()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'跳过', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+        sys.stdout.flush()
 
 
 if __name__ == '__main__':
