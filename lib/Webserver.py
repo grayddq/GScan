@@ -28,7 +28,7 @@ class Webshell_Analysis:
         return ''
 
     def getWebserverConf(self):
-        webserver = ['nginx', 'tomcat', 'jetty', 'httpd', 'resin', 'jboss', 'weblogic','']
+        webserver = ['nginx', 'tomcat', 'jetty', 'httpd', 'resin', 'jboss', 'weblogic','jenkins']
         for name in webserver:
             cmd = "ps -efwww |grep " + name + "|grep -v grep|awk '{for(i=8;i<=NF;i++)printf\"%s \",$i;printf\"\\n\"}'"
             # cmd = "ps -efwww|cut -c49-|grep tomcat|grep -v grep"
@@ -66,11 +66,38 @@ class Webshell_Analysis:
                         self.webconf.append(
                             {'name': 'httpd', 'conf': '/etc/httpd/conf/httpd.conf', 'home': '', 'webroot': ''})
                 elif name == 'resin':
-                    
+                    root = self.getStrPath(' --root-directory ', pro)
+                    if root:
+                        self.webconf.append({'name': 'resin', 'conf': '', 'home': '', 'webroot': root + '/webapps'})
+                    conf = self.getStrPath(' -conf ', pro)
+                    if conf: self.webconf.append({'name': 'resin', 'conf': conf, 'home': '', 'webroot': ''})
+                elif name == 'jenkins':
+                    root = self.getStrPath(' --webroot=', pro)
+                    if root:
+                        self.webconf.append({'name': 'jenkins', 'conf': '', 'home': '', 'webroot': root})
 
 
 
 
+
+    #解析nginx的配置文件，读取web路径
+    def parseNginxConf(self):
+        return []
+
+    #解析resin的配置文件，读取web路径
+    def parseResinConf(self):
+        return []
+
+    def getWebRoot(self):
+        if len(self.webconf):
+            for conf in self.webconf:
+                if conf['webroot']:
+                    self.webroot.append(conf['webroot'])
+                else:
+                    if conf['name'] == 'nginx':
+                        self.webroot = self.webroot + self.parseNginxConf(conf['conf'])
+                    elif conf['name'] == 'resin':
+                        self.webroot = self.webroot + self.parseResinConf(conf['conf'])
 
 
     def run(self):
