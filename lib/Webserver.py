@@ -2,7 +2,7 @@
 from __future__ import print_function
 # from lib.common import *
 # from common import *
-import os, platform, sys
+import os, platform, sys, glob
 
 
 # nginx
@@ -16,7 +16,7 @@ import os, platform, sys
 # 1、提取
 
 
-class Webshell_Analysis:
+class Webserver:
     def __init__(self):
         self.webroot = ['/var/www/', '/tmp/']
         self.webconf = []
@@ -28,7 +28,7 @@ class Webshell_Analysis:
         return ''
 
     def getWebserverConf(self):
-        webserver = ['nginx', 'tomcat', 'jetty', 'httpd', 'resin', 'jboss', 'weblogic','jenkins']
+        webserver = ['nginx', 'tomcat', 'jetty', 'httpd', 'resin', 'jboss', 'weblogic', 'jenkins']
         for name in webserver:
             cmd = "ps -efwww |grep " + name + "|grep -v grep|awk '{for(i=8;i<=NF;i++)printf\"%s \",$i;printf\"\\n\"}'"
             # cmd = "ps -efwww|cut -c49-|grep tomcat|grep -v grep"
@@ -76,17 +76,44 @@ class Webshell_Analysis:
                     if root:
                         self.webconf.append({'name': 'jenkins', 'conf': '', 'home': '', 'webroot': root})
 
+    # 解析nginx的配置文件，读取web路径
+    def parseNginxConf(self, conf):
+        if not os.path.isfile(conf): return
+        if not os.path.isfile(conf): return
 
+        with open(conf) as f:
+            for readline in f:
+                line = readline.lstrip().rstrip("\n").strip()
+                if line == '' or line[0] == '#':
+                    continue
 
+                elif line[0:4].lower() == 'root':  # find root or DocumentRoot
+                    root = line[4:].strip().rstrip(
+                        ';').strip('"').strip("'").strip()
+                    self.webroot.append(root)
+                elif line.lower().startswith("include"):  # find include /xxx/*.conf
+                    include_conf = line[len("include"):].strip().rstrip(
+                        ';').strip('"').strip("'").strip()
 
+                    if '*' in include_conf:  # /home/work/apache/conf/*.conf
+                        include_list = glob.glob(include_conf)
+                        for include in include_list:
+                            self.parseNginxConf(include)
+                    else:
+                        self.parseNginxConf(include_conf)
 
-    #解析nginx的配置文件，读取web路径
-    def parseNginxConf(self):
-        return []
-
-    #解析resin的配置文件，读取web路径
-    def parseResinConf(self):
-        return []
+    # 解析resin的配置文件，读取web路径
+    def parseResinConf(self, conf):
+        if not os.path.isfile(conf): return
+        if not os.path.isfile(conf): return
+        with open(conf) as f:
+            for readline in f:
+                line = readline.lstrip().rstrip("\n").strip()
+                if line == '' or line[0] == '#' or line[0:4] == '<!--':
+                    continue
+                elif line[0:8] == '<web-app' and 'root-directory="' in line:
+                    root = line.split('root-directory="')[1].split('"')[0]
+                    self.webroot.append(root)
 
     def getWebRoot(self):
         if len(self.webconf):
@@ -95,9 +122,19 @@ class Webshell_Analysis:
                     self.webroot.append(conf['webroot'])
                 else:
                     if conf['name'] == 'nginx':
-                        self.webroot = self.webroot + self.parseNginxConf(conf['conf'])
+                        self.parseNginxConf(conf['conf'])
                     elif conf['name'] == 'resin':
-                        self.webroot = self.webroot + self.parseResinConf(conf['conf'])
-
+                        self.parseResinConf(conf['conf'])
 
     def run(self):
+        # 获取配置文件
+        self.getWebserverConf()
+        # 获取web根目录
+        self.getWebRoot()
+
+
+if __name__ == '__main__':
+    webroot = Webserver()
+    webroot.run()
+    for root in webroot.webroot:
+        print(root)

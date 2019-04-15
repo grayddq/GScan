@@ -3,6 +3,8 @@ from __future__ import print_function
 # from lib.common import *
 from common import *
 import os, platform, sys
+# from lib.Webserver import *
+from Webserver import *
 
 
 # 分析主机上webshell类文件
@@ -19,12 +21,17 @@ import os, platform, sys
 class Webshell_Analysis:
     def __init__(self):
         # WEB目录
-        self.webroot_list = ['/var/www/', '/usr/share/nginx/html/',
-                             '/Users/grayddq/Grayddq/01.mygit/15.GScan/GScan/lib/test']
+        self.webroot_list = []
         # yara的webshell规则
         self.rule = sys.path[0] + '/webshell_rule/'
         # 恶意webshell列表
         self.webshell_list = []
+
+    # 获取web根目录
+    def getWebRoot(self):
+        webroot = Webserver()
+        webroot.run()
+        self.webroot_list = webroot.webroot
 
     # 将yara规则编译
     def getRules(self, yara):
@@ -91,6 +98,8 @@ class Webshell_Analysis:
         file_write(u'\n开始Webshell安全扫描\n')
         file_write(align(u' [1]Webshell安全扫描', 30) + u'[ ')
         sys.stdout.flush()
+
+        self.getWebRoot()
 
         suspicious, malice = self.init_scan()
         if malice:
