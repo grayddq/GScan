@@ -11,6 +11,7 @@ from lib.common import *
 from lib.Config_Analysis import *
 from lib.Log_Analysis import *
 from lib.Rootkit_Analysis import *
+from lib.Webshell_Analysis import *
 
 if __name__ == '__main__':
     progam = u'''
@@ -55,7 +56,7 @@ if __name__ == '__main__':
         # rootkit检测
         Rootkit_Analysis().run()
         # WEBShell类扫描
-
+        Webshell_Analysis().run()
 
         # 输出报告
         print(u'-' * 30)
