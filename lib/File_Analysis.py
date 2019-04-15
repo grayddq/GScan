@@ -190,7 +190,7 @@ class File_Analysis:
         sys.stdout.flush()
 
         if len(self.file_malware) > 0:
-            file_write('-' * 30)
+            file_write('-' * 30 + '\n')
             file_write(u'文件检查异常如下：\n')
             for info in self.file_malware:
                 file_write(json.dumps(info, ensure_ascii=False) + '\n')

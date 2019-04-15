@@ -61,11 +61,11 @@ class Webshell_Analysis:
 
     def init_scan(self):
         suspicious, malice = False, False
-        DEPENDENT_LIBRARIES_2_6 = "/egg/yara_python-3.5.0-py2.6-linux-2.32-x86_64.egg"
-        DEPENDENT_LIBRARIES_3_10 = "/egg/yara_python-3.5.0-py2.7-linux-3.10-x86_64.egg"
-        DEPENDENT_LIBRARIES_4_20 = "/egg/yara_python-3.8.1-py2.7-linux-4.20-x86_64.egg"
-        DEPENDENT_LIBRARIES_16 = "/egg/yara_python-3.5.0-py2.7-macosx-10.12-x86_64.egg"
-        DEPENDENT_LIBRARIES_17 = "/egg/yara_python-3.5.0-py2.7-macosx-10.13-x86_64.egg"
+        DEPENDENT_LIBRARIES_2_6 = "/lib/egg/yara_python-3.5.0-py2.6-linux-2.32-x86_64.egg"
+        DEPENDENT_LIBRARIES_3_10 = "/lib/egg/yara_python-3.5.0-py2.7-linux-3.10-x86_64.egg"
+        DEPENDENT_LIBRARIES_4_20 = "/lib/egg/yara_python-3.8.1-py2.7-linux-4.20-x86_64.egg"
+        DEPENDENT_LIBRARIES_16 = "/lib/egg/yara_python-3.5.0-py2.7-macosx-10.12-x86_64.egg"
+        DEPENDENT_LIBRARIES_17 = "/lib/egg/yara_python-3.5.0-py2.7-macosx-10.13-x86_64.egg"
         _kernel = platform.release()
         if _kernel.startswith('2.6'):
             sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_2_6)
@@ -109,6 +109,13 @@ class Webshell_Analysis:
         else:
             pringf(u'OK', security=True)
         sys.stdout.flush()
+
+        if len(self.webshell_list) > 0:
+            file_write('-' * 30 + '\n')
+            file_write(u'可疑webshell文件如下：\n')
+            for file in self.webshell_list:
+                file_write(file + '\n')
+            file_write('-' * 30 + '\n')
 
 
 if __name__ == '__main__':
