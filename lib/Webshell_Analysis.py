@@ -1,10 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
-# from lib.common import *
-from common import *
+from lib.common import *
 import os, platform, sys
-# from lib.Webserver import *
-from Webserver import *
+from lib.Webserver import *
 
 
 # 分析主机上webshell类文件

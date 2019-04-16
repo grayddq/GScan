@@ -44,7 +44,12 @@ class File_Analysis:
         binary_list = ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/']
         try:
             for dir in binary_list:
+                if not os.path.exists(dir): continue
                 for file in gci(dir):
+                    if not os.path.exists(file): continue
+                    if os.path.isdir(file): continue
+                    if (os.path.getsize(file) == 0) or (
+                            round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
                     malware = self.analysis_file(file)
                     if malware:
                         self.file_malware.append(
@@ -61,15 +66,18 @@ class File_Analysis:
         tmp_list = ['/tmp/', '/var/tmp/', '/dev/shm/']
         try:
             for dir in tmp_list:
-                if os.path.exists(dir):
-                    for file in os.listdir(dir):
-                        fpath = os.path.join('%s%s' % (dir, file))
-                        malware = self.analysis_file(fpath)
-                        if malware:
-                            self.file_malware.append(
-                                {u'异常类型': u'文件恶意特征', u'文件路径': fpath, u'恶意特征': malware,
-                                 u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (fpath, fpath)})
-                            malice = True
+                if not os.path.exists(dir): continue
+                for file in gci(dir):
+                    if not os.path.exists(file): continue
+                    if os.path.isdir(file): continue
+                    if (os.path.getsize(file) == 0) or (
+                            round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
+                    malware = self.analysis_file(file)
+                    if malware:
+                        self.file_malware.append(
+                            {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
+                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (file, file)})
+                        malice = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -126,6 +134,8 @@ class File_Analysis:
     # 分析文件是否包含恶意特征或者反弹shell问题
     def analysis_file(self, file):
         try:
+            if not os.path.exists(file): return ""
+            if os.path.isdir(file): return ""
             if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
                     round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()

@@ -32,11 +32,12 @@ class User_Analysis:
     def check_empty(self):
         suspicious, malice = False, False
         try:
-            shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow").readlines()
-            for user in shell_process2:
-                self.user_malware.append(
-                    {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
-                malice = True
+            if os.path.exists('/etc/shadow'):
+                shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow").readlines()
+                for user in shell_process2:
+                    self.user_malware.append(
+                        {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
+                    malice = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -45,12 +46,13 @@ class User_Analysis:
     def check_sudo(self):
         suspicious, malice = False, False
         try:
-            shell_process3 = os.popen("cat /etc/sudoers|grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").readlines()
-            for user in shell_process3:
-                if user.replace("\n", "") != 'root' and user[0] != '%':
-                    self.user_malware.append(
-                        {u'用户': user.replace("\n", ""), u'异常描述': u'可通过sudo命令获取特权'})
-                    suspicious = True
+            if os.path.exists('/etc/sudoers'):
+                shell_process3 = os.popen("cat /etc/sudoers|grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").readlines()
+                for user in shell_process3:
+                    if user.replace("\n", "") != 'root' and user[0] != '%':
+                        self.user_malware.append(
+                            {u'用户': user.replace("\n", ""), u'异常描述': u'可通过sudo命令获取特权'})
+                        suspicious = True
             return suspicious, malice
         except:
             return suspicious, malice
