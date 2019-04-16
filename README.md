@@ -106,6 +106,8 @@
 
 ## 运行截图 ##
 
-![Screenshot](pic/1.png)
-![Screenshot](pic/2.png)
-![Screenshot](pic/3.png)
+![Screenshot](./pic/1.png)
+
+![Screenshot](./pic/2.png)
+
+![Screenshot](./pic/3.png)
