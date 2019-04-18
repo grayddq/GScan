@@ -4,6 +4,7 @@ import os, optparse, time, sys, json
 from lib.common import *
 
 
+# 作者：咚咚呛
 # 常规类后门检测
 # 1、LD_PRELOAD后门检测
 # 2、ld.so.preload后门检测

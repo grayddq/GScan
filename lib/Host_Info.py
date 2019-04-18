@@ -3,6 +3,10 @@ import socket, os, time, platform, sys
 from lib.common import *
 
 
+# 作者：咚咚呛
+# 版本：v0.1
+# 功能：获取本机信息
+
 class Host_Info:
     def __init__(self):
         # 主机名

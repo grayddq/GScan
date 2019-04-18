@@ -2,6 +2,10 @@
 import os, sys, json
 from imp import reload
 
+# 作者：咚咚呛
+# 功能：调用的公共库
+# 版本：v0.1
+
 if sys.version_info < (3, 0):
     reload(sys)
     sys.setdefaultencoding('utf-8')

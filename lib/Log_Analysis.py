@@ -5,6 +5,10 @@ from lib.SSHAnalysis import *
 from lib.common import *
 
 
+# 作者：咚咚呛
+# 版本：v0.1
+# 功能：日志类安全分析
+
 class Log_Analysis:
     def __init__(self):
         self.log_malware = []

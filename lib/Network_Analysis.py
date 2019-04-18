@@ -5,6 +5,7 @@ from lib.ip.ip import *
 from lib.common import *
 
 
+# 作者：咚咚呛
 # 分析网络连接
 # 1、检查当前网络对外连接，提取国外连接
 # 2、检查当前对外连接，匹配Rootkit特征

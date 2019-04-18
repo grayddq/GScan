@@ -5,6 +5,7 @@ from lib.common import *
 from lib.ip.ip import *
 
 
+# 作者：咚咚呛
 # 配置安全类检测
 # 1、dns配置检测
 # 2、防火墙配置检测

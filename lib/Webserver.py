@@ -5,6 +5,9 @@ from __future__ import print_function
 import os, platform, sys, glob
 
 
+# 作者：咚咚呛
+# 版本：v0.1
+# 功能：根据本机的web服务，提取web的根目录，供后续webshell扫描使用
 # nginx
 # 1、进程名称中出现-c 跟配置文件
 # 2、不存在-c 获取的默认配置文件/etc/nginx/nginx.conf
@@ -13,7 +16,7 @@ import os, platform, sys, glob
 # 1、提取-Dcatalina.home=、-Djava.io.tmpdir=
 # 2、home/webapp、home/work、tmp均纳入为web扫描目录
 # jetty
-# 1、提取
+# 。。。。
 
 
 class Webserver:
@@ -87,15 +90,15 @@ class Webserver:
                 if line == '' or line[0] == '#':
                     continue
 
-                elif line[0:4].lower() == 'root':  # find root or DocumentRoot
+                elif line[0:4].lower() == 'root':
                     root = line[4:].strip().rstrip(
                         ';').strip('"').strip("'").strip()
                     self.webroot.append(root)
-                elif line.lower().startswith("include"):  # find include /xxx/*.conf
+                elif line.lower().startswith("include"):
                     include_conf = line[len("include"):].strip().rstrip(
                         ';').strip('"').strip("'").strip()
 
-                    if '*' in include_conf:  # /home/work/apache/conf/*.conf
+                    if '*' in include_conf:
                         include_list = glob.glob(include_conf)
                         for include in include_list:
                             self.parseNginxConf(include)

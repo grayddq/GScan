@@ -4,6 +4,7 @@ import os, optparse, time, sys, json
 from lib.common import *
 
 
+# 作者：咚咚呛
 # 分析主机文件类异常
 # 1、系统可执行文件扫描
 # 3、临时目录文件扫描

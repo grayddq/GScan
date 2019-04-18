@@ -4,6 +4,7 @@ import os, optparse, time, sys, json
 from lib.common import *
 
 
+# 作者：咚咚呛
 # Rootkit检测,规则参考rkhunter
 # 1、扫描93类rootkit特征
 # 2、检查已知rootkit的内核符号表
@@ -740,7 +741,7 @@ class Rootkit_Analysis:
             pringf(u'OK', security=True)
 
         if len(self.rootkit) > 0:
-            file_write('-' * 30+ '\n')
+            file_write('-' * 30 + '\n')
             file_write(u'Rootkit类安全扫描如下：\n')
             for info in self.rootkit:
                 file_write(json.dumps(info, ensure_ascii=False) + '\n')

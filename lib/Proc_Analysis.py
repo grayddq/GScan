@@ -4,6 +4,7 @@ import os, optparse, time, sys, json
 from lib.common import *
 
 
+# 作者：咚咚呛
 # 分析进程信息
 # 1、cpu使用超过70% 的进程
 # 2、内存使用超过70% 的进程

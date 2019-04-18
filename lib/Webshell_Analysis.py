@@ -5,6 +5,7 @@ import os, platform, sys
 from lib.Webserver import *
 
 
+# 作者：咚咚呛
 # 分析主机上webshell类文件
 # 1、提取nginx的web目录，进行安全扫描
 # 2、提取tomcat的web目录，进行安全扫描

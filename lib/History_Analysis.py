@@ -5,10 +5,10 @@ from lib.ip.ip import *
 from lib.common import *
 
 
+# 作者：咚咚呛
 # 分析用户历史操作记录
 # 1、获取所有用户目录下.bash_history文件
-# 2、匹配操作非内网ip下载类信息
-# 3、匹配非国内的ip
+# 2、匹配境外ip类操作
 
 class History_Analysis:
     def __init__(self):
@@ -21,7 +21,7 @@ class History_Analysis:
 
     # 获取所有用户下的操作记录，是否存在恶意ip
     def get_all_history(self):
-        suspicious,malice = False,False
+        suspicious, malice = False, False
         try:
             for dir in os.listdir('/home/'):
                 suspicious, malice = self.file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.bash_history')), dir)
@@ -34,7 +34,7 @@ class History_Analysis:
 
     # 分析history文件的操作记录
     def file_analysis(self, file, user):
-        suspicious,malice = False,False
+        suspicious, malice = False, False
         try:
             if os.path.exists(file):
                 with open(file) as f:
@@ -52,7 +52,7 @@ class History_Analysis:
     def run(self):
         print(u'\n开始主机历史操作类安全扫描')
         file_write(u'\n开始主机历史操作类安全扫描\n')
-        print(align(u' [1]所有历史操作的可疑记录', 30) + u'[ ',end='')
+        print(align(u' [1]所有历史操作的可疑记录', 30) + u'[ ', end='')
         file_write(align(u' [1]所有历史操作的可疑记录', 30) + u'[ ')
         sys.stdout.flush()
         # 系统完整性检测

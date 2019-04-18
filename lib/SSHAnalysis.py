@@ -2,6 +2,7 @@
 import os, optparse
 
 
+# 作者：咚咚呛
 # 分析SSH的日志，分析出存在爆破且成功的记录
 # 1、是否存在爆破行为
 # 1.1 一个IP错误20+以上(相同账户和不同账户)
@@ -107,7 +108,7 @@ class SSH_Analysis:
 
 
 if __name__ == '__main__':
-    #print SSH_Analysis(log="secure", log_dir="").correct_baopo_infos
+    # print SSH_Analysis(log="secure", log_dir="").correct_baopo_infos
     parser = optparse.OptionParser()
     parser.add_option("-d", "--dir", dest="dir", help=u"target dir，demo: -d /var/log/")
     parser.add_option("-f", "--file", dest="file", help=u"target file，demo: -p /var/log/secure")

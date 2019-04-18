@@ -4,6 +4,8 @@ import os, optparse, time, sys, json
 from lib.common import *
 
 
+# 作者：咚咚呛
+# 版本：v0.1
 # 账户类安全排查
 # 1、查看root权限账户，排除root本身
 # 2、查看系统中是否存在空口令账户
