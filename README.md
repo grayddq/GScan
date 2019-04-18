@@ -70,14 +70,14 @@
 >注：其他系统并未做兼容性测试，检测结果未知
 
 ## 部署和执行 ##
-> root# git clone https://github.com/grayddq/GScan.git
+> root# <kbd>git clone https://github.com/grayddq/GScan.git</kbd>
 >
-> root# cd GScan
+> root# <kbd>cd GScan</kbd>
 > 
-> root# sudo python GScan.py
+> root# <kbd>sudo python GScan.py</kbd>
 
 
-## 程序说明 ##
+## 程序脚本说明 ##
 
 	GScan
 	----GScan.py                #主程序
@@ -96,21 +96,66 @@
 	-------SSHAnalysis.py       #secure日志分析
 	-------Webserver.py         #获取当前web服务的web根目录
 	-------Webshell_Analysis.py #webshell检测
-	-------ip                   #ip地址定位库
-	-------malware              #各类恶意特征库
-	-------egg                  #yara打包动态库
-	-------webshell_rule        #webshell检测的规则
-
-	
+	-----ip                     #ip地址定位库
+	-----malware                #各类恶意特征库
+	-----egg                    #yara打包动态库
+	-----webshell_rule        #webshell检测的规则
 
 
-## 日志结果 ##
+
+## 程序特点 ##
+
+| 检测项 | GScan | chkrootkit | rkhunter | lynis|
+|:-------------|:------: |:------: |:------: |:------: |
+| 【主机文件检测】系统重要文件完整性检测 | √ |  | √ |  |
+| 【主机文件检测】文件恶意特征扫描 | √ |  |  |  |
+| 【主机操作检测】境外IP操作记录检测 | √ |  |  |  |
+| 【主机进程检测】CPU&内存使用异常检测 | √ |  |  |  |
+| 【主机进程检测】隐藏进程检测 | √ |  |  |  |
+| 【主机进程检测】反弹shell进程检测 | √ |  |  |  |
+| 【主机进程检测】可疑进程名检测 | √ |  |  |  |
+| 【主机进程检测】进程exe恶意特征检测 | √ |  |  |  |
+| 【网络链接检测】境外IP链接检测 | √ |  |  |  |
+| 【网络链接检测】恶意特征链接检测 | √ |  |  |  |
+| 【网络链接检测】网卡混杂模式检测 | √ |  |  |  |
+| 【常规后门检测】LD_PRELOAD后门检测 | √ |  |  |  |
+| 【常规后门检测】ld.so.preload后门检测 | √ |  |  |  |
+| 【常规后门检测】PROMPT_COMMAND后门检测 | √ |  |  |  |
+| 【常规后门检测】Crontab后门检测 | √ |  |  |  |
+| 【常规后门检测】alias后门检测 | √ |  |  |  |
+| 【常规后门检测】SSH后门检测 | √ |  |  |  |
+| 【常规后门检测】SSH Wrapper后门检测 | √ |  |  |  |
+| 【常规后门检测】inetd.conf后门检测 | √ |  |  |  |
+| 【常规后门检测】xinetd.conf后门检测 | √ |  |  |  |
+| 【常规后门检测】系统启动项后门检测 | √ |  |  |  |
+| 【账户安全检测】root权限账户检测 | √ |  |  |  |
+| 【账户安全检测】空口令账户检测 | √ |  |  |  |
+| 【账户安全检测】sudoers文件检测 | √ |  |  |  |
+| 【日志安全检测】secure日志安全检测 | √ |  |  |  |
+| 【安全配置检测】DNS设置检测 | √ |  |  |  |
+| 【安全配置检测】防火墙设置检测 | √ |  |  |  |
+| 【Rootkit检测】已知Rootkit类特征检测 | √ |  | √ |  |
+| 【WEBShell检测】Nginx服务WebShell检测 | √ | x | x | x |
+| 【WEBShell检测】Apache服务WebShell检测 | √ | x | x | x |
+| 【WEBShell检测】Tomcat服务WebShell检测 | √ | x | x | x |
+| 【WEBShell检测】Jetty服务WebShell检测 | √ | x | x | x |
+| 【WEBShell检测】Resin服务WebShell检测 | √ | x | x | x |
+| 【WEBShell检测】Jenkins服务WebShell检测 | √ | x | x | x |
+| 【WEBShell检测】各默认web目录WebShell检测 | √ | x | x | x |
+| 【系统兼容性】 | x | √ | √ | √ |
+| 【安全性检查】漏洞检查 | x |  |  | √ |
+
+
+
+
+## 检测结果 ##
 
 日志及结果目录默认：/var/log/gscan/gscan.log
 
 
 ## 运行截图 ##
-
 ![Screenshot](pic/1.png)
+
 ![Screenshot](pic/2.png)
+
 ![Screenshot](pic/3.png)
