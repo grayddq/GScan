@@ -111,18 +111,18 @@ def check_shell(content):
                 ('exec ' in content) and ('socket' in content)) or ('curl ' in content) or (
                         'wget ' in content) or (
                         'lynx ' in content))) or (".decode('base64')" in content):
-            return True
+            return content
         elif ('/dev/tcp/' in content) and (('exec ' in content) or ('ksh -c' in content)):
-            return True
+            return content
         elif ('exec ' in content) and (('socket.' in content) or (".decode('base64')" in content)):
-            return True
+            return content
         # 下载执行类
         elif (('wget ' in content) or ('curl ' in content)) and (
                 (' -O ' in content) or (' -s ' in content)) and (
                 ' http' in content) and (
                 ('php ' in content) or ('perl' in content) or ('python ' in content) or ('sh ' in content) or (
                 'bash ' in content)):
-            return True
+            return content
         return False
     except:
         return False

@@ -29,18 +29,6 @@ class File_Analysis:
     # 检查系统文件完整性
     def check_system_integrity(self):
         suspicious, malice = False, False
-        system_file = ["depmod", "fsck", "fuser", "ifconfig", "ifdown", "ifup", "init", "insmod", "ip", "lsmod",
-                       "modinfo", "modprobe", "nologin", "rmmod", "route", "rsyslogd", "runlevel", "sulogin", "sysctl",
-                       "awk", "basename", "bash", "cat", "chmod", "chown", "cp", "cut", "date", "df", "dmesg", "echo",
-                       "egrep", "env", "fgrep", "find", "grep", "kill", "logger", "login", "ls", "mail", "mktemp",
-                       "more", "mount", "mv", "netstat", "ping", "ps", "pwd", "readlink", "rpm", "sed", "sh", "sort",
-                       "su", "touch", "uname", "gawk", "mailx", "adduser", "chroot", "groupadd", "groupdel", "groupmod",
-                       "grpck", "lsof", "pwck", "sestatus", "sshd", "useradd", "userdel", "usermod", "vipw", "chattr",
-                       "curl", "diff", "dirname", "du", "file", "groups", "head", "id", "ipcs", "killall", "last",
-                       "lastlog", "ldd", "less", "lsattr", "md5sum", "newgrp", "passwd", "perl", "pgrep", "pkill",
-                       "pstree", "runcon", "sha1sum", "sha224sum", "sha256sum", "sha384sum", "sha512sum", "size", "ssh",
-                       "stat", "strace", "strings", "sudo", "tail", "test", "top", "tr", "uniq", "users", "vmstat", "w",
-                       "watch", "wc", "wget", "whereis", "which", "who", "whoami"]
 
         binary_list = ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/']
         try:
@@ -137,11 +125,13 @@ class File_Analysis:
         try:
             if not os.path.exists(file): return ""
             if os.path.isdir(file): return ""
+            if os.path.islink(file): return ""
             if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
                     round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
-                if check_shell(str): return u'反弹shell类'
+                mal = check_shell(str)
+                if mal: return mal
                 for malware in self.malware_infos:
                     if malware in str: return malware
             return ""
