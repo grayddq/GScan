@@ -47,7 +47,7 @@ class Network_Analysis:
     def check_network_abroad(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("netstat -ano | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
+            shell_process = os.popen("netstat -an | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
             for nets in shell_process:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
@@ -65,7 +65,7 @@ class Network_Analysis:
     def check_net_suspicious(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("netstat -ano | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
+            shell_process = os.popen("netstat -an | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
             for nets in shell_process:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
@@ -83,6 +83,8 @@ class Network_Analysis:
     def check_promisc(self):
         suspicious, malice = False, False
         try:
+            ipcmd = os.popen("whereis ip").read().splitlines()
+            if not len(ipcmd): return suspicious, malice
             shell_process = os.popen("ip link | grep PROMISC").read().splitlines()
             if len(shell_process) > 0:
                 self.network_malware.append(

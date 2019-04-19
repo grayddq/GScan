@@ -698,6 +698,7 @@ class Rootkit_Analysis:
     def check_bad_LKM(self):
         suspicious, malice = False, False
         try:
+            if not os.path.exists('/lib/modules/'): return suspicious, malice
             infos = os.popen('find /lib/modules/ -name "*.so" -o -name "*.ko"  -o -name "*.ko.xz"').read().splitlines()
             for file in infos:
                 for lkm in self.LKM_BADNAMES:

@@ -3,6 +3,7 @@ from __future__ import print_function
 # from lib.common import *
 # from common import *
 import os, platform, sys, glob
+from subprocess import Popen, PIPE
 
 
 # 作者：咚咚呛
@@ -33,9 +34,14 @@ class Webserver:
     def getWebserverConf(self):
         webserver = ['nginx', 'tomcat', 'jetty', 'httpd', 'resin', 'jboss', 'weblogic', 'jenkins']
         for name in webserver:
-            cmd = "ps -efwww |grep " + name + "|grep -v grep|awk '{for(i=8;i<=NF;i++)printf\"%s \",$i;printf\"\\n\"}'"
-            # cmd = "ps -efwww|cut -c49-|grep tomcat|grep -v grep"
-            shell_process = os.popen(cmd).read().splitlines()
+            p1 = Popen("ps -efwww", stdout=PIPE, shell=True)
+            p2 = Popen("grep " + name, stdin=p1.stdout, stdout=PIPE, shell=True)
+            p3 = Popen("grep -v grep", stdin=p2.stdout, stdout=PIPE, shell=True)
+            p4 = Popen("awk '{for(i=8;i<=NF;i++)printf\"%s \",$i;printf\"\\n\"}'", stdin=p3.stdout, stdout=PIPE,
+                       shell=True)
+            shell_process = p4.stdout.read().splitlines()
+            # cmd = "ps -efwww |grep " + name + "|grep -v grep|awk '{for(i=8;i<=NF;i++)printf\"%s \",$i;printf\"\\n\"}'"
+            # shell_process = os.popen(cmd).read().splitlines()
             for pro in shell_process:
                 if name == 'nginx':
                     conf = self.getStrPath(' -c ', pro)

@@ -2,6 +2,7 @@
 from __future__ import print_function
 import os, optparse, time, sys, json
 from lib.common import *
+from subprocess import Popen, PIPE
 
 
 # 作者：咚咚呛
@@ -75,8 +76,12 @@ class Proc_Analysis:
     def shell_analysis(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen(
-                "ps -ef|grep -v 'grep'|awk '{print $1\" \"$2\" \"$3\" \"$8}'").readlines()
+            p1 = Popen("ps -ef", stdout=PIPE, shell=True)
+            p2 = Popen("grep -v 'grep'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            p3 = Popen("awk '{print $1\" \"$2\" \"$3\" \"$8}'", stdin=p2.stdout, stdout=PIPE, shell=True)
+            shell_process = p3.stdout.readlines()
+            # shell_process = os.popen(
+            #    "ps -ef|grep -v 'grep'|awk '{print $1\" \"$2\" \"$3\" \"$8}'").readlines()
             for pro in shell_process:
                 if check_shell(pro):
                     pro_info = pro.strip().split(' ', 3)
@@ -92,8 +97,17 @@ class Proc_Analysis:
     def work_analysis(self):
         suspicious, malice = False, False
         try:
-            cpu_process = os.popen(
-                "ps aux|grep -v PID|sort -rn -k +3|head|awk '{print $1\" \"$2\" \"$3\" \"$4\" \"$11}'|grep -v 'systemd|rsyslogd|mysqld|redis|apache||nginx|mongodb|docker|memcached|tomcat|jboss|java|php|python'").readlines()
+            p1 = Popen("ps aux", stdout=PIPE, shell=True)
+            p2 = Popen('grep -v PID', stdin=p1.stdout, stdout=PIPE, shell=True)
+            p3 = Popen('sort -rn -k3', stdin=p2.stdout, stdout=PIPE, shell=True)
+            p4 = Popen('head', stdin=p3.stdout, stdout=PIPE, shell=True)
+            p5 = Popen("awk '{print $1\" \"$2\" \"$3\" \"$4\" \"$11}'", stdin=p4.stdout, stdout=PIPE, shell=True)
+            p6 = Popen(
+                "grep -v 'systemd|rsyslogd|mysqld|redis|apache||nginx|mongodb|docker|memcached|tomcat|jboss|java|php|python'",
+                stdin=p5.stdout, stdout=PIPE, shell=True)
+            cpu_process = p6.stdout.readlines()
+            # cpu_process = os.popen(
+            #    "ps aux|grep -v PID|sort -rn -k +3|head|awk '{print $1\" \"$2\" \"$3\" \"$4\" \"$11}'|grep -v 'systemd|rsyslogd|mysqld|redis|apache||nginx|mongodb|docker|memcached|tomcat|jboss|java|php|python'").readlines()
             for pro in cpu_process:
                 pro_info = pro.strip().split(' ', 4)
                 # cpu使用超过标准
@@ -121,7 +135,11 @@ class Proc_Analysis:
         suspicious, malice = False, False
         try:
             # ps获取所有pid
-            pid_process = os.popen("ps -ef | awk 'NR>1{print $2}'").read().splitlines()
+            p1 = Popen("ps -ef", stdout=PIPE, shell=True)
+            p2 = Popen("awk 'NR>1{print $2}'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            pid_process = p2.stdout.splitlines()
+
+            # pid_process = os.popen("ps -ef | awk 'NR>1{print $2}'").read().splitlines()
             # 所有/proc目录的pid
             pid_pro_file = []
             if not os.path.exists('/proc/'): return False, False
@@ -143,8 +161,14 @@ class Proc_Analysis:
     def keyi_analysis(self):
         suspicious, malice = False, False
         try:
-            process = os.popen(
-                "ps -ef | grep -E 'minerd|r00t|sqlmap|nmap|hydra|aircrack'|grep -v 'grep'|awk '{print $1\" \"$2\" \"$3\" \"$8}'").readlines()
+            p1 = Popen("ps -efwww", stdout=PIPE, shell=True)
+            p2 = Popen("grep -E 'minerd|r00t|sqlmap|nmap|hydra|aircrack'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            p3 = Popen("grep -v 'grep'", stdin=p2.stdout, stdout=PIPE, shell=True)
+            p4 = Popen("awk '{print $1\" \"$2\" \"$3\" \"$8}'", stdin=p3.stdout, stdout=PIPE, shell=True)
+            process = p4.stdout.readlines()
+
+            # process = os.popen(
+            #    "ps -ef | grep -E 'minerd|r00t|sqlmap|nmap|hydra|aircrack'|grep -v 'grep'|awk '{print $1\" \"$2\" \"$3\" \"$8}'").readlines()
             for pro in process:
                 pro_info = pro.strip().split(' ', 3)
                 self.process_backdoor.append(
