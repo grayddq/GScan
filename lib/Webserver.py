@@ -27,7 +27,7 @@ class Webserver:
 
     def getStrPath(self, match, str):
         if match in str.decode():
-            path = str.split(match)[1].split(' ')[0]
+            path = str.decode().split(match)[1].split(' ')[0]
             return path
         return ''
 
