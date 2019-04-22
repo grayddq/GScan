@@ -126,6 +126,7 @@ class File_Analysis:
             if not os.path.exists(file): return ""
             if os.path.isdir(file): return ""
             if os.path.islink(file): return ""
+            if " " in file: return ""
             if 'GScan' in file: return ""
             if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
                     round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
