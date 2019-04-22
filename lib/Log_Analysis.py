@@ -40,7 +40,7 @@ class Log_Analysis:
             return suspicious, malice
 
     # wtmp日志登陆分析，排查境外IP的登陆日志
-    def check_(self):
+    def check_utmp(self):
         suspicious, malice = False, False
         try:
             if not os.path.exists('/var/log/utmp'): return suspicious, malice
@@ -95,6 +95,17 @@ class Log_Analysis:
         file_write(align(u' [4]wtmp日志日志安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_wtmp()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        print(align(u' [3]utmp日志日志安全扫描', 30) + u'[ ', end='')
+        file_write(align(u' [4]utmp日志日志安全扫描', 30) + u'[ ')
+        sys.stdout.flush()
+        suspicious, malice = self.check_utmp()
         if malice:
             pringf(u'存在风险', malice=True)
         elif suspicious and (not malice):
