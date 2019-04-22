@@ -56,8 +56,8 @@ class Log_Analysis:
                     ip = ips.replace('(', '').replace(')', '')
                     if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                         self.log_malware.append(
-                            {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                             u'排查参考命令': u'[1]who /var/log/wtmp'})
+                            {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
+                             u'排查参考命令': u'[1]who'})
                         suspicious = True
             return suspicious, malice
         except:
