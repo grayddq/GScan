@@ -1,7 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json
+import os, optparse, time, sys, json, re
 from lib.common import *
+from lib.ip.ip import *
 
 
 # 作者：咚咚呛
@@ -26,22 +27,10 @@ class Backdoor_Analysis:
         self.malware_infos = []
         # 获取恶意特征信息
         self.get_malware_info()
-        # LD_PRELOAD后门检测
-        # self.check_LD_PRELOAD()
-        # ld.so.preload后门检测
-        # self.check_ld_so_preload()
-        # PROMPT_COMMAND后门检测
-        # self.check_PROMPT_COMMAND()
-        # 分析cron定时任务后门
-        # self.check_cron()
-        # 分析SSH后门
-        # self.check_SSH()
-        # 分析SSHwrapper后门
-        # self.check_SSHwrapper()
-        # 分析inetd.conf后门
-        # self.check_inetd()
-        # 分析xinetd.conf后门
-        # self.check_xinetd()
+
+        self.ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        self.ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        self.lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
     # LD_PRELOAD后门检测
     def check_LD_PRELOAD(self):
@@ -225,16 +214,34 @@ class Backdoor_Analysis:
     # 分析文件是否包含恶意特征或者反弹shell问题
     def analysis_file(self, file):
         try:
-            if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
-                    round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
+            if not os.path.exists(file): return ""
+            if os.path.isdir(file): return ""
+            if os.path.islink(file): return ""
+            if " " in file: return ""
+            if 'GScan' in file: return ""
+            if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
-                if check_shell(str): return u'反弹shell类'
+                mal = check_shell(str)
+                if mal: return mal
                 for malware in self.malware_infos:
                     if malware in str: return malware
+
             return ""
         except:
             return ""
+
+    # 分析字符串是否包含境外IP
+    def check_contents_ip(self, contents):
+        try:
+            if not re.search(self.ip_http, contents): continue
+            if re.search(self.lan_ip, contents): continue
+            for ip in re.findall(self.ip_re, contents):
+                if find(ip)[0:2] != u'中国':
+                    return True
+            return False
+        except:
+            return False
 
     # 分析一串字符串是否包含反弹shell或者存在的文件路径
     def analysis_strings(self, name, file, contents, solve):
@@ -244,6 +251,10 @@ class Backdoor_Analysis:
             if check_shell(content):
                 self.backdoor.append(
                     {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell类', u'手工确认': solve})
+                malice = True
+            elif self.check_contents_ip(content):
+                self.backdoor.append(
+                    {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'境外IP信息', u'手工确认': solve})
                 malice = True
             else:
                 for file in content.split(' '):

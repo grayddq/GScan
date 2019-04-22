@@ -128,8 +128,7 @@ class File_Analysis:
             if os.path.islink(file): return ""
             if " " in file: return ""
             if 'GScan' in file: return ""
-            if not os.path.exists(file) or (os.path.getsize(file) == 0) or (
-                    round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
+            if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
             for str in strings:
                 mal = check_shell(str)
