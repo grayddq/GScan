@@ -28,13 +28,13 @@ class Log_Analysis:
                     if len(wtmp_info.split(' ')) != 2: continue
                     user = wtmp_info.split(' ')[0]
                     ips = wtmp_info.split(' ')[1]
-                    if ips[0] == '(':
-                        ip = ips.strip('(').strip(')')
-                        if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
-                            self.log_malware.append(
-                                {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                                 u'排查参考命令': u'[1]who /var/log/wtmp'})
-                            suspicious = True
+                    if ips[0] != '(': continue
+                    ip = ips.replace('(', '').replace(')', '')
+                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
+                        self.log_malware.append(
+                            {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
+                             u'排查参考命令': u'[1]who /var/log/wtmp'})
+                        suspicious = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -52,13 +52,13 @@ class Log_Analysis:
                     if len(utmp_info.split(' ')) != 2: continue
                     user = utmp_info.split(' ')[0]
                     ips = utmp_info.split(' ')[1]
-                    if ips[0] == '(':
-                        ip = ips.strip('(').strip(')')
-                        if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
-                            self.log_malware.append(
-                                {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                                 u'排查参考命令': u'[1]who /var/log/wtmp'})
-                            suspicious = True
+                    if ips[0] != '(': continue
+                    ip = ips.replace('(', '').replace(')', '')
+                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
+                        self.log_malware.append(
+                            {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
+                             u'排查参考命令': u'[1]who /var/log/wtmp'})
+                        suspicious = True
             return suspicious, malice
         except:
             return suspicious, malice
