@@ -83,12 +83,10 @@ class Network_Analysis:
     def check_promisc(self):
         suspicious, malice = False, False
         try:
-            ipcmd = os.popen("whereis ip").read().splitlines()
-            if not len(ipcmd): return suspicious, malice
-            shell_process = os.popen("ip link | grep PROMISC").read().splitlines()
+            shell_process = os.popen("ifconfig | grep PROMISC | grep RUNNING").read().splitlines()
             if len(shell_process) > 0:
                 self.network_malware.append(
-                    {u'异常类型': u'网卡开启混杂模式', u'手工确认': u'ip link | grep PROMISC'})
+                    {u'异常类型': u'网卡开启混杂模式', u'确认参考命令': u'ifconfig | grep PROMISC | grep RUNNING'})
                 suspicious = True
             return suspicious, malice
         except:
