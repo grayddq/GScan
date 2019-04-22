@@ -29,7 +29,8 @@ class Log_Analysis:
                     user = wtmp_info.split(' ')[0]
                     ips = wtmp_info.split(' ')[1]
                     if ips[0] != '(': continue
-                    ip = ips.replace('(', '').replace(')', '')
+                    ip = ips.replace('(', '').replace(')', '').replace('\n', '')
+                    if len(ip) < 2: continue
                     if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                         self.log_malware.append(
                             {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
@@ -53,7 +54,8 @@ class Log_Analysis:
                     user = utmp_info.split(' ')[0]
                     ips = utmp_info.split(' ')[1]
                     if ips[0] != '(': continue
-                    ip = ips.replace('(', '').replace(')', '')
+                    ip = ips.replace('(', '').replace(')', '').replace('\n', '')
+                    if len(ip) < 2: continue
                     if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                         self.log_malware.append(
                             {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
@@ -75,11 +77,12 @@ class Log_Analysis:
                 if lastlog:
                     if len(lastlog.split(' ')) != 2: continue
                     user = lastlog.split(' ')[0].strip()
-                    ip = lastlog.split(' ')[1].strip()
+                    ip = lastlog.split(' ')[1].replace(' ', '').replace('\n', '')
+                    if len(ip) < 2: continue
                     if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                         self.log_malware.append(
-                            {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                             u'排查参考命令': u'[1]who'})
+                            {u'日志类型': u'lastlog登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
+                             u'排查参考命令': u'[1]lastlog'})
                         suspicious = True
             return suspicious, malice
         except:
