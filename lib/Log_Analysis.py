@@ -43,7 +43,7 @@ class Log_Analysis:
     def check_utmp(self):
         suspicious, malice = False, False
         try:
-            if not os.path.exists('/var/log/utmp'): return suspicious, malice
+            if not os.path.exists('/var/run/utmp'): return suspicious, malice
             p1 = Popen("who", stdout=PIPE, shell=True)
             p2 = Popen("awk '{print $1\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
             utmp_infos = p2.stdout.readlines()
@@ -54,6 +54,28 @@ class Log_Analysis:
                     ips = utmp_info.split(' ')[1]
                     if ips[0] != '(': continue
                     ip = ips.replace('(', '').replace(')', '')
+                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
+                        self.log_malware.append(
+                            {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
+                             u'排查参考命令': u'[1]who'})
+                        suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # wtmp日志登陆分析，排查境外IP的登陆日志
+    def check_lastlog(self):
+        suspicious, malice = False, False
+        try:
+            if not os.path.exists('/var/log/lastlog'): return suspicious, malice
+            p1 = Popen("lastlog", stdout=PIPE, shell=True)
+            p2 = Popen("awk '{if (NR>1){print $1\" \"$3}}'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            lastlogs = p2.stdout.readlines()
+            for lastlog in lastlogs:
+                if lastlog:
+                    if len(lastlog.split(' ')) != 2: continue
+                    user = lastlog.split(' ')[0].strip()
+                    ip = lastlog.split(' ')[1].strip()
                     if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                         self.log_malware.append(
                             {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
@@ -106,6 +128,17 @@ class Log_Analysis:
         file_write(align(u' [4]utmp日志日志安全扫描', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_utmp()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        print(align(u' [4]lastlog日志日志安全扫描', 30) + u'[ ', end='')
+        file_write(align(u' [4]lastlog日志日志安全扫描', 30) + u'[ ')
+        sys.stdout.flush()
+        suspicious, malice = self.check_lastlog()
         if malice:
             pringf(u'存在风险', malice=True)
         elif suspicious and (not malice):
