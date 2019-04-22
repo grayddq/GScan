@@ -234,8 +234,8 @@ class Backdoor_Analysis:
     # 分析字符串是否包含境外IP
     def check_contents_ip(self, contents):
         try:
-            if not re.search(self.ip_http, contents): continue
-            if re.search(self.lan_ip, contents): continue
+            if not re.search(self.ip_http, contents): return False
+            if re.search(self.lan_ip, contents): return False
             for ip in re.findall(self.ip_re, contents):
                 if find(ip)[0:2] != u'中国':
                     return True
