@@ -1,6 +1,6 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json, re
+import os, time, sys, json, re
 from lib.common import *
 from lib.ip.ip import *
 
@@ -226,6 +226,7 @@ class Backdoor_Analysis:
                 if mal: return mal
                 for malware in self.malware_infos:
                     if malware in str: return malware
+                if self.check_contents_ip(str): return str
 
             return ""
         except:

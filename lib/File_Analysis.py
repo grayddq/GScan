@@ -1,7 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json
+import os, time, sys, json, re
 from lib.common import *
+from lib.ip.ip import *
 
 
 # 作者：咚咚呛
@@ -19,12 +20,10 @@ class File_Analysis:
         self.malware_infos = []
         # 获取恶意特征信息
         self.get_malware_info()
-        # 系统完整性检测
-        # self.check_system_integrity()
-        # 临时目录文件扫描
-        # self.check_tmp()
-        # 可疑隐藏文件扫描
-        # self.check_hide()
+
+        self.ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        self.ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        self.lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
     # 检查系统文件完整性
     def check_system_integrity(self):
@@ -120,7 +119,19 @@ class File_Analysis:
         except:
             return
 
-    # 分析文件是否包含恶意特征或者反弹shell问题
+    # 分析字符串是否包含境外IP
+    def check_contents_ip(self, contents):
+        try:
+            if not re.search(self.ip_http, contents): return False
+            if re.search(self.lan_ip, contents): return False
+            for ip in re.findall(self.ip_re, contents):
+                if find(ip)[0:2] != u'中国':
+                    return True
+            return False
+        except:
+            return False
+
+    # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
     def analysis_file(self, file):
         try:
             if not os.path.exists(file): return ""
@@ -135,6 +146,7 @@ class File_Analysis:
                 if mal: return mal
                 for malware in self.malware_infos:
                     if malware in str: return malware
+                if self.check_contents_ip(str): return str
             return ""
         except:
             return ""
