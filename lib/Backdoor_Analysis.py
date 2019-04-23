@@ -225,8 +225,9 @@ class Backdoor_Analysis:
         suspicious, malice = False, False
         try:
             init_path = ['/etc/init.d/', '/etc/rc.d/', '/etc/rc.local', '/usr/local/etc/rc.d',
-                         '/usr/local/etc/rc.local', '/etc/conf.d/local.start', '/etc/inittab']
+                         '/usr/local/etc/rc.local', '/etc/conf.d/local.start', '/etc/inittab', '/etc/systemd/system']
             for path in init_path:
+                if not os.path.exists(path): continue
                 if os.path.isfile(path):
                     malware = self.analysis_file(path)
                     if malware:
