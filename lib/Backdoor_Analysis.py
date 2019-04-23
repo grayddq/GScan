@@ -8,15 +8,18 @@ from lib.ip.ip import *
 # 作者：咚咚呛
 # 常规类后门检测
 # 1、LD_PRELOAD后门检测
-# 2、ld.so.preload后门检测
-# 3、PROMPT_COMMAND后门检测
-# 4、crontab后门检测
-# 5、alias后门
-# 6、ssh后门 ln -sf /usr/sbin/sshd /tmp/su; /tmp/su -oPort=5555;
-# 7、SSH Server wrapper 后门，替换/user/sbin/sshd 为脚本文件
-# 8、/etc/inetd.conf 后门
-# 9、/etc/xinetd.conf/后门
-# 10、系统启动项后门检测
+# 2、LD_AOUT_PRELOAD后门检测
+# 3、LD_ELF_PRELOAD后门检测
+# 4、LD_LIBRARY_PATH后门检测
+# 5、ld.so.preload后门检测
+# 6、PROMPT_COMMAND后门检测
+# 7、crontab后门检测
+# 8、alias后门
+# 9、ssh后门 ln -sf /usr/sbin/sshd /tmp/su; /tmp/su -oPort=5555;
+# 10、SSH Server wrapper 后门，替换/user/sbin/sshd 为脚本文件
+# 11、/etc/inetd.conf 后门
+# 12、/etc/xinetd.conf/后门
+# 13、系统启动项后门检测
 
 
 class Backdoor_Analysis:
@@ -41,6 +44,51 @@ class Backdoor_Analysis:
                 if not len(info) > 3: continue
                 self.backdoor.append(
                     {u'异常类型': u'LD_PRELOAD 后门', u'异常信息': info, u'手工确认': u'[1]echo $LD_PRELOAD [2]unset LD_PRELOAD'})
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # LD_AOUT_PRELOAD后门检测
+    def check_LD_AOUT_PRELOAD(self):
+        suspicious, malice = False, False
+        try:
+            infos = os.popen("echo $LD_AOUT_PRELOAD").read().splitlines()
+            for info in infos:
+                if not len(info) > 3: continue
+                self.backdoor.append(
+                    {u'异常类型': u'LD_AOUT_PRELOAD 后门', u'异常信息': info,
+                     u'手工确认': u'[1]echo $LD_AOUT_PRELOAD [2]unset LD_AOUT_PRELOAD'})
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # LD_ELF_PRELOAD后门检测
+    def check_LD_ELF_PRELOAD(self):
+        suspicious, malice = False, False
+        try:
+            infos = os.popen("echo $LD_ELF_PRELOAD").read().splitlines()
+            for info in infos:
+                if not len(info) > 3: continue
+                self.backdoor.append(
+                    {u'异常类型': u'LD_ELF_PRELOAD 后门', u'异常信息': info,
+                     u'手工确认': u'[1]echo $LD_ELF_PRELOAD [2]unset LD_ELF_PRELOAD'})
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # LD_LIBRARY_PATH后门检测
+    def check_LD_LIBRARY_PATH(self):
+        suspicious, malice = False, False
+        try:
+            infos = os.popen("echo $LD_LIBRARY_PATH").read().splitlines()
+            for info in infos:
+                if not len(info) > 3: continue
+                self.backdoor.append(
+                    {u'异常类型': u'LD_LIBRARY_PATH 后门', u'异常信息': info,
+                     u'手工确认': u'[1]echo $LD_LIBRARY_PATH [2]unset LD_LIBRARY_PATH'})
                 malice = True
             return suspicious, malice
         except:
@@ -283,8 +331,41 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [2]ld.so.preload 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [2]ld.so.preload 后门检测', 30) + u'[ ')
+        print(align(u' [2]LD_AOUT_PRELOAD 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [2]LD_AOUT_PRELOAD 后门检测', 30) + u'[ ')
+        sys.stdout.flush()
+        suspicious, malice = self.check_LD_AOUT_PRELOAD()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        print(align(u' [3]LD_ELF_PRELOAD 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [3]LD_ELF_PRELOAD 后门检测', 30) + u'[ ')
+        sys.stdout.flush()
+        suspicious, malice = self.check_LD_ELF_PRELOAD()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        print(align(u' [4]LD_LIBRARY_PATH 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [4]LD_LIBRARY_PATH 后门检测', 30) + u'[ ')
+        sys.stdout.flush()
+        suspicious, malice = self.check_LD_LIBRARY_PATH()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
+        print(align(u' [5]ld.so.preload 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [5]ld.so.preload 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_ld_so_preload()
         if malice:
@@ -294,8 +375,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [3]PROMPT_COMMAND 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [3]PROMPT_COMMAND 后门检测', 30) + u'[ ')
+        print(align(u' [6]PROMPT_COMMAND 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [6]PROMPT_COMMAND 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_PROMPT_COMMAND()
         if malice:
@@ -305,8 +386,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [4]crontab 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [4]crontab 后门检测', 30) + u'[ ')
+        print(align(u' [7]crontab 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [7]crontab 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_cron()
         if malice:
@@ -316,8 +397,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [5]alias 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [5]alias 后门检测', 30) + u'[ ')
+        print(align(u' [8]alias 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [8]alias 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_SSH()
         if malice:
@@ -327,8 +408,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [6]ssh 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [6]ssh 后门检测', 30) + u'[ ')
+        print(align(u' [9]ssh 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [9]ssh 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_SSH()
         if malice:
@@ -338,8 +419,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [7]SSH wrapper 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [7]SSH wrapper 后门检测', 30) + u'[ ')
+        print(align(u' [10]SSH wrapper 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [10]SSH wrapper 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_SSHwrapper()
         if malice:
@@ -349,8 +430,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [8]inetd.conf 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [8]inetd.conf 后门检测', 30) + u'[ ')
+        print(align(u' [11]inetd.conf 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [11]inetd.conf 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_inetd()
         if malice:
@@ -360,8 +441,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [9]xinetd.conf 后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [9]xinetd.conf 后门检测', 30) + u'[ ')
+        print(align(u' [12]xinetd.conf 后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [12]xinetd.conf 后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_xinetd()
         if malice:
@@ -371,8 +452,8 @@ class Backdoor_Analysis:
         else:
             pringf(u'OK', security=True)
 
-        print(align(u' [10]系统启动项后门检测', 30) + u'[ ', end='')
-        file_write(align(u' [10]系统启动项后门检测', 30) + u'[ ')
+        print(align(u' [13]系统启动项后门检测', 30) + u'[ ', end='')
+        file_write(align(u' [13]系统启动项后门检测', 30) + u'[ ')
         sys.stdout.flush()
         suspicious, malice = self.check_startup()
         if malice:

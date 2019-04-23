@@ -627,6 +627,25 @@ class Rootkit_Analysis:
         LOGIN_BACKDOOR_FILES = {'name': 'Miscellaneous login backdoors', 'file': ['/bin/.login', '/sbin/.login'],
                                 'dir': [], 'ksyms': []}
 
+        Sniffer_FILES = {'name': 'Sniffer log',
+                         'file': ['/usr/lib/libice.log', '/dev/prom/sn.l', '/dev/fd/.88/zxsniff.log'],
+                         'dir': [], 'ksyms': []}
+
+        SUSPICIOUS_DIRS = {'name': 'Suspicious dir', 'file': [], 'dir': ['/usr/X11R6/bin/.,/copy', '/dev/rd/cdb'],
+                           'ksyms': []}
+
+        Apache_Door = {'name': 'Apache backdoor',
+                       'file': ['/etc/apache2/mods-enabled/mod_rootme.so', '/etc/apache2/mods-enabled/mod_rootme2.so',
+                                '/etc/httpd/modules/mod_rootme.so', '/etc/httpd/modules/mod_rootme2.so',
+                                '/usr/apache/libexec/mod_rootme.so', '/usr/apache/libexec/mod_rootme2.so',
+                                '/usr/lib/modules/mod_rootme.so', '/usr/lib/modules/mod_rootme2.so',
+                                '/usr/local/apache/modules/mod_rootme.so', '/usr/local/apache/modules/mod_rootme2.so',
+                                '/usr/local/apache/conf/mod_rootme.so', '/usr/local/apache/conf/mod_rootme2.so',
+                                '/usr/local/etc/apache/mod_rootme.so', '/usr/local/etc/apache/mod_rootme2.so',
+                                '/etc/apache/mod_rootme.so', '/etc/apache/mod_rootme2.so',
+                                '/etc/httpd/conf/mod_rootme.so', '/etc/httpd/conf/mod_rootme2.so'], 'dir': [],
+                       'ksyms': []}
+
         self.LKM_BADNAMES = ['adore.o', 'bkit-adore.o', 'cleaner.o', 'flkm.o', 'knark.o', 'modhide.o', 'mod_klgr.o',
                              'phide_mod.o', 'vlogger.o', 'p2.ko', 'rpldev.o', 'xC.o', 'strings.o', 'wkmr26.o']
 
@@ -647,7 +666,7 @@ class Rootkit_Analysis:
                               SUNOSROOTKIT_FILES, SUPERKIT_FILES, TBD_FILES, TELEKIT_FILES, TOGROOT_FILES, TORN_FILES,
                               TRNKIT_FILES, TROJANIT_FILES, TURTLE_FILES, TUXTENDO_FILES, URK_FILES, VCKIT_FILES,
                               VAMPIRE_FILES, VOLC_FILES, WEAPONX_FILES, XZIBIT_FILES, XORGSUNOS_FILES, ZARWT_FILES,
-                              ZK_FILES, LOGIN_BACKDOOR_FILES]
+                              ZK_FILES, LOGIN_BACKDOOR_FILES, Sniffer_FILES, SUSPICIOUS_DIRS, Apache_Door]
 
     # 获取内核符号表
     def get_kmsinfo(self):
