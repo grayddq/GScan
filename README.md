@@ -69,9 +69,9 @@
 
 ## 测试环境 ##
 
->系统：CentOS (6、7) + python (2.x 3.x)
+>系统：CentOS (6、7) + python (2.x、3.x)
 >
->注：目前程序只针对Centos进行开发测试，其他系统并未做兼容性，检测结果未知
+>注：目前程序只针对Centos进行开发测试，程序执行需要root权限，其他系统并未做兼容性，检测结果未知
 
 ## 部署和执行 ##
 > root# <kbd>git clone https://github.com/grayddq/GScan.git</kbd>
