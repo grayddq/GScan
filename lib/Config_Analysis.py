@@ -61,7 +61,7 @@ class Config_Analysis:
     def check_hosts(self):
         suspicious, malice = False, False
         try:
-            if not os.path.exists("cat /etc/hosts"): return suspicious, malice
+            if not os.path.exists("/etc/hosts"): return suspicious, malice
             p1 = Popen("cat /etc/hosts", stdout=PIPE, shell=True)
             p2 = Popen("awk '{print $1}'", stdin=p1.stdout, stdout=PIPE, shell=True)
             shell_process = p2.stdout.readlines()
