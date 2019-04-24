@@ -73,6 +73,7 @@ class Config_Analysis:
                         {u'配置信息': ip_info, u'异常类型': u'存在指定域名境外ip的配置信息', u'文件': u'/etc/hosts',
                          u'手工确认': u'[1]cat /etc/hosts'})
                     suspicious = True
+            return suspicious, malice
         except:
             return suspicious, malice
 
