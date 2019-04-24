@@ -42,7 +42,7 @@ class History_Analysis:
                         if not re.search(self.ip_http, line): continue
                         if re.search(self.lan_ip, line): continue
                         for ip in re.findall(self.ip_re, line):
-                            if find(ip)[0:2] != u'中国':
+                            if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
                                 self.history.append({u'用户名': user, u'异常执行记录': line})
                                 suspicious = True
             return suspicious, malice

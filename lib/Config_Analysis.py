@@ -1,18 +1,21 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json
+import os, optparse, time, sys, json, re
 from lib.common import *
 from lib.ip.ip import *
+from subprocess import Popen, PIPE
 
 
 # 作者：咚咚呛
 # 配置安全类检测
 # 1、dns配置检测
 # 2、防火墙配置检测
+# 3、hosts配置检测
 
 class Config_Analysis:
     def __init__(self):
         self.config_suspicious = []
+        self.ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 
     # 检测dns设置
     def check_dns(self):
@@ -51,6 +54,25 @@ class Config_Analysis:
                                      u'手工确认': u'[1]cat /etc/sysconfig/iptables'})
                                 suspicious = True
             return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # 检测hosts配置信息
+    def check_hosts(self):
+        suspicious, malice = False, False
+        try:
+            if not os.path.exists("cat /etc/hosts"): return suspicious, malice
+            p1 = Popen("cat /etc/hosts", stdout=PIPE, shell=True)
+            p2 = Popen("awk '{print $1}'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            shell_process = p2.stdout.readlines()
+            for ip_info in shell_process:
+                if not re.search(self.ip_re, ip_info): continue
+                ip = ip_info.strip()
+                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
+                    self.config_suspicious.append(
+                        {u'配置信息': ip_info, u'异常类型': u'存在指定域名境外ip的配置信息', u'文件': u'/etc/hosts',
+                         u'手工确认': u'[1]cat /etc/hosts'})
+                    suspicious = True
         except:
             return suspicious, malice
 
