@@ -101,6 +101,17 @@ class Config_Analysis:
         else:
             pringf(u'OK', security=True)
 
+        print(align(u' [3]hosts设置扫描', 30) + u'[ ', end='')
+        file_write(align(u' [3]hosts设置扫描', 30) + u'[ ')
+        sys.stdout.flush()
+        suspicious, malice = self.check_hosts()
+        if malice:
+            pringf(u'存在风险', malice=True)
+        elif suspicious and (not malice):
+            pringf(u'警告', suspicious=True)
+        else:
+            pringf(u'OK', security=True)
+
         if len(self.config_suspicious) > 0:
             file_write('-' * 30 + '\n')
             file_write(u'可疑配置类如下：\n')
