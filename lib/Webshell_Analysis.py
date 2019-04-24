@@ -22,7 +22,7 @@ class Webshell_Analysis:
         # WEB目录
         self.webroot_list = []
         # yara的webshell规则
-        self.rule = sys.path[0] + '/webshell_rule/'
+        self.rule = sys.path[0] + '/lib/webshell_rule/'
         # 恶意webshell列表
         self.webshell_list = []
 
@@ -93,6 +93,8 @@ class Webshell_Analysis:
 
         if len(self.webshell_list) > 0:
             malice = True
+        # 内容去重
+        self.webshell_list = list(set(self.webshell_list))
         return suspicious, malice
 
     def run(self):
