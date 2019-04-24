@@ -25,7 +25,7 @@ class Host_Info:
     def host_info(self):
         self.hostname = platform.node()
         # self.hostname = socket.gethostname()
-        self.version = platform.version()
+        self.version = platform.platform()
         self.time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
     def get_host_ip(self):
