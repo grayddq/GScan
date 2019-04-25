@@ -118,7 +118,7 @@ class File_Analysis:
                 with open(malware_path + file) as f:
                     for line in f:
                         malware = line.strip().replace('\n', '')
-                        if len(malware) > 4 and ('.' in malware):
+                        if len(malware) > 5 and ('.' in malware) and not ("\\" in malware):
                             if malware[0] != '#' and ('.' in malware): self.malware_infos.append(malware)
         except:
             return
@@ -143,6 +143,7 @@ class File_Analysis:
             if os.path.isdir(file): return ""
             if " " in file: return ""
             if 'GScan' in file: return ""
+            if '.log' in file: return ""
             if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
             if len(strings) > 200: return ""

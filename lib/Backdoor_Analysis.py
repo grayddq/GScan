@@ -256,7 +256,7 @@ class Backdoor_Analysis:
                 with open(malware_path + file) as f:
                     for line in f:
                         malware = line.strip().replace('\n', '')
-                        if len(malware) > 4 and ('.' in malware):
+                        if len(malware) > 5 and ('.' in malware) and not ("\\" in malware):
                             if malware[0] != '#' and ('.' in malware): self.malware_infos.append(malware)
         except:
             return
