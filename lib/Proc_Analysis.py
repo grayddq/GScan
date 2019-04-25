@@ -57,7 +57,7 @@ class Proc_Analysis:
     # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
     def analysis_file(self, file):
         try:
-            time.sleep(0.01)
+            time.sleep(0.05)
             if not os.path.exists(file): return ""
             if os.path.isdir(file): return ""
             if " " in file: return ""

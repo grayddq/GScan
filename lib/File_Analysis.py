@@ -29,15 +29,26 @@ class File_Analysis:
     def check_system_integrity(self):
         suspicious, malice = False, False
 
+        system_file = ["depmod", "fsck", "fuser", "ifconfig", "ifdown", "ifup", "init", "insmod", "ip", "lsmod",
+                       "modinfo", "modprobe", "nologin", "rmmod", "route", "rsyslogd", "runlevel", "sulogin", "sysctl",
+                       "awk", "basename", "bash", "cat", "chmod", "chown", "cp", "cut", "date", "df", "dmesg", "echo",
+                       "egrep", "env", "fgrep", "find", "grep", "kill", "logger", "login", "ls", "mail", "mktemp",
+                       "more", "mount", "mv", "netstat", "ping", "ps", "pwd", "readlink", "rpm", "sed", "sh", "sort",
+                       "su", "touch", "uname", "gawk", "mailx", "adduser", "chroot", "groupadd", "groupdel", "groupmod",
+                       "grpck", "lsof", "pwck", "sestatus", "sshd", "useradd", "userdel", "usermod", "vipw", "chattr",
+                       "curl", "diff", "dirname", "du", "file", "groups", "head", "id", "ipcs", "killall", "last",
+                       "lastlog", "ldd", "less", "lsattr", "md5sum", "newgrp", "passwd", "perl", "pgrep", "pkill",
+                       "pstree", "runcon", "sha1sum", "sha224sum", "sha256sum", "sha384sum", "sha512sum", "size", "ssh",
+                       "stat", "strace", "strings", "sudo", "tail", "test", "top", "tr", "uniq", "users", "vmstat", "w",
+                       "watch", "wc", "wget", "whereis", "which", "who", "whoami"]
+
         binary_list = ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/']
         try:
             for dir in binary_list:
                 if not os.path.exists(dir): continue
                 for file in gci(dir):
-                    if not os.path.exists(file): continue
-                    if os.path.isdir(file): continue
-                    if (os.path.getsize(file) == 0) or (
-                            round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
+                    filename = os.path.basename(file)
+                    if not filename in system_file: continue
                     malware = self.analysis_file(file)
                     if malware:
                         self.file_malware.append(
@@ -135,7 +146,7 @@ class File_Analysis:
     # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
     def analysis_file(self, file):
         try:
-            time.sleep(0.01)
+            time.sleep(0.05)
             if not os.path.exists(file): return ""
             if os.path.isdir(file): return ""
             if " " in file: return ""
