@@ -53,7 +53,7 @@ class Network_Analysis:
                 protocol = netinfo[0]
                 remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
                 if (find(remote_ip)[0:2] != u'中国') and (find(remote_ip)[0:3] != u'局域网') and (
-                        find(remote_ip)[0:4] != u'共享地址'):
+                        find(remote_ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
                     self.network_malware.append(
                         {u'异常类型': u'境外IP链接', u'远程ip': remote_ip, u'远程port': remote_port})
                     suspicious = True
