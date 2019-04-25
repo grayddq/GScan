@@ -72,6 +72,8 @@
 
 >系统：CentOS (6、7) + python (2.x、3.x)
 >
+>执行时间：程序在恶意文件查杀方面执行时间较长，请耐心等待
+>
 >注：目前程序只针对Centos进行开发测试，程序执行需要root权限，其他系统并未做兼容性，检测结果未知
 
 ## 部署和执行 ##
@@ -80,6 +82,8 @@
 > root# <kbd>cd GScan</kbd>
 > 
 > root# <kbd>sudo python GScan.py</kbd>
+>
+>root# <kbd>nohup sudo python GScan.py &</kbd> (建议后台执行,一段时间后直接查看结果输出/var/log/gscan/gscan.log)
 
 
 ## 程序脚本说明 ##
