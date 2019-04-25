@@ -83,7 +83,9 @@
 > 
 > root# <kbd>sudo python GScan.py</kbd>
 >
->root# <kbd>nohup sudo python GScan.py &</kbd> (建议后台执行,一段时间后直接查看结果输出/var/log/gscan/gscan.log)
+>或者使用nohup后台执行,一段时间后直接查看输出结果/var/log/gscan/gscan.log
+>
+>root# <kbd>nohup python GScan.py &</kbd>
 
 
 ## 程序脚本说明 ##
