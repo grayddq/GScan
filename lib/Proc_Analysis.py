@@ -1,8 +1,9 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json
+import os, optparse, time, sys, json, re
 from lib.common import *
 from subprocess import Popen, PIPE
+from lib.ip.ip import *
 
 
 # 作者：咚咚呛
@@ -22,53 +23,74 @@ class Proc_Analysis:
         self.process_backdoor = []
         # 恶意的域名等信息
         self.malware_infos = []
-
-        # 查询反弹shell进程
-        # self.shell_analysis()
-        # 查询cpu和内存使用的可疑进程
-        # self.work_analysis()
-        # 查询隐藏的进程
-        # self.check_hide_pro()
-        # 查询挖矿进程、黑客工具、可疑进程名
-        # self.keyi_analysis()
-        # 判断exe可执行程序是否存在恶意域名特征
-        # self.exe_analysis()
-        # 数据去重
-        # self.process_backdoor = self.reRepeat(self.process_backdoor)
+        self.get_malware_info()
+        self.ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        self.ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+        self.lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
     # 获取配置文件的恶意域名等信息
     def get_malware_info(self):
         try:
-            malware_path = sys.path[0] + '/lib/malware/'
+            malware_path = sys.path[0] + '/lib//malware/'
             if not os.path.exists(malware_path): return
             for file in os.listdir(malware_path):
-                time.sleep(0.001)  # 防止cpu占用过大
                 with open(malware_path + file) as f:
                     for line in f:
-                        if len(line) > 3:
-                            if line[0] != '#': self.malware_infos.append(line.strip().replace("\n", ""))
+                        malware = line.strip().replace('\n', '')
+                        if len(malware) > 4:
+                            if malware[0] != '#' and ('.' in malware): self.malware_infos.append(malware)
         except:
             return
+
+    # 分析字符串是否包含境外IP
+    def check_contents_ip(self, contents):
+        try:
+            if not re.search(self.ip_http, contents): return False
+            if re.search(self.lan_ip, contents): return False
+            for ip in re.findall(self.ip_re, contents):
+                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
+                    return True
+            return False
+        except:
+            return False
+
+    # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
+    def analysis_file(self, file):
+        try:
+            if not os.path.exists(file): return ""
+            if os.path.isdir(file): return ""
+            if " " in file: return ""
+            if 'GScan' in file: return ""
+            if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
+            strings = os.popen("strings %s" % file).readlines()
+            for str in strings:
+                mal = check_shell(str)
+                if mal: return mal
+                for malware in self.malware_infos:
+                    if malware.replace('\n', '') in str:
+                        return malware
+                if self.check_contents_ip(str): return str
+            return ""
+        except:
+            return ""
 
     # 判断进程的可执行文件是否具备恶意特征
     def exe_analysis(self):
         suspicious, malice = False, False
         try:
-            self.get_malware_info()
             if not os.path.exists('/proc/'): return suspicious, malice
             for file in os.listdir('/proc/'):
                 if file.isdigit():
                     filepath = os.path.join('%s%s%s' % ('/proc/', file, '/exe'))
                     if (not os.path.islink(filepath)) or (not os.path.exists(filepath)): continue
-                    strings = os.popen("strings %s" % filepath).readlines()
-                    for malware in self.malware_infos:
-                        time.sleep(0.001)  # 防止cpu占用过大
-                        for str in strings:
-                            if malware in str:
-                                lnstr = os.readlink(filepath)
-                                self.process_backdoor.append(
-                                    {u'异常类型': u'进程程序恶意特征', u'进程pid': file, u'进程cmd': lnstr, u'恶意特征': malware})
-                                malice = True
+                    malware = self.analysis_file(filepath)
+                    if malware:
+                        lnstr = os.readlink(filepath)
+                        self.process_backdoor.append(
+                            {u'异常类型': u'进程程序恶意特征', u'进程pid': file, u'进程cmd': lnstr, u'恶意特征': malware,
+                             u'手工确认': u'[1]ls -a %s [2]strings %s' % (filepath, filepath)})
+                        malice = True
+
             return suspicious, malice
         except:
             return suspicious, malice

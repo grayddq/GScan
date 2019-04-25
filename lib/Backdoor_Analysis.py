@@ -250,14 +250,14 @@ class Backdoor_Analysis:
     # 获取配置文件的恶意域名等信息
     def get_malware_info(self):
         try:
-            malware_path = sys.path[0] + '/lib/malware/'
+            malware_path = sys.path[0] + '/lib//malware/'
             if not os.path.exists(malware_path): return
             for file in os.listdir(malware_path):
-                time.sleep(0.001)  # 防止cpu占用过大
                 with open(malware_path + file) as f:
                     for line in f:
-                        if len(line) > 3:
-                            if line[0] != '#': self.malware_infos.append(line.strip().replace("\n", ""))
+                        malware = line.strip().replace('\n', '')
+                        if len(malware) > 4 :
+                            if malware[0] != '#' and ('.' in malware): self.malware_infos.append(malware)
         except:
             return
 
@@ -266,7 +266,6 @@ class Backdoor_Analysis:
         try:
             if not os.path.exists(file): return ""
             if os.path.isdir(file): return ""
-            if os.path.islink(file): return ""
             if " " in file: return ""
             if 'GScan' in file: return ""
             if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
@@ -275,7 +274,7 @@ class Backdoor_Analysis:
                 mal = check_shell(str)
                 if mal: return mal
                 for malware in self.malware_infos:
-                    if malware in str: return malware
+                    if malware.replace('\n','') in str: return malware
                 if self.check_contents_ip(str): return str
 
             return ""

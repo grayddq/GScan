@@ -100,6 +100,7 @@ def mkfile():
 def file_write(content, logfile='/var/log/gscan/gscan.log'):
     with open(logfile, 'a+') as f:
         f.write(content)
+    return
 
 
 # 分析字符串是否包含反弹shell或者恶意下载执行的特征
