@@ -49,7 +49,7 @@ class Proc_Analysis:
             if not re.search(self.ip_http, contents): return False
             if re.search(self.lan_ip, contents): return False
             for ip in re.findall(self.ip_re, contents):
-                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址'):
+                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
                     return True
             return False
         except:
