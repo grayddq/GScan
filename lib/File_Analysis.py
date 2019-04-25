@@ -109,10 +109,11 @@ class File_Analysis:
     # 获取配置文件的恶意域名等信息
     def get_malware_info(self):
         try:
-            if not os.path.exists('malware'): return
-            for file in os.listdir('./malware/'):
+            malware_path = sys.path[0] + '/lib/malware/'
+            if not os.path.exists(malware_path): return
+            for file in os.listdir(malware_path):
                 time.sleep(0.001)  # 防止cpu占用过大
-                with open(os.path.join('%s%s' % ('./malware/', file))) as f:
+                with open(malware_path + file) as f:
                     for line in f:
                         if len(line) > 3:
                             if line[0] != '#': self.malware_infos.append(line.strip().replace("\n", ""))
