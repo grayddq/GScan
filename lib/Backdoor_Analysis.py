@@ -256,7 +256,7 @@ class Backdoor_Analysis:
                 with open(malware_path + file) as f:
                     for line in f:
                         malware = line.strip().replace('\n', '')
-                        if len(malware) > 4 :
+                        if len(malware) > 4 and ('.' in malware):
                             if malware[0] != '#' and ('.' in malware): self.malware_infos.append(malware)
         except:
             return
@@ -271,11 +271,12 @@ class Backdoor_Analysis:
             if 'GScan' in file: return ""
             if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
             strings = os.popen("strings %s" % file).readlines()
+            if len(strings) > 200: return ""
             for str in strings:
                 mal = check_shell(str)
                 if mal: return mal
                 for malware in self.malware_infos:
-                    if malware.replace('\n','') in str: return malware
+                    if malware.replace('\n', '') in str: return malware
                 if self.check_contents_ip(str): return str
 
             return ""
