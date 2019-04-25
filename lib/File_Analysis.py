@@ -67,10 +67,6 @@ class File_Analysis:
             for dir in tmp_list:
                 if not os.path.exists(dir): continue
                 for file in gci(dir):
-                    if not os.path.exists(file): continue
-                    if os.path.isdir(file): continue
-                    if (os.path.getsize(file) == 0) or (
-                            round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
                     malware = self.analysis_file(file)
                     if malware:
                         self.file_malware.append(
@@ -89,10 +85,6 @@ class File_Analysis:
             for dir in dir_list:
                 if not os.path.exists(dir): continue
                 for file in gci(dir):
-                    if not os.path.exists(file): continue
-                    if os.path.isdir(file): continue
-                    if (os.path.getsize(file) == 0) or (
-                            round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
                     malware = self.analysis_file(file)
                     if malware:
                         self.file_malware.append(
