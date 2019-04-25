@@ -250,14 +250,15 @@ class Backdoor_Analysis:
     # 获取配置文件的恶意域名等信息
     def get_malware_info(self):
         try:
-            malware_path = sys.path[0] + '/lib//malware/'
+            malware_path = sys.path[0] + '/lib/malware/'
             if not os.path.exists(malware_path): return
             for file in os.listdir(malware_path):
                 with open(malware_path + file) as f:
                     for line in f:
                         malware = line.strip().replace('\n', '')
-                        if len(malware) > 5 and ('.' in malware) and not ("\\" in malware):
-                            if malware[0] != '#' and ('.' in malware): self.malware_infos.append(malware)
+                        if len(malware) > 5:
+                            if malware[0] != '#' and malware[0] != '.' and ('.' in malware):
+                                self.malware_infos.append(malware)
         except:
             return
 
