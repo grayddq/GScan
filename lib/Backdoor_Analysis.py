@@ -264,6 +264,7 @@ class Backdoor_Analysis:
     # 分析文件是否包含恶意特征或者反弹shell问题
     def analysis_file(self, file):
         try:
+            time.sleep(0.01)
             if not os.path.exists(file): return ""
             if os.path.isdir(file): return ""
             if " " in file: return ""
