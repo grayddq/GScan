@@ -82,8 +82,9 @@ class User_Analysis:
         try:
             if os.path.exists(file):
                 shell_process = os.popen("cat " + file + "|awk '{print $3}'").readlines()
-                authorized_key = ' & '.join(shell_process).replace("\n", "")
-                self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
+                if len(shell_process):
+                    authorized_key = ' & '.join(shell_process).replace("\n", "")
+                    self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
                                           u'证书客户端名称': authorized_key})
                 suspicious = True
             return suspicious, malice
