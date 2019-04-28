@@ -226,3 +226,5 @@ https://github.com/CISOfy/lynis
 
 http://rkhunter.sourceforge.net/
 
+https://github.com/stamparm/maltrail
+

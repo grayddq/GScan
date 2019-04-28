@@ -26,6 +26,7 @@ class File_Analysis:
         self.lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
     # 检查系统文件完整性
+    # 由于速度的问题，故只检测指定重要文件
     def check_system_integrity(self):
         suspicious, malice = False, False
 
