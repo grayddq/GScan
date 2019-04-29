@@ -13,7 +13,7 @@ from lib.ip.ip import *
 # 4、LD_LIBRARY_PATH后门检测
 # 5、ld.so.preload后门检测
 # 6、PROMPT_COMMAND后门检测
-# 7、crontab后门检测
+# 7、cron后门检测
 # 8、alias后门
 # 9、ssh后门 ln -sf /usr/sbin/sshd /tmp/su; /tmp/su -oPort=5555;
 # 10、SSH Server wrapper 后门，替换/user/sbin/sshd 为脚本文件
@@ -109,10 +109,8 @@ class Backdoor_Analysis:
         try:
             infos = os.popen("echo $PROMPT_COMMAND").read().splitlines()
             for info in infos:
-                suspicious2, malice2 = self.analysis_strings('PROMPT_COMMAND backdoor', 'ROMPT_COMMAND', info,
-                                                             '[1]echo $PROMPT_COMMAND')
-                if suspicious2: suspicious = True
-                if malice2: malice = True
+                suspicious, malice = self.analysis_strings('PROMPT_COMMAND backdoor', 'ROMPT_COMMAND', info,
+                                                           '[1]echo $PROMPT_COMMAND')
             return suspicious, malice
         except:
             return suspicious, malice
@@ -127,9 +125,7 @@ class Backdoor_Analysis:
                 files = [os.path.join(cron, i) for i in os.listdir(cron) if (not os.path.isdir(os.path.join(cron, i)))]
                 for file in files:
                     for i in open(file, 'r'):
-                        suspicious2, malice2 = self.analysis_strings('crontab backdoor', file, i, '[1]cat %s' % file)
-                        if suspicious2: suspicious = True
-                        if malice2: malice = True
+                        suspicious, malice = self.analysis_strings('cron backdoor', file, i, '[1]cat %s' % file)
             return suspicious, malice
         except:
             return suspicious, malice
@@ -140,9 +136,7 @@ class Backdoor_Analysis:
         try:
             infos = os.popen("alias").read().splitlines()
             for info in infos:
-                suspicious2, malice2 = self.analysis_strings('alias backdoor', "", info, '[1]alias')
-                if suspicious2: suspicious = True
-                if malice2: malice = True
+                suspicious, malice = self.analysis_strings('alias backdoor', "", info, '[1]alias')
             return suspicious, malice
         except:
             return suspicious, malice
@@ -239,15 +233,17 @@ class Backdoor_Analysis:
         except:
             return suspicious, malice
 
-    # 分析一串字符串是否包含反弹shell或者存在的文件路径
+    # 分析一串字符串是否包含反弹shell、获取对应字串内可能存在的文件，并判断文件是否存在恶意特征。
     def analysis_strings(self, name, file, contents, solve):
         suspicious, malice = False, False
         try:
             content = contents.replace('\n', '')
+            # 反弹shell类
             if check_shell(content):
                 self.backdoor.append(
                     {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell类', u'手工确认': solve})
                 malice = True
+            # 境外IP操作类
             elif check_contents_ip(content):
                 self.backdoor.append(
                     {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'境外IP信息', u'手工确认': solve})
@@ -292,7 +288,7 @@ class Backdoor_Analysis:
         suspicious, malice = self.check_PROMPT_COMMAND()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [7]crontab 后门检测')
+        string_output(u' [7]cron定时任务后门检测')
         suspicious, malice = self.check_cron()
         result_output_tag(suspicious, malice)
 
@@ -320,9 +316,8 @@ class Backdoor_Analysis:
         suspicious, malice = self.check_startup()
         result_output_tag(suspicious, malice)
 
-        #结果内容输出到文件
-        result_output_file(u'后门检查异常如下：',self.backdoor)
-
+        # 结果内容输出到文件
+        result_output_file(u'后门检查异常如下：', self.backdoor)
 
 
 if __name__ == '__main__':

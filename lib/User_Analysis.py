@@ -1,6 +1,6 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json
+import os
 from lib.common import *
 
 
@@ -11,6 +11,7 @@ from lib.common import *
 # 2、查看系统中是否存在空口令账户
 # 3、查看sudoers文件权限，是否存在可直接sudo获取root的账户
 # 4、查看各账户下登录公钥
+# 5、密码文件权限检测
 
 class User_Analysis:
     def __init__(self):
@@ -85,8 +86,29 @@ class User_Analysis:
                 if len(shell_process):
                     authorized_key = ' & '.join(shell_process).replace("\n", "")
                     self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
-                                          u'证书客户端名称': authorized_key})
+                                              u'证书客户端名称': authorized_key})
                 suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # 密码文件检测
+    def passwd_file_analysis(self):
+        suspicious, malice = False, False
+        try:
+            files = ['/etc/passwd', '/etc/shadow']
+            for file in files:
+                if not os.path.exists(file): continue
+                shell_process = os.popen("ls -l " + file + "|awk '{print $1}'").read().splitlines()
+                if len(shell_process) != 1: continue
+                if file == '/etc/passwd' and shell_process[0] != '-rw-r--r--':
+                    self.user_malware.append(
+                        {u'文件': file, u'异常描述': u'passwd文件权限变更，不为-rw-r--r--', u'排查参考命令': u'ls -l /etc/passwd'})
+                    suspicious = True
+                elif file == '/etc/shadow' and shell_process[0] != '----------':
+                    self.user_malware.append(
+                        {u'文件': file, u'异常描述': u'shadow文件权限变更，不为----------', u'排查参考命令': u'ls -l /etc/shadow'})
+                    suspicious = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -113,7 +135,6 @@ class User_Analysis:
 
         # 检测结果输出到文件
         result_output_file(u'可疑账户类信息如下：', self.user_malware)
-
 
 
 if __name__ == '__main__':

@@ -47,19 +47,7 @@ class Proc_Analysis:
     def shell_analysis(self):
         suspicious, malice = False, False
         try:
-            p1 = Popen("ps -ef", stdout=PIPE, shell=True)
-            p2 = Popen("grep -v 'grep'", stdin=p1.stdout, stdout=PIPE, shell=True)
-            p3 = Popen("awk '{print $1\" \"$2\" \"$3\" \"$8}'", stdin=p2.stdout, stdout=PIPE, shell=True)
-            shell_process = p3.stdout.readlines()
-            # shell_process = os.popen(
-            #    "ps -ef|grep -v 'grep'|awk '{print $1\" \"$2\" \"$3\" \"$8}'").readlines()
-            for pro in shell_process:
-                if check_shell(pro):
-                    pro_info = pro.strip().split(' ', 3)
-                    self.process_backdoor.append(
-                        {u'异常类型': u'进程反弹shell特征', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'父进程ppid': pro_info[2],
-                         u'进程cmd': pro_info[3].replace("\n", ""), u'恶意特征': u'反弹shell'})
-                    malice = True
+
             return suspicious, malice
         except:
             return suspicious, malice
@@ -175,7 +163,9 @@ class Proc_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'恶意进程如下：：', self.process_backdoor)
+        result_output_file(u'恶意进程如下：', self.process_backdoor)
+
+
 
 
 if __name__ == '__main__':

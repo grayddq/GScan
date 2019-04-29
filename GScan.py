@@ -12,6 +12,7 @@ from lib.Config_Analysis import *
 from lib.Log_Analysis import *
 from lib.Rootkit_Analysis import *
 from lib.Webshell_Analysis import *
+from lib.Init import *
 
 # 作者：咚咚呛
 # 版本：v0.1
@@ -42,6 +43,8 @@ if __name__ == '__main__':
         print(u'\033[1;32m开始扫描当前系统安全状态...\033[0m')
         # 主机信息获取
         Host_Info().run()
+        # 系统初始化检查
+        SYS_INIT().run()
         # 文件类安全检测
         File_Analysis().run()
         # 主机历史操作类扫描
