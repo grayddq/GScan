@@ -25,7 +25,8 @@ class Config_Analysis:
                 shell_process = os.popen(
                     'cat /etc/resolv.conf | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"').read().splitlines()
                 for ip in shell_process:
-                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
+                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
+                            find(ip)[0:4] != u'本机地址'):
                         self.config_suspicious.append(
                             {u'配置信息': u'DNS servername: %s' % ip, u'异常类型': u'境外dns', u'文件': u'/etc/resolv.conf'})
                         suspicious = True
@@ -68,7 +69,8 @@ class Config_Analysis:
             for ip_info in shell_process:
                 if not re.search(self.ip_re, ip_info): continue
                 ip = ip_info.strip().replace('\n', '')
-                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
+                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
+                        find(ip)[0:4] != u'本机地址'):
                     self.config_suspicious.append(
                         {u'配置信息': ip_info, u'异常类型': u'存在指定域名境外ip的配置信息', u'文件': u'/etc/hosts',
                          u'手工确认': u'[1]cat /etc/hosts'})
@@ -79,46 +81,22 @@ class Config_Analysis:
 
     def run(self):
         print(u'\n开始配置类安全扫描')
-        print(align(u' [1]DNS设置扫描', 30) + u'[ ', end='')
         file_write(u'\n开始配置类安全扫描\n')
-        file_write(align(u' [1]DNS设置扫描', 30) + u'[ ')
-        sys.stdout.flush()
+
+        string_output(u' [1]DNS设置扫描')
         suspicious, malice = self.check_dns()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [2]防火墙设置扫描', 30) + u'[ ', end='')
-        file_write(align(u' [2]防火墙设置扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [2]防火墙设置扫描')
         suspicious, malice = self.check_iptables()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [3]hosts设置扫描', 30) + u'[ ', end='')
-        file_write(align(u' [3]hosts设置扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [3]hosts设置扫描')
         suspicious, malice = self.check_hosts()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        if len(self.config_suspicious) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'可疑配置类如下：\n')
-            for info in self.config_suspicious:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30 + '\n')
+        # 检测结果输出到文件
+        result_output_file(u'可疑配置类如下：', self.config_suspicious)
 
 
 if __name__ == '__main__':

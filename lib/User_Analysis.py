@@ -93,57 +93,27 @@ class User_Analysis:
 
     def run(self):
         print(u'\n开始账户类安全扫描')
-        print(align(u' [1]root权限账户安全扫描', 30) + u'[ ', end='')
         file_write(u'\n开始账户类安全扫描\n')
-        file_write(align(u' [1]root权限账户安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+
+        string_output(u' [1]root权限账户安全扫描')
         suspicious, malice = self.check_user()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [2]空口令账户安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [2]空口令账户安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [2]空口令账户安全扫描')
         suspicious, malice = self.check_empty()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [3]sudoers文件权限账户安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [3]sudoers文件权限账户安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [3]sudoers文件权限账户安全扫描')
         suspicious, malice = self.check_sudo()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [4]账户免密码证书安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [4]账户免密码证书安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [4]账户免密码证书安全扫描')
         suspicious, malice = self.check_authorized_keys()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        if len(self.user_malware) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'可疑账户如下：\n')
-            for info in self.user_malware:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30 + '\n')
+        # 检测结果输出到文件
+        result_output_file(u'可疑账户类信息如下：', self.user_malware)
+
 
 
 if __name__ == '__main__':

@@ -30,8 +30,7 @@ class Log_Analysis:
                     ips = wtmp_info.split(' ')[1]
                     if ips[0] != '(': continue
                     ip = ips.replace('(', '').replace(')', '').replace('\n', '')
-                    if len(ip) < 2: continue
-                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
+                    if check_ip(ip):
                         self.log_malware.append(
                             {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
                              u'排查参考命令': u'[1]who /var/log/wtmp'})
@@ -55,8 +54,7 @@ class Log_Analysis:
                     ips = utmp_info.split(' ')[1]
                     if ips[0] != '(': continue
                     ip = ips.replace('(', '').replace(')', '').replace('\n', '')
-                    if len(ip) < 2: continue
-                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
+                    if check_ip(ip):
                         self.log_malware.append(
                             {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
                              u'排查参考命令': u'[1]who'})
@@ -78,8 +76,7 @@ class Log_Analysis:
                     if len(lastlog.split(' ')) != 2: continue
                     user = lastlog.split(' ')[0].strip()
                     ip = lastlog.split(' ')[1].replace(' ', '').replace('\n', '')
-                    if len(ip) < 2: continue
-                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
+                    if check_ip(ip):
                         self.log_malware.append(
                             {u'日志类型': u'lastlog登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
                              u'排查参考命令': u'[1]lastlog'})
@@ -104,57 +101,26 @@ class Log_Analysis:
 
     def run(self):
         print(u'\n开始日志类安全扫描')
-        print(align(u' [1]secure日志安全扫描', 30) + u'[ ', end='')
         file_write(u'\n开始日志类安全扫描\n')
-        file_write(align(u' [1]secure日志安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+
+        string_output(u' [1]secure日志安全扫描')
         suspicious, malice = self.check_sshlog()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [2]wtmp日志日志安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [4]wtmp日志日志安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [2]wtmp日志日志安全扫描')
         suspicious, malice = self.check_wtmp()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [3]utmp日志日志安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [4]utmp日志日志安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [3]utmp日志日志安全扫描')
         suspicious, malice = self.check_utmp()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [4]lastlog日志日志安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [4]lastlog日志日志安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [4]lastlog日志日志安全扫描')
         suspicious, malice = self.check_lastlog()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        if len(self.log_malware) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'日志分析结果如下：\n')
-            for info in self.log_malware:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30 + '\n')
+        # 检测结果输出到文件
+        result_output_file(u'日志分析结果如下：', self.log_malware)
 
 
 if __name__ == '__main__':

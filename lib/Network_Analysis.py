@@ -52,8 +52,7 @@ class Network_Analysis:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
                 remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
-                if (find(remote_ip)[0:2] != u'中国') and (find(remote_ip)[0:3] != u'局域网') and (
-                        find(remote_ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
+                if check_ip(ip):
                     self.network_malware.append(
                         {u'异常类型': u'境外IP链接', u'远程ip': remote_ip, u'远程port': remote_port})
                     suspicious = True
@@ -94,46 +93,22 @@ class Network_Analysis:
 
     def run(self):
         print(u'\n开始网络链接类安全扫描')
-        print(align(u' [1]当前网络对外连接扫描', 30) + u'[ ', end='')
         file_write(u'\n开始网络链接类安全扫描\n')
-        file_write(align(u' [1]当前网络对外连接扫描', 30) + u'[ ')
-        sys.stdout.flush()
+
+        string_output(u' [1]当前网络对外连接扫描')
         suspicious, malice = self.check_network_abroad()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [2]恶意特征类链接扫描', 30) + u'[ ', end='')
-        file_write(align(u' [2]恶意特征类链接扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [2]恶意特征类链接扫描')
         suspicious, malice = self.check_net_suspicious()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [3]网卡混杂模式扫描', 30) + u'[ ', end='')
-        file_write(align(u' [3]网卡混杂模式扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [3]网卡混杂模式扫描')
         suspicious, malice = self.check_promisc()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        if len(self.network_malware) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'可疑网络连接：\n')
-            for info in self.network_malware:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30 + '\n')
+        # 检测结果输出到文件
+        result_output_file(u'可疑网络连接：', self.network_malware)
 
 
 if __name__ == '__main__':

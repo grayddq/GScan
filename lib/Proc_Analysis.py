@@ -21,61 +21,6 @@ class Proc_Analysis:
         self.cpu, self.mem = cpu, mem
         # 可疑的进程列表
         self.process_backdoor = []
-        # 恶意的域名等信息
-        self.malware_infos = []
-        self.get_malware_info()
-        self.ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-        self.ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-        self.lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
-
-    # 获取配置文件的恶意域名等信息
-    def get_malware_info(self):
-        try:
-            malware_path = sys.path[0] + '/lib//malware/'
-            if not os.path.exists(malware_path): return
-            for file in os.listdir(malware_path):
-                with open(malware_path + file) as f:
-                    for line in f:
-                        malware = line.strip().replace('\n', '')
-                        if len(malware) > 5:
-                            if malware[0] != '#' and malware[0] != '.' and ('.' in malware):
-                                self.malware_infos.append(malware)
-        except:
-            return
-
-    # 分析字符串是否包含境外IP
-    def check_contents_ip(self, contents):
-        try:
-            if not re.search(self.ip_http, contents): return False
-            if re.search(self.lan_ip, contents): return False
-            for ip in re.findall(self.ip_re, contents):
-                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
-                    return True
-            return False
-        except:
-            return False
-
-    # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
-    def analysis_file(self, file):
-        try:
-            time.sleep(0.05)
-            if not os.path.exists(file): return ""
-            if os.path.isdir(file): return ""
-            if " " in file: return ""
-            if 'GScan' in file: return ""
-            if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
-            strings = os.popen("strings %s" % file).readlines()
-            if len(strings) > 200: return ""
-            for str in strings:
-                mal = check_shell(str)
-                if mal: return mal
-                for malware in self.malware_infos:
-                    if malware.replace('\n', '') in str:
-                        return malware
-                if self.check_contents_ip(str): return str
-            return ""
-        except:
-            return ""
 
     # 判断进程的可执行文件是否具备恶意特征
     def exe_analysis(self):
@@ -86,7 +31,7 @@ class Proc_Analysis:
                 if file.isdigit():
                     filepath = os.path.join('%s%s%s' % ('/proc/', file, '/exe'))
                     if (not os.path.islink(filepath)) or (not os.path.exists(filepath)): continue
-                    malware = self.analysis_file(filepath)
+                    malware = analysis_file(filepath)
                     if malware:
                         lnstr = os.readlink(filepath)
                         self.process_backdoor.append(
@@ -165,10 +110,9 @@ class Proc_Analysis:
             p2 = Popen("awk 'NR>1{print $2}'", stdin=p1.stdout, stdout=PIPE, shell=True)
             pid_process = p2.stdout.splitlines()
 
-            # pid_process = os.popen("ps -ef | awk 'NR>1{print $2}'").read().splitlines()
             # 所有/proc目录的pid
             pid_pro_file = []
-            if not os.path.exists('/proc/'): return False, False
+            if not os.path.exists('/proc/'): return suspicious, malice
             for file in os.listdir('/proc/'):
                 if file.isdigit():
                     pid_pro_file.append(file)
@@ -205,82 +149,33 @@ class Proc_Analysis:
         except:
             return suspicious, malice
 
-    # 数组去重
-    def reRepeat(self, old):
-        new_li = []
-        for i in old:
-            if i not in new_li:
-                new_li.append(i)
-        return new_li
 
     def run(self):
         print(u'\n开始进程类安全扫描')
-        print(align(u' [1]CUP和内存类异常进程排查', 30) + u'[ ', end='')
         file_write(u'\n开始进程类安全扫描\n')
-        file_write(align(u' [1]CUP和内存类异常进程排查', 30) + u'[ ')
-        sys.stdout.flush()
 
-        # cpu和内存使用的可疑问题
+        string_output(u' [1]CUP和内存类异常进程排查')
         suspicious, malice = self.work_analysis()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [2]隐藏进程安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [2]隐藏进程安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [2]隐藏进程安全扫描')
         suspicious, malice = self.check_hide_pro()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [3]反弹shell类进程扫描', 30) + u'[ ', end='')
-        file_write(align(u' [3]反弹shell类进程扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [3]反弹shell类进程扫描')
         suspicious, malice = self.shell_analysis()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [4]恶意进程信息安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [4]恶意进程信息安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [4]恶意进程信息安全扫描')
         suspicious, malice = self.keyi_analysis()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [5]exe程序安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [5]exe程序安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [5]exe程序安全扫描')
         suspicious, malice = self.exe_analysis()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        self.process_backdoor = self.reRepeat(self.process_backdoor)
-
-        if len(self.process_backdoor) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'恶意进程如下：：\n')
-            for info in self.process_backdoor:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30 + '\n')
+        # 检测结果输出到文件
+        result_output_file(u'恶意进程如下：：', self.process_backdoor)
 
 
 if __name__ == '__main__':

@@ -16,14 +16,6 @@ class File_Analysis:
     def __init__(self):
         # 恶意文件列表
         self.file_malware = []
-        # 恶意特征列表
-        self.malware_infos = []
-        # 获取恶意特征信息
-        self.get_malware_info()
-
-        self.ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-        self.ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-        self.lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
     # 检查系统文件完整性
     # 由于速度的问题，故只检测指定重要文件
@@ -41,7 +33,7 @@ class File_Analysis:
                        "lastlog", "ldd", "less", "lsattr", "md5sum", "newgrp", "passwd", "perl", "pgrep", "pkill",
                        "pstree", "runcon", "sha1sum", "sha224sum", "sha256sum", "sha384sum", "sha512sum", "size", "ssh",
                        "stat", "strace", "strings", "sudo", "tail", "test", "top", "tr", "uniq", "users", "vmstat", "w",
-                       "watch", "wc", "wget", "whereis", "which", "who", "whoami"]
+                       "watch", "wc", "wget", "whereis", "which", "who", "whoami", "test"]
 
         binary_list = ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/']
         try:
@@ -50,7 +42,7 @@ class File_Analysis:
                 for file in gci(dir):
                     filename = os.path.basename(file)
                     if not filename in system_file: continue
-                    malware = self.analysis_file(file)
+                    malware = analysis_file(file)
                     if malware:
                         self.file_malware.append(
                             {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
@@ -68,7 +60,7 @@ class File_Analysis:
             for dir in tmp_list:
                 if not os.path.exists(dir): continue
                 for file in gci(dir):
-                    malware = self.analysis_file(file)
+                    malware = analysis_file(file)
                     if malware:
                         self.file_malware.append(
                             {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
@@ -86,7 +78,7 @@ class File_Analysis:
             for dir in dir_list:
                 if not os.path.exists(dir): continue
                 for file in gci(dir):
-                    malware = self.analysis_file(file)
+                    malware = analysis_file(file)
                     if malware:
                         self.file_malware.append(
                             {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
@@ -110,115 +102,36 @@ class File_Analysis:
         except:
             return suspicious, malice
 
-    # 获取配置文件的恶意域名等信息
-    def get_malware_info(self):
-        try:
-            malware_path = sys.path[0] + '/lib//malware/'
-            if not os.path.exists(malware_path): return
-            for file in os.listdir(malware_path):
-                with open(malware_path + file) as f:
-                    for line in f:
-                        malware = line.strip().replace('\n', '')
-                        if len(malware) > 5:
-                            if malware[0] != '#' and malware[0] != '.' and ('.' in malware):
-                                self.malware_infos.append(malware)
-        except:
-            return
-
-    # 分析字符串是否包含境外IP
-    def check_contents_ip(self, contents):
-        try:
-            if not re.search(self.ip_http, contents): return False
-            if re.search(self.lan_ip, contents): return False
-            for ip in re.findall(self.ip_re, contents):
-                if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (find(ip)[0:4] != u'本机地址'):
-                    return True
-            return False
-        except:
-            return False
-
-    # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
-    def analysis_file(self, file):
-        try:
-            time.sleep(0.05)
-            if not os.path.exists(file): return ""
-            if os.path.isdir(file): return ""
-            if " " in file: return ""
-            if 'GScan' in file: return ""
-            if '.log' in file: return ""
-            if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
-            strings = os.popen("strings %s" % file).readlines()
-            if len(strings) > 200: return ""
-            for str in strings:
-                time.sleep(0.01)
-                mal = check_shell(str)
-                if mal: return mal
-                for malware in self.malware_infos:
-                    if malware.replace('\n', '') in str:
-                        return malware
-                if self.check_contents_ip(str): return str
-            return ""
-        except:
-            return ""
-
     def run(self):
         print(u'\n开始文件类安全扫描')
-        print(align(u' [1]系统可执行文件安全扫描', 30) + u'[ ', end='')
         file_write(u'\n开始文件类安全扫描\n')
-        file_write(align(u' [1]系统可执行文件安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
-        # 系统完整性检测
+
+        string_output(u' [1]系统可执行文件安全扫描')
         suspicious, malice = self.check_system_integrity()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [2]系统临时目录安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [2]系统临时目录安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
-        # 临时目录文件扫描
+        string_output(u' [2]系统临时目录安全扫描')
         suspicious, malice = self.check_tmp()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [3]各用户目录安全扫描', 30) + u'[ ', end='')
-        file_write(align(u' [3]各用户目录安全扫描', 30) + u'[ ')
-        sys.stdout.flush()
-        # 临时目录文件扫描
+        string_output(u' [3]各用户目录安全扫描')
         suspicious, malice = self.check_user_dir()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        print(align(u' [4]可疑隐藏文件扫描', 30) + u'[ ', end='')
-        file_write(align(u' [4]可疑隐藏文件扫描', 30) + u'[ ')
-        sys.stdout.flush()
-        # 临时目录文件扫描
+        string_output(u' [4]可疑隐藏文件扫描')
         suspicious, malice = self.check_hide()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
-        sys.stdout.flush()
+        result_output_tag(suspicious, malice)
 
-        if len(self.file_malware) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'文件检查异常如下：\n')
-            for info in self.file_malware:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30)
+        string_output(u' [1]系统可执行文件安全扫描')
+        suspicious, malice = self.check_system_integrity()
+        result_output_tag(suspicious, malice)
+
+        string_output(u' [1]系统可执行文件安全扫描')
+        suspicious, malice = self.check_system_integrity()
+        result_output_tag(suspicious, malice)
+
+        # 检测结果输出到文件
+        result_output_file(u'文件检查异常如下：', self.file_malware)
 
 
 if __name__ == '__main__':

@@ -734,38 +734,20 @@ class Rootkit_Analysis:
     def run(self):
         print(u'\n开始Rootkit类安全扫描')
         file_write(u'\n开始Rootkit类安全扫描\n')
-        sys.stdout.flush()
+
         i = 0
         for rootkit_info in self.rootkit_rules:
             i += 1
-            print(align(u' [%d]%s' % (i, rootkit_info['name']), 30) + u'[ ', end='')
-            file_write(align(u' [%d]%s' % (i, rootkit_info['name']), 30) + u'[ ')
-            sys.stdout.flush()
+            string_output(u' [%d]%s' % (i, rootkit_info['name']))
             suspicious, malice = self.check_rootkit_rules(rootkit_info)
-            if malice:
-                pringf(u'存在风险', malice=True)
-            elif suspicious and (not malice):
-                pringf(u'警告', suspicious=True)
-            else:
-                pringf(u'OK', security=True)
+            result_output_tag(suspicious, malice)
 
-        print(align(u' [%d]检测内核模块名称' % (i + 1), 30) + u'[ ', end='')
-        file_write(align(u' [%d]检测内核模块名称' % (i + 1), 30) + u'[ ')
-        sys.stdout.flush()
+        string_output(u' [%d]检测LKM内核模块' % (i + 1))
         suspicious, malice = self.check_bad_LKM()
-        if malice:
-            pringf(u'存在风险', malice=True)
-        elif suspicious and (not malice):
-            pringf(u'警告', suspicious=True)
-        else:
-            pringf(u'OK', security=True)
+        result_output_tag(suspicious, malice)
 
-        if len(self.rootkit) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'Rootkit类安全扫描如下：\n')
-            for info in self.rootkit:
-                file_write(json.dumps(info, ensure_ascii=False) + '\n')
-            file_write('-' * 30)
+        # 检测结果输出到文件
+        result_output_file(u'Rootkit类安全扫描如下：\n', self.rootkit)
 
 
 if __name__ == '__main__':
