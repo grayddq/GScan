@@ -255,7 +255,7 @@ def analysis_file(file):
         strings = os.popen("strings %s" % file).readlines()
         if len(strings) > 200: return ""
         for str in strings:
-            time.sleep(0.05)
+            time.sleep(0.01)
             mal = check_shell(str)
             if mal: return mal
             for malware in malware_infos:
