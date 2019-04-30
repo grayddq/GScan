@@ -122,14 +122,6 @@ class File_Analysis:
         suspicious, malice = self.check_hide()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [1]系统可执行文件安全扫描')
-        suspicious, malice = self.check_system_integrity()
-        result_output_tag(suspicious, malice)
-
-        string_output(u' [1]系统可执行文件安全扫描')
-        suspicious, malice = self.check_system_integrity()
-        result_output_tag(suspicious, malice)
-
         # 检测结果输出到文件
         result_output_file(u'文件检查异常如下：', self.file_malware)
 
