@@ -250,7 +250,7 @@ def analysis_file(file):
         if " " in file: return ""
         if 'GScan' in file: return ""
         if os.path.splitext(file)[1] == '.log': return ""
-        if '.log' in file: return ""
+        #if '.log' in file: return ""
         if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
         strings = os.popen("strings %s" % file).readlines()
         if len(strings) > 200: return ""

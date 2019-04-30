@@ -133,6 +133,10 @@ class User_Analysis:
         suspicious, malice = self.check_authorized_keys()
         result_output_tag(suspicious, malice)
 
+        string_output(u' [5]账户密码文件扫描')
+        suspicious, malice = self.passwd_file_analysis()
+        result_output_tag(suspicious, malice)
+
         # 检测结果输出到文件
         result_output_file(u'可疑账户类信息如下：', self.user_malware)
 
