@@ -93,7 +93,7 @@ class File_Analysis:
         suspicious, malice = False, False
         try:
             infos = os.popen(
-                'find / -type f -name " *" -o -name ". *" -o -name "..." -o -name ".." -o -name "." -o -name " " -print | grep -v "No such" |grep -v "Permission denied"').read().splitlines()
+                'find / -type f -name ". *" -o -name "...*" -o -name "..*" -not -path "/proc/*" -not -path "/run/*" -not -path "/private/*"').read().splitlines()
             for file in infos:
                 self.file_malware.append(
                     {u'异常类型': u'文件异常隐藏', u'文件路径': file, u'手工确认': u'[1]ls -l %s [2]strings %s' % (file, file)})

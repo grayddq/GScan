@@ -3,6 +3,7 @@ from __future__ import print_function
 import os, time, sys, json, re
 from lib.common import *
 from lib.ip.ip import *
+from subprocess import Popen, PIPE
 
 
 # 作者：咚咚呛
@@ -19,6 +20,8 @@ from lib.ip.ip import *
 # 10、SSH Server wrapper 后门，替换/user/sbin/sshd 为脚本文件
 # 11、/etc/inetd.conf 后门
 # 12、/etc/xinetd.conf/后门
+# 13、setuid类后门
+# 14、/etc/fstab类后门（待写）
 # 13、系统启动项后门检测
 
 
@@ -206,6 +209,25 @@ class Backdoor_Analysis:
         except:
             return suspicious, malice
 
+    # 分析setuid后门后
+    def check_setuid(self):
+        suspicious, malice = False, False
+        try:
+            p1 = Popen("find / -type f -perm -4000  -not -path '/proc/*' -not -path '/run/*'", stdout=PIPE, shell=True)
+            p2 = Popen(
+                "grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec'",
+                stdin=p1.stdout, stdout=PIPE, shell=True)
+            file_infos = p2.stdout.splitlines()
+            if info in file_infos:
+                self.backdoor.append(
+                    {u'异常类型': u'setuid后门', u'异常信息': u'文件被设置setuid属性', u'文件': info,
+                     u'手工确认': u"[1]ls -l %s [2]判断是否存在setuid设置" % info,
+                     u'风险说明': u'通常此类被设置权限的文件执行后会给予普通用户root权限，通常利用会使用ld-linux类或者自己编写程序类'})
+                suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
     # 系统启动项检测
     def check_startup(self):
         suspicious, malice = False, False
@@ -312,7 +334,11 @@ class Backdoor_Analysis:
         suspicious, malice = self.check_xinetd()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [13]系统启动项后门检测')
+        string_output(u' [13]setuid 后门检测')
+        suspicious, malice = self.check_setuid()
+        result_output_tag(suspicious, malice)
+
+        string_output(u' [14]系统启动项后门检测')
         suspicious, malice = self.check_startup()
         result_output_tag(suspicious, malice)
 
