@@ -59,7 +59,7 @@ class Webshell_Analysis:
                     self.webshell_list.append(file)
 
     def init_scan(self):
-        suspicious, malice = False, False
+        suspicious, malice, skip = False, False, False
         if sys.version_info < (3, 0):
             DEPENDENT_LIBRARIES_2_6 = "/lib/egg/yara_python-3.5.0-py2.6-linux-2.32-x86_64.egg"
             DEPENDENT_LIBRARIES_3_10 = "/lib/egg/yara_python-3.5.0-py2.7-linux-3.10-x86_64.egg"
@@ -81,11 +81,11 @@ class Webshell_Analysis:
                 sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_17)
             else:
                 # pringf(u'跳过', suspicious=True)
-                return True, malice
+                return suspicious, malice, True
             import yara
         else:
             # pringf(u'跳过', suspicious=True)
-            return True, malice
+            return suspicious, malice, True
 
         # 编译规则
         self.yararule = self.getRules(yara)
@@ -95,7 +95,7 @@ class Webshell_Analysis:
             malice = True
         # 内容去重
         self.webshell_list = list(set(self.webshell_list))
-        return suspicious, malice
+        return suspicious, malice, skip
 
     def run(self):
         print(u'\n开始Webshell安全扫描')
@@ -103,8 +103,8 @@ class Webshell_Analysis:
 
         string_output(u' [1]Webshell安全扫描')
         self.getWebRoot()
-        suspicious, malice = self.init_scan()
-        result_output_tag(suspicious, malice)
+        suspicious, malice, skip = self.init_scan()
+        result_output_tag(suspicious, malice, skip)
 
         if len(self.webshell_list) > 0:
             file_write('-' * 30 + '\n')

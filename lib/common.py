@@ -3,6 +3,7 @@ from __future__ import print_function
 import os, sys, json, re, time
 from imp import reload
 from lib.ip.ip import *
+from lib.globalvar import *
 
 # 作者：咚咚呛
 # 功能：调用的公共库
@@ -12,6 +13,11 @@ from lib.ip.ip import *
 if sys.version_info < (3, 0):
     reload(sys)
     sys.setdefaultencoding('utf-8')
+
+# 用于url提取境外IP信息
+ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
 
 # 颜色打印
@@ -90,19 +96,25 @@ def reRepeat(old):
 
 # 结果内容输出到文件
 def result_output_file(tag, result):
+    DEBUG = get_value('DEBUG')
     if len(result) > 0:
         new = reRepeat(result)
         file_write('-' * 30 + '\n')
         file_write(tag + '\n')
+        if DEBUG: print(tag)
         for info in new:
             file_write(json.dumps(info, ensure_ascii=False) + '\n')
+            if DEBUG: print(json.dumps(info, ensure_ascii=False))
+    if DEBUG: print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 
-def result_output_tag(suspicious=False, malice=False):
+def result_output_tag(suspicious=False, malice=False, skip=False):
     if malice:
         pringf(u'存在风险', malice=True)
     elif suspicious and (not malice):
         pringf(u'警告', suspicious=True)
+    elif skip and not suspicious and not malice:
+        pringf(u'跳过', suspicious=True)
     else:
         pringf(u'OK', security=True)
 
@@ -244,33 +256,36 @@ def analysis_strings(strings):
 # 不存在返回空
 def analysis_file(file):
     try:
+        SCAN_TYPE = get_value('SCAN_TYPE')
+        DEBUG = get_value('DEBUG')
         time.sleep(0.05)
         if not os.path.exists(file): return ""
         if os.path.isdir(file): return ""
         if " " in file: return ""
         if 'GScan' in file: return ""
         if os.path.splitext(file)[1] == '.log': return ""
-        #if '.log' in file: return ""
         if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
         strings = os.popen("strings %s" % file).readlines()
         if len(strings) > 200: return ""
         for str in strings:
             time.sleep(0.01)
             mal = check_shell(str)
-            if mal: return mal
-            for malware in malware_infos:
-                if malware.replace('\n', '') in str:
-                    return malware
-            if check_contents_ip(str): return str
+            if mal:
+                if DEBUG: print(u'bash shell :%s' % mal)
+                return mal
+            # 完全扫描会带入恶意特征扫描
+            if SCAN_TYPE == 2:
+                for malware in malware_infos:
+                    if malware.replace('\n', '') in str:
+                        if DEBUG: print(u'malware :%s' % malware)
+                        return malware
+            if check_contents_ip(str):
+                if DEBUG: print(u'境外IP操作类 :%s' % str)
+                return str
         return ""
     except:
         return ""
 
-
-# 用于url提取境外IP信息
-ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
 
 # 恶意特征列表list
 malware_infos = []

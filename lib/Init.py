@@ -12,7 +12,7 @@ from lib.common import *
 
 class SYS_INIT:
     def __init__(self):
-        # 异常后门列表
+        # 异常信息
         self.backdoor_info = []
 
     def check_alias_conf(self):
@@ -70,6 +70,7 @@ class SYS_INIT:
 
         # 检测结果输出到文件
         result_output_file(u'系统初始化检查：', self.backdoor_info)
+
 
 
 if __name__ == '__main__':
