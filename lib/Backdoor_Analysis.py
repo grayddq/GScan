@@ -222,7 +222,7 @@ class Backdoor_Analysis:
                 stdin=p1.stdout, stdout=PIPE, shell=True)
             file_infos = p2.stdout.splitlines()
             '''
-            if info in file_infos:
+            for info in file_infos:
                 self.backdoor.append(
                     {u'异常类型': u'setuid后门', u'异常信息': u'文件被设置setuid属性', u'文件': info,
                      u'手工确认': u"[1]ls -l %s [2]判断是否存在setuid设置" % info,
