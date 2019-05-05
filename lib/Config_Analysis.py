@@ -25,8 +25,7 @@ class Config_Analysis:
                 shell_process = os.popen(
                     'cat /etc/resolv.conf | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"').read().splitlines()
                 for ip in shell_process:
-                    if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
-                            find(ip)[0:4] != u'本机地址'):
+                    if check_ip(ip):
                         self.config_suspicious.append(
                             {u'配置信息': u'DNS servername: %s' % ip, u'异常类型': u'境外dns', u'文件': u'/etc/resolv.conf'})
                         suspicious = True
