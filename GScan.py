@@ -46,7 +46,7 @@ if __name__ == '__main__':
         init()
         set_value('DEBUG', True if options.debug else False)
         # 设置国内ip模式
-        set_value('Overseas', False if options.overseas else True)
+        set_value('Overseas', True if options.overseas else False)
         # 设置扫描模式为完全扫描
         set_value('SCAN_TYPE', 2 if options.full_scan else 1)
         # 创建日志文件
