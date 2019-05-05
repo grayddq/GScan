@@ -34,11 +34,10 @@ if __name__ == '__main__':
     print(progam)
 
     parser = optparse.OptionParser()
-    parser.add_option("--overseas", dest="overseas", default=False, action='store_true',
-                      help=u"默认国内模式，设置此参数将不进行境外ip的匹配")
-    parser.add_option("--full", dest="full_scan", default=False, action='store_true', help=u"完全扫描，默认为快速扫描")
+    parser.add_option("--overseas", dest="overseas", default=False, action='store_true', help=u"境外模式，此参数将不进行境外ip的匹配")
+    parser.add_option("--full", dest="full_scan", default=False, action='store_true', help=u"完全扫描，此参数将启用完全扫描")
     parser.add_option("--debug", dest="debug", default=False, action='store_true', help=u"调试模式，进行程序的调试数据输出")
-    parser.add_option("-l", "--log", dest="logdir", help=u"打包当前系统的所有安全日志，demo: -l /var/log/")
+    parser.add_option("-l", "--log", dest="logdir", help=u"打包当前系统的所有安全日志（暂不支持），demo: -l /var/log/")
     options, _ = parser.parse_args()
 
     if not options.logdir:

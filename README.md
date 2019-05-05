@@ -75,16 +75,37 @@
 >
 >权限：root权限启动
 >
->执行时间：新创建的主机程序大概执行时间为10分钟，程序执行时间的长度由检测文件的多少决定，有可能会存在较长的时间，请耐心等待
+>执行时间：默认安全扫描大概执行时间为4～6分钟，完全扫描在1～2小时之间，程序执行时间的长度由检测文件的多少决定，有可能会存在较长的时间，请耐心等待
 >
 >兼容性：目前程序只针对Centos进行开发测试，其他系统并未做兼容性，检测结果未知
 
 ## 部署和执行 ##
+
+程序下载
+
 > root# <kbd>git clone https://github.com/grayddq/GScan.git</kbd>
 >
 > root# <kbd>cd GScan</kbd>
-> 
-> root# <kbd>sudo python GScan.py</kbd>
+
+程序执行
+
+>     root# python GScan.py -h
+>       
+>     Usage: GScan.py [options]
+>       
+>     Options:
+>
+>       -h, --help            show this help message and exit
+>
+>       --overseas            境外模式，此参数将不进行境外ip的匹配
+>
+>       --full                完全扫描，此参数将启用完全扫描
+>
+>       --debug               调试模式，进行程序的调试数据输出
+>
+>       -l LOGDIR, --log=LOGDIR 打包当前系统的所有安全日志，demo: -l /var/log/
+>
+>root# <kbd>python GScan.py</kbd>
 >
 >或者使用nohup后台执行,一段时间后直接查看输出结果/var/log/gscan/gscan.log
 >
