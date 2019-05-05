@@ -258,7 +258,6 @@ def analysis_file(file):
     try:
         SCAN_TYPE = get_value('SCAN_TYPE')
         DEBUG = get_value('DEBUG')
-        time.sleep(0.05)
         if not os.path.exists(file): return ""
         if os.path.isdir(file): return ""
         if " " in file: return ""
@@ -267,14 +266,15 @@ def analysis_file(file):
         if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
         strings = os.popen("strings %s" % file).readlines()
         if len(strings) > 200: return ""
+        time.sleep(0.01)
         for str in strings:
-            time.sleep(0.01)
             mal = check_shell(str)
             if mal:
                 if DEBUG: print(u'bash shell :%s' % mal)
                 return mal
             # 完全扫描会带入恶意特征扫描
             if SCAN_TYPE == 2:
+                time.sleep(0.01)
                 for malware in malware_infos:
                     if malware.replace('\n', '') in str:
                         if DEBUG: print(u'malware :%s' % malware)
