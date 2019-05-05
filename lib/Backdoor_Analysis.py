@@ -213,7 +213,7 @@ class Backdoor_Analysis:
     def check_setuid(self):
         suspicious, malice = False, False
         try:
-            p1 = Popen("find / -type f -perm -4000  -not -path '/proc/*' -not -path '/run/*'", stdout=PIPE, shell=True)
+            p1 = Popen("find / ! -path '/proc/*' -type f -perm -4000", stdout=PIPE, shell=True)
             p2 = Popen(
                 "grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec'",
                 stdin=p1.stdout, stdout=PIPE, shell=True)
