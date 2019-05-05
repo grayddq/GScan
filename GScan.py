@@ -34,17 +34,19 @@ if __name__ == '__main__':
     print(progam)
 
     parser = optparse.OptionParser()
+    parser.add_option("--overseas", dest="overseas", default=False, action='store_true',
+                      help=u"默认国内模式，设置此参数将不进行境外ip的匹配")
     parser.add_option("--full", dest="full_scan", default=False, action='store_true', help=u"完全扫描，默认为快速扫描")
     parser.add_option("--debug", dest="debug", default=False, action='store_true', help=u"调试模式，进行程序的调试数据输出")
     parser.add_option("-l", "--log", dest="logdir", help=u"打包当前系统的所有安全日志，demo: -l /var/log/")
-
     options, _ = parser.parse_args()
 
     if not options.logdir:
-
         # 设置调试模式
         init()
         set_value('DEBUG', True if options.debug else False)
+        # 设置国内ip模式
+        set_value('Overseas', False if options.overseas else True)
         # 设置扫描模式为完全扫描
         set_value('SCAN_TYPE', 2 if options.full_scan else 1)
         # 创建日志文件

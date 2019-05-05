@@ -200,11 +200,13 @@ def get_malware_info():
 # 不存在境外ip返回假
 def check_contents_ip(contents):
     try:
+        Overseas = get_value('Overseas')
+        if Overseas: return False
         if not re.search(ip_http, contents): return False
         if re.search(lan_ip, contents): return False
         for ip in re.findall(ip_re, contents):
             if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
-                    find(ip)[0:4] != u'本机地址'):
+                    find(ip)[0:4] != u'本机地址') and (find(ip)[0:4] != u'本地链路'):
                 return True
         return False
     except:
@@ -227,11 +229,13 @@ def isIP(str):
 # 否则返回假
 def check_ip(ip):
     try:
+        Overseas = get_value('Overseas')
+        if Overseas: return False
         ip = ip.strip()
         if not isIP(ip): return False
         if re.search(lan_ip, ip): return False
         if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
-                find(ip)[0:4] != u'本机地址'):
+                find(ip)[0:4] != u'本机地址') and (find(ip)[0:4] != u'本地链路'):
             return True
         return False
     except:
@@ -258,29 +262,34 @@ def analysis_file(file):
     try:
         SCAN_TYPE = get_value('SCAN_TYPE')
         DEBUG = get_value('DEBUG')
+        Overseas = get_value('Overseas')
+
         if not os.path.exists(file): return ""
         if os.path.isdir(file): return ""
         if " " in file: return ""
         if 'GScan' in file: return ""
+        if '\\' in file: return ""
         if os.path.splitext(file)[1] == '.log': return ""
         if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
         strings = os.popen("strings %s" % file).readlines()
         if len(strings) > 200: return ""
+
         time.sleep(0.01)
         for str in strings:
             mal = check_shell(str)
             if mal:
-                if DEBUG: print(u'bash shell :%s' % mal)
+                if DEBUG: print(u'文件：%s ，bash shell :%s' % file, mal)
                 return mal
             # 完全扫描会带入恶意特征扫描
             if SCAN_TYPE == 2:
                 time.sleep(0.01)
                 for malware in malware_infos:
                     if malware.replace('\n', '') in str:
-                        if DEBUG: print(u'malware :%s' % malware)
+                        if DEBUG: print(u'文件：%s ，恶意特征 :%s' % file, malware)
                         return malware
+            if Overseas: continue
             if check_contents_ip(str):
-                if DEBUG: print(u'境外IP操作类 :%s' % str)
+                if DEBUG: print(u'文件：%s ，境外IP操作类 :%s' % file, str)
                 return str
         return ""
     except:
