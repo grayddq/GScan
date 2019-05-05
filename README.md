@@ -87,7 +87,7 @@
 >
 > root# <kbd>cd GScan</kbd>
 
-程序执行
+参数参考
 
 >     root# python GScan.py -h
 >       
@@ -104,7 +104,9 @@
 >       --debug               调试模式，进行程序的调试数据输出
 >
 >       -l LOGDIR, --log=LOGDIR 打包当前系统的所有安全日志，demo: -l /var/log/
->
+
+执行参考：
+
 >root# <kbd>python GScan.py</kbd>
 >
 >或者使用nohup后台执行,一段时间后直接查看输出结果/var/log/gscan/gscan.log
