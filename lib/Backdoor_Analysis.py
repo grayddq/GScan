@@ -213,11 +213,15 @@ class Backdoor_Analysis:
     def check_setuid(self):
         suspicious, malice = False, False
         try:
+            file_infos = os.popen(
+                "find / ! -path '/proc/*' -type f -perm -4000 | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec'").read().splitlines()
+            '''
             p1 = Popen("find / ! -path '/proc/*' -type f -perm -4000", stdout=PIPE, shell=True)
             p2 = Popen(
                 "grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec'",
                 stdin=p1.stdout, stdout=PIPE, shell=True)
             file_infos = p2.stdout.splitlines()
+            '''
             if info in file_infos:
                 self.backdoor.append(
                     {u'异常类型': u'setuid后门', u'异常信息': u'文件被设置setuid属性', u'文件': info,
