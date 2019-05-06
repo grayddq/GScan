@@ -49,14 +49,17 @@ class Webshell_Analysis:
         for webroot in self.webroot_list:
             if not os.path.exists(webroot): continue
             for file in gci(webroot):
-                if not os.path.exists(file): continue
-                if os.path.isdir(file): continue
-                if (os.path.getsize(file) == 0) or (
-                        round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
-                fp = open(file, 'rb')
-                matches = self.yararule.match(data=fp.read())
-                if len(matches):
-                    self.webshell_list.append(file)
+                try:
+                    if not os.path.exists(file): continue
+                    if os.path.isdir(file): continue
+                    if (os.path.getsize(file) == 0) or (
+                            round(os.path.getsize(file) / float(1024 * 1024)) > 10): continue
+                    fp = open(file, 'rb')
+                    matches = self.yararule.match(data=fp.read())
+                    if len(matches):
+                        self.webshell_list.append(file)
+                except:
+                    continue
 
     def init_scan(self):
         suspicious, malice, skip = False, False, False
