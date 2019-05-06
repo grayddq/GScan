@@ -747,7 +747,7 @@ class Rootkit_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'Rootkit类安全扫描如下：\n', self.rootkit)
+        result_output_file(u'Rootkit类安全扫描如下：', self.rootkit)
 
 
 if __name__ == '__main__':

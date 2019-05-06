@@ -51,7 +51,7 @@ class History_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'可疑的操作记录如下：\n', self.history)
+        result_output_file(u'可疑的操作记录如下：', self.history)
 
 
 if __name__ == '__main__':

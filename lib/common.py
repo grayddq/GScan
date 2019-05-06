@@ -272,7 +272,8 @@ def analysis_file(file):
 
         if not os.path.exists(file): return ""
         if os.path.isdir(file): return ""
-        if " " in file: return ""
+        if (" " in file) or ("GScan" in file) or ("\\" in file) or (".jpg" in file) or (")" in file) or (
+                "(" in file): return ""
         if 'GScan' in file: return ""
         if '\\' in file: return ""
         if os.path.splitext(file)[1] == '.log': return ""

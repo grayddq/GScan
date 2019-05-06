@@ -79,6 +79,8 @@ if __name__ == '__main__':
         Rootkit_Analysis().run()
         # WEBShell类扫描
         Webshell_Analysis().run()
+        # 漏洞扫描
+
 
         # 输出报告
         print(u'-' * 30)

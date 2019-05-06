@@ -137,7 +137,6 @@ class Proc_Analysis:
         except:
             return suspicious, malice
 
-
     def run(self):
         print(u'\n开始进程类安全扫描')
         file_write(u'\n开始进程类安全扫描\n')
@@ -164,8 +163,6 @@ class Proc_Analysis:
 
         # 检测结果输出到文件
         result_output_file(u'恶意进程如下：', self.process_backdoor)
-
-
 
 
 if __name__ == '__main__':

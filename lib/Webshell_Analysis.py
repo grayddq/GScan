@@ -3,6 +3,7 @@ from __future__ import print_function
 from lib.common import *
 import os, platform, sys
 from lib.Webserver import *
+from lib.globalvar import *
 
 
 # 作者：咚咚呛
@@ -63,42 +64,44 @@ class Webshell_Analysis:
 
     def init_scan(self):
         suspicious, malice, skip = False, False, False
-        if sys.version_info < (3, 0):
-            DEPENDENT_LIBRARIES_2_6 = "/lib/egg/yara_python-3.5.0-py2.6-linux-2.32-x86_64.egg"
-            DEPENDENT_LIBRARIES_3_10 = "/lib/egg/yara_python-3.5.0-py2.7-linux-3.10-x86_64.egg"
-            DEPENDENT_LIBRARIES_4_20 = "/lib/egg/yara_python-3.8.1-py2.7-linux-4.20-x86_64.egg"
-            DEPENDENT_LIBRARIES_16 = "/lib/egg/yara_python-3.5.0-py2.7-macosx-10.12-x86_64.egg"
-            DEPENDENT_LIBRARIES_17 = "/lib/egg/yara_python-3.5.0-py2.7-macosx-10.13-x86_64.egg"
-            _kernel = platform.release()
-            if _kernel.startswith('2.6'):
-                sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_2_6)
-            elif _kernel.startswith('3.') and ("6." in str(platform.dist())):
-                sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_2_6)
-            elif _kernel.startswith('3.'):
-                sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_3_10)
-            elif _kernel.startswith('4.'):
-                sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_4_20)
-            elif _kernel.startswith('16.'):
-                sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_16)
-            elif _kernel.startswith('17.'):
-                sys.path.append(sys.path[0] + DEPENDENT_LIBRARIES_17)
+        try:
+            SYS_PATH = get_value('SYS_PATH')
+            if sys.version_info < (3, 0):
+                DEPENDENT_LIBRARIES_2_6 = "/lib/egg/yara_python-3.5.0-py2.6-linux-2.32-x86_64.egg"
+                DEPENDENT_LIBRARIES_3_10 = "/lib/egg/yara_python-3.5.0-py2.7-linux-3.10-x86_64.egg"
+                DEPENDENT_LIBRARIES_4_20 = "/lib/egg/yara_python-3.8.1-py2.7-linux-4.20-x86_64.egg"
+                DEPENDENT_LIBRARIES_16 = "/lib/egg/yara_python-3.5.0-py2.7-macosx-10.12-x86_64.egg"
+                DEPENDENT_LIBRARIES_17 = "/lib/egg/yara_python-3.5.0-py2.7-macosx-10.13-x86_64.egg"
+                _kernel = platform.release()
+                if _kernel.startswith('2.6'):
+                    sys.path.append(SYS_PATH + DEPENDENT_LIBRARIES_2_6)
+                elif _kernel.startswith('3.') and ("6." in str(platform.dist())):
+                    sys.path.append(SYS_PATH + DEPENDENT_LIBRARIES_2_6)
+                elif _kernel.startswith('3.'):
+                    sys.path.append(SYS_PATH + DEPENDENT_LIBRARIES_3_10)
+                elif _kernel.startswith('4.'):
+                    sys.path.append(SYS_PATH + DEPENDENT_LIBRARIES_4_20)
+                elif _kernel.startswith('16.'):
+                    sys.path.append(SYS_PATH + DEPENDENT_LIBRARIES_16)
+                elif _kernel.startswith('17.'):
+                    sys.path.append(SYS_PATH + DEPENDENT_LIBRARIES_17)
+                else:
+                    return suspicious, malice, True
+                import yara
             else:
-                # pringf(u'跳过', suspicious=True)
                 return suspicious, malice, True
-            import yara
-        else:
-            # pringf(u'跳过', suspicious=True)
-            return suspicious, malice, True
 
-        # 编译规则
-        self.yararule = self.getRules(yara)
-        self.scan_web()
+            # 编译规则
+            self.yararule = self.getRules(yara)
+            self.scan_web()
 
-        if len(self.webshell_list) > 0:
-            malice = True
-        # 内容去重
-        self.webshell_list = list(set(self.webshell_list))
-        return suspicious, malice, skip
+            if len(self.webshell_list) > 0:
+                malice = True
+            # 内容去重
+            self.webshell_list = list(set(self.webshell_list))
+            return suspicious, malice, skip
+        except:
+            return suspicious, malice, skip
 
     def run(self):
         print(u'\n开始Webshell安全扫描')
