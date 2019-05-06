@@ -122,32 +122,38 @@ def result_output_tag(suspicious=False, malice=False, skip=False):
 # 递归目录返回文件名列表
 def gci(filepath):
     filename = []
-    files = os.listdir(filepath)
-    for fi in files:
-        fi_d = os.path.join(filepath, fi)
-        if os.path.isdir(fi_d):
-            filename = filename + gci(fi_d)
-        else:
-            filename.append(os.path.join(filepath, fi_d))
-    return filename
+    try:
+        files = os.listdir(filepath)
+        for fi in files:
+            fi_d = os.path.join(filepath, fi)
+            if os.path.isdir(fi_d):
+                filename = filename + gci(fi_d)
+            else:
+                filename.append(os.path.join(filepath, fi_d))
+        return filename
+    except:
+        return filename
 
 
 # 创建日志文件
 def mkfile():
-    if os.path.exists('/var/log/gscan/gscan.log'):
-        f = open('/var/log/gscan/gscan.log', "r+")
+    SYS_PATH = get_value('SYS_PATH')
+    LOG_PATH = get_value('LOG_PATH')
+    if os.path.exists(LOG_PATH):
+        f = open(LOG_PATH, "r+")
         f.truncate()
         f.close()
     else:
-        if not os.path.exists('/var/log/gscan/'): os.mkdir('/var/log/gscan/')
-        f = open('/var/log/gscan/gscan.log', "w")
+        if not os.path.exists(SYS_PATH + '/log/'): os.mkdir(SYS_PATH + '/log/')
+        f = open(LOG_PATH, "w")
         f.truncate()
         f.close()
 
 
 # 追加文件写入
-def file_write(content, logfile='/var/log/gscan/gscan.log'):
-    with open(logfile, 'a+') as f:
+def file_write(content):
+    LOG_PATH = get_value('LOG_PATH')
+    with open(LOG_PATH, 'a+') as f:
         f.write(content)
     sys.stdout.flush()
     return
@@ -206,7 +212,7 @@ def check_contents_ip(contents):
         if re.search(lan_ip, contents): return False
         for ip in re.findall(ip_re, contents):
             if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
-                    find(ip)[0:4] != u'本机地址') and (find(ip)[0:4] != u'本地链路'):
+                    find(ip)[0:4] != u'本机地址') and (find(ip)[0:4] != u'本地链路') and (find(ip)[0:4] != u'保留地址'):
                 return True
         return False
     except:
@@ -235,7 +241,7 @@ def check_ip(ip):
         if not isIP(ip): return False
         if re.search(lan_ip, ip): return False
         if (find(ip)[0:2] != u'中国') and (find(ip)[0:3] != u'局域网') and (find(ip)[0:4] != u'共享地址') and (
-                find(ip)[0:4] != u'本机地址') and (find(ip)[0:4] != u'本地链路'):
+                find(ip)[0:4] != u'本机地址') and (find(ip)[0:4] != u'本地链路') and (find(ip)[0:4] != u'保留地址'):
             return True
         return False
     except:

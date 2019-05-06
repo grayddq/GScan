@@ -48,6 +48,8 @@ if __name__ == '__main__':
         set_value('Overseas', True if options.overseas else False)
         # 设置扫描模式为完全扫描
         set_value('SCAN_TYPE', 2 if options.full_scan else 1)
+        set_value('SYS_PATH', os.path.dirname(os.path.abspath(__file__)))
+        set_value('LOG_PATH', os.path.dirname(os.path.abspath(__file__)) + "/log/gscan.log")
         # 创建日志文件
         mkfile()
         file_write(progam + '\n')
@@ -80,7 +82,7 @@ if __name__ == '__main__':
 
         # 输出报告
         print(u'-' * 30)
-        print(u'\033[1;32m扫描完毕，扫描结果已记入到/var/log/gscan/gscan.log文件中，请及时查看\033[0m')
+        print(u'\033[1;32m扫描完毕，扫描结果已记入到 %s 文件中，请及时查看\033[0m' % get_value('LOG_PATH'))
 
 
     elif options.logdir:

@@ -166,7 +166,8 @@ class Backdoor_Analysis:
         suspicious, malice = False, False
         try:
             infos = os.popen("file /usr/sbin/sshd").read().splitlines()
-            if 'ELF' not in infos[0]:
+            if not len(infos): return suspicious, malice
+            if ('ELF' not in infos[0]) and ('executable' not in infos[0]):
                 self.backdoor.append(
                     {u'异常类型': u'SSHwrapper 后门', u'异常信息': infos[0], u'文件': u'/usr/sbin/sshd',
                      u'手工确认': u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd'})
@@ -214,7 +215,7 @@ class Backdoor_Analysis:
         suspicious, malice = False, False
         try:
             file_infos = os.popen(
-                "find / ! -path '/proc/*' -type f -perm -4000 | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec'").read().splitlines()
+                "find / ! -path '/proc/*' -type f -perm -4000 | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec|top|Xorg|nvidia-modprobe|quota|login|security_authtrampoline|authopen|traceroute6|traceroute|ps'").read().splitlines()
             '''
             p1 = Popen("find / ! -path '/proc/*' -type f -perm -4000", stdout=PIPE, shell=True)
             p2 = Popen(

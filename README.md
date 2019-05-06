@@ -111,7 +111,7 @@
 
 >root# <kbd>python GScan.py</kbd>
 >
->或者使用nohup后台执行,一段时间后直接查看输出结果/var/log/gscan/gscan.log
+>或者使用nohup后台执行,一段时间后直接查看输出结果./GScan/log/gscan.log
 >
 >root# <kbd>nohup python GScan.py &</kbd>
 
@@ -120,6 +120,7 @@
 
 	GScan
 	----GScan.py                #主程序
+	----log                     #日志和结果记录
 	----lib                     #模块库文件
 	-------common.py            #调用的公共库
 	-------Host_Info.py         #主机信息获取
@@ -243,7 +244,7 @@
 
 ## 检测结果 ##
 
-日志及结果目录默认：/var/log/gscan/gscan.log
+日志及结果目录默认：./GScan/log/gscan.log
 
 
 ## 运行截图 ##
