@@ -1,8 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, sys, json, re
-from lib.common import *
-from lib.ip.ip import *
+import os, re
+from lib.core.common import *
+from lib.core.ip.ip import *
 from subprocess import Popen, PIPE
 
 
@@ -23,7 +23,7 @@ class Config_Analysis:
         try:
             if os.path.exists('/etc/resolv.conf'):
                 shell_process = os.popen(
-                    'cat /etc/resolv.conf | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"').read().splitlines()
+                    'cat /etc/resolv.conf 2>/dev/null| grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"').read().splitlines()
                 for ip in shell_process:
                     if check_ip(ip):
                         self.config_suspicious.append(
@@ -37,9 +37,7 @@ class Config_Analysis:
     def check_iptables(self):
         suspicious, malice = False, False
         try:
-            iptable = os.popen("whereis iptables").read().splitlines()
-            if not len(iptable): return suspicious, malice
-            shell_process = os.popen("iptables -L -n| grep -v 'Chain'|grep 'ACCEPT'").read().splitlines()
+            shell_process = os.popen("iptables -L -n 2>/dev/null| grep -v 'Chain'|grep 'ACCEPT'").read().splitlines()
             for iptables in shell_process:
                 self.config_suspicious.append(
                     {u'配置信息': iptables, u'异常类型': u'存在iptables ACCEPT策略', u'手工确认': u'[1]iptables -L'})
@@ -62,9 +60,9 @@ class Config_Analysis:
         suspicious, malice = False, False
         try:
             if not os.path.exists("/etc/hosts"): return suspicious, malice
-            p1 = Popen("cat /etc/hosts", stdout=PIPE, shell=True)
+            p1 = Popen("cat /etc/hosts 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("awk '{print $1}'", stdin=p1.stdout, stdout=PIPE, shell=True)
-            shell_process = p2.stdout.readlines()
+            shell_process = p2.stdout.read().splitlines()
             for ip_info in shell_process:
                 if not re.search(self.ip_re, ip_info): continue
                 ip = ip_info.strip().replace('\n', '')

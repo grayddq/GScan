@@ -119,27 +119,31 @@
 ## 程序脚本说明 ##
 
 	GScan
-	----GScan.py                #主程序
-	----log                     #日志和结果记录
-	----lib                     #模块库文件
-	-------common.py            #调用的公共库
-	-------Host_Info.py         #主机信息获取
-	-------File_Analysis.py     #文件类安全检测
-	-------History_Analysis.py  #用户历史操作类
-	-------Proc_Analysis.py     #进程类安全检测
-	-------Network_Analysis.py  #网络类安全检测
-	-------Backdoor_Analysis.py #后门类检测
-	-------User_Analysis.py     #账户类安全排查
-	-------Log_Analysis.py      #日志类安全分析
-	-------Config_Analysis.py   #安全配置类分析
-	-------Rootkit_Analysis.py  #Rootkit分析
-	-------SSHAnalysis.py       #secure日志分析
-	-------Webserver.py         #获取当前web服务的web根目录
-	-------Webshell_Analysis.py #webshell检测
-	-----ip                     #ip地址定位库
-	-----malware                #各类恶意特征库
-	-----egg                    #yara打包动态库
-	-----webshell_rule        #webshell检测的规则
+	----GScan.py                   #主程序
+	----log                        #日志和结果记录
+	----lib                        #模块库文件
+	-------core                    #调用库文件
+	----------common.py            #公共库模块
+	----------globalvar.py         #全局参数管理模块
+	----------option.py            #参数管理模块
+	----------ip                   ##ip地址定位库
+	-------egg                     #yara打包动态库
+	-------malware                 #恶意特征库
+	-------plugins                 #检测插件模块库
+	----------Host_Info.py         #主机信息获取
+	----------File_Analysis.py     #文件类安全检测
+	----------History_Analysis.py  #用户历史操作类
+	----------Proc_Analysis.py     #进程类安全检测
+	----------Network_Analysis.py  #网络类安全检测
+	----------Backdoor_Analysis.py #后门类检测
+	----------User_Analysis.py     #账户类安全排查
+	----------Log_Analysis.py      #日志类安全分析
+	----------Config_Analysis.py   #安全配置类分析
+	----------Rootkit_Analysis.py  #Rootkit分析
+	----------SSHAnalysis.py       #secure日志分析
+	----------Webserver.py         #获取当前web服务的web根目录
+	----------Webshell_Analysis.py #webshell检测
+	----------webshell_rule        #webshell检测的规则
 
 
 ## 程序特点 ##
@@ -225,6 +229,8 @@
 | 【日志安全检测】wtmp日志安全检测 | √ | √ |  |  |
 | 【日志安全检测】utmp日志安全检测 | √ | √ |  |  |
 | 【日志安全检测】lastlog日志安全检测 | √ | √ |  |  |
+| 【日志安全检测】web日志安全检测 |  |  |  |  |
+| 【日志安全检测】其他服务日志安全检测 |  |  |  |  |
 | 【安全配置检测】DNS设置检测 | √ |  |  | √ |
 | 【安全配置检测】防火墙设置检测 | √ |  |  | √ |
 | 【安全配置检测】hosts安全检测 | √ |  |  | √ |

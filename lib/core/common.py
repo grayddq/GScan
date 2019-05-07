@@ -2,8 +2,8 @@
 from __future__ import print_function
 import os, sys, json, re, time
 from imp import reload
-from lib.ip.ip import *
-from lib.globalvar import *
+from lib.core.ip.ip import *
+from lib.core.globalvar import *
 
 # 作者：咚咚呛
 # 功能：调用的公共库
@@ -18,6 +18,9 @@ if sys.version_info < (3, 0):
 ip_http = r'(htt|ft)p(|s)://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 ip_re = r'(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})'
+
+# 恶意特征列表list
+malware_infos = []
 
 
 # 颜色打印
@@ -186,9 +189,9 @@ def check_shell(content):
 
 
 # 获取配置文件的恶意域名等信息
-def get_malware_info():
+def get_malware_info(path):
     try:
-        malware_path = sys.path[0] + '/lib/malware/'
+        malware_path = path + '/lib/malware/'
         if not os.path.exists(malware_path): return
         for file in os.listdir(malware_path):
             with open(malware_path + file) as f:
@@ -273,12 +276,9 @@ def analysis_file(file):
         if not os.path.exists(file): return ""
         if os.path.isdir(file): return ""
         if (" " in file) or ("GScan" in file) or ("\\" in file) or (".jpg" in file) or (")" in file) or (
-                "(" in file): return ""
-        if 'GScan' in file: return ""
-        if '\\' in file: return ""
-        if os.path.splitext(file)[1] == '.log': return ""
+                "(" in file) or (".log" in file): return ""
         if (os.path.getsize(file) == 0) or (round(os.path.getsize(file) / float(1024 * 1024)) > 10): return ""
-        strings = os.popen("strings %s" % file).readlines()
+        strings = os.popen("strings %s 2>/dev/null" % file).read().splitlines()
         if len(strings) > 200: return ""
 
         time.sleep(0.01)
@@ -301,9 +301,3 @@ def analysis_file(file):
         return ""
     except:
         return ""
-
-
-# 恶意特征列表list
-malware_infos = []
-# 获取恶意特征信息
-get_malware_info()

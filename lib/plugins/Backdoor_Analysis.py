@@ -1,8 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
 import os, time, sys, json, re
-from lib.common import *
-from lib.ip.ip import *
+from lib.core.common import *
+from lib.core.ip.ip import *
 from subprocess import Popen, PIPE
 
 
@@ -137,7 +137,7 @@ class Backdoor_Analysis:
     def check_alias(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("alias").read().splitlines()
+            infos = os.popen("alias 2>/dev/null").read().splitlines()
             for info in infos:
                 suspicious, malice = self.analysis_strings('alias backdoor', "", info, '[1]alias')
             return suspicious, malice
@@ -148,7 +148,7 @@ class Backdoor_Analysis:
     def check_SSH(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("netstat -ntpl |grep -v ':22 '| awk '{if (NR>2){print $7}}'").read().splitlines()
+            infos = os.popen("netstat -ntpl 2>/dev/null |grep -v ':22 '| awk '{if (NR>2){print $7}}'").read().splitlines()
             for info in infos:
                 pid = info.split("/")[0]
                 if os.path.exists('/proc/%s/exe' % pid):
@@ -165,7 +165,7 @@ class Backdoor_Analysis:
     def check_SSHwrapper(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("file /usr/sbin/sshd").read().splitlines()
+            infos = os.popen("file /usr/sbin/sshd 2>/dev/null").read().splitlines()
             if not len(infos): return suspicious, malice
             if ('ELF' not in infos[0]) and ('executable' not in infos[0]):
                 self.backdoor.append(
@@ -215,14 +215,7 @@ class Backdoor_Analysis:
         suspicious, malice = False, False
         try:
             file_infos = os.popen(
-                "find / ! -path '/proc/*' -type f -perm -4000 | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec|top|Xorg|nvidia-modprobe|quota|login|security_authtrampoline|authopen|traceroute6|traceroute|ps'").read().splitlines()
-            '''
-            p1 = Popen("find / ! -path '/proc/*' -type f -perm -4000", stdout=PIPE, shell=True)
-            p2 = Popen(
-                "grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec'",
-                stdin=p1.stdout, stdout=PIPE, shell=True)
-            file_infos = p2.stdout.splitlines()
-            '''
+                "find / ! -path '/proc/*' -type f -perm -4000 2>/dev/null | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec|top|Xorg|nvidia-modprobe|quota|login|security_authtrampoline|authopen|traceroute6|traceroute|ps'").read().splitlines()
             for info in file_infos:
                 self.backdoor.append(
                     {u'异常类型': u'setuid后门', u'异常信息': u'文件被设置setuid属性', u'文件': info,

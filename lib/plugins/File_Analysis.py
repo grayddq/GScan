@@ -1,8 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
-import os, time, sys, json, re
-from lib.common import *
-from lib.ip.ip import *
+import os
+from lib.core.common import *
+from lib.core.ip.ip import *
 
 
 # 作者：咚咚呛
@@ -92,8 +92,7 @@ class File_Analysis:
     def check_hide(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen(
-                'find / ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/private/*" -name "..*"').read().splitlines()
+            infos = os.popen('find / ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/private/*" -name "..*" 2>/dev/null').read().splitlines()
             for file in infos:
                 self.file_malware.append(
                     {u'异常类型': u'文件异常隐藏', u'文件路径': file, u'手工确认': u'[1]ls -l %s [2]strings %s' % (file, file)})

@@ -1,7 +1,7 @@
 # coding:utf-8
 from __future__ import print_function
 import os
-from lib.common import *
+from lib.core.common import *
 
 
 # 作者：咚咚呛
@@ -21,7 +21,7 @@ class User_Analysis:
     def check_user(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("awk -F: '$3==0 {print $1}' /etc/passwd").readlines()
+            shell_process = os.popen("awk -F: '$3==0 {print $1}' /etc/passwd 2>/dev/null").read().splitlines()
             for user in shell_process:
                 if user.replace("\n", "") != 'root':
                     self.user_malware.append(
@@ -36,7 +36,7 @@ class User_Analysis:
         suspicious, malice = False, False
         try:
             if os.path.exists('/etc/shadow'):
-                shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow").readlines()
+                shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow 2>/dev/null").read().splitlines()
                 for user in shell_process2:
                     self.user_malware.append(
                         {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
@@ -50,7 +50,8 @@ class User_Analysis:
         suspicious, malice = False, False
         try:
             if os.path.exists('/etc/sudoers'):
-                shell_process3 = os.popen("cat /etc/sudoers|grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").readlines()
+                shell_process3 = os.popen(
+                    "cat /etc/sudoers 2>/dev/null |grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").read().splitlines()
                 for user in shell_process3:
                     if user.replace("\n", "") != 'root' and user[0] != '%':
                         self.user_malware.append(
@@ -82,7 +83,7 @@ class User_Analysis:
         suspicious, malice = False, False
         try:
             if os.path.exists(file):
-                shell_process = os.popen("cat " + file + "|awk '{print $3}'").readlines()
+                shell_process = os.popen("cat " + file + " 2>/dev/null |awk '{print $3}'").read().splitlines()
                 if len(shell_process):
                     authorized_key = ' & '.join(shell_process).replace("\n", "")
                     self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
@@ -99,7 +100,7 @@ class User_Analysis:
             files = ['/etc/passwd', '/etc/shadow']
             for file in files:
                 if not os.path.exists(file): continue
-                shell_process = os.popen("ls -l " + file + "|awk '{print $1}'").read().splitlines()
+                shell_process = os.popen("ls -l " + file + " 2>/dev/null |awk '{print $1}'").read().splitlines()
                 if len(shell_process) != 1: continue
                 if file == '/etc/passwd' and shell_process[0] != '-rw-r--r--':
                     self.user_malware.append(

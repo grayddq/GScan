@@ -1,7 +1,7 @@
 # coding:utf-8
 from __future__ import print_function
 import os, optparse, time, sys, json
-from lib.common import *
+from lib.core.common import *
 
 
 # 作者：咚咚呛
@@ -673,7 +673,7 @@ class Rootkit_Analysis:
         try:
             # cat /proc/kallsyms |awk '{print $3}'
             if os.path.exists('/proc/kallsyms'):
-                self.kallsyms = os.popen("cat /proc/kallsyms |awk '{print $3}'").read().splitlines()
+                self.kallsyms = os.popen("cat /proc/kallsyms 2>/dev/null|awk '{print $3}'").read().splitlines()
                 return
             elif os.path.exists('/proc/ksyms'):
                 self.kallsyms = os.popen("cat /proc/ksyms").read().splitlines()
@@ -718,7 +718,7 @@ class Rootkit_Analysis:
         suspicious, malice = False, False
         try:
             if not os.path.exists('/lib/modules/'): return suspicious, malice
-            infos = os.popen('find /lib/modules/ -name "*.so" -o -name "*.ko"  -o -name "*.ko.xz"').read().splitlines()
+            infos = os.popen('find /lib/modules/ -name "*.so" -o -name "*.ko"  -o -name "*.ko.xz" 2>/dev/null').read().splitlines()
             for file in infos:
                 for lkm in self.LKM_BADNAMES:
                     if lkm == os.path.basename(file):

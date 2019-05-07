@@ -2,7 +2,7 @@
 from __future__ import print_function
 from subprocess import Popen, PIPE
 import os
-from lib.common import *
+from lib.core.common import *
 
 
 # 作者：咚咚呛
@@ -25,9 +25,7 @@ class SYS_INIT:
                 if suspicious2: suspicious = True
                 if malice2: malice = True
 
-            for dir in os.listdir('/home/'):
-                suspicious2, malice2 = self.alias_file_analysis(
-                    os.path.join('%s%s%s' % ('/home/', dir, '/.bash_profile')))
+                suspicious2, malice2 = self.alias_file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.bash_profile')))
                 if suspicious2: suspicious = True
                 if malice2: malice = True
 

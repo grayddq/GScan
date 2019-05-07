@@ -1,9 +1,9 @@
 # coding:utf-8
 from __future__ import print_function
 import os, optparse, time, json
-from lib.SSHAnalysis import *
-from lib.common import *
-from lib.ip.ip import *
+from lib.plugins.SSHAnalysis import *
+from lib.core.common import *
+from lib.core.ip.ip import *
 from subprocess import Popen, PIPE
 
 
@@ -20,9 +20,9 @@ class Log_Analysis:
         suspicious, malice = False, False
         try:
             if not os.path.exists('/var/log/wtmp'): return suspicious, malice
-            p1 = Popen("who /var/log/wtmp", stdout=PIPE, shell=True)
+            p1 = Popen("who /var/log/wtmp 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("awk '{print $1\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
-            wtmp_infos = p2.stdout.readlines()
+            wtmp_infos = p2.stdout.read().splitlines()
             for wtmp_info in wtmp_infos:
                 if wtmp_info:
                     if len(wtmp_info.split(' ')) != 2: continue
@@ -43,10 +43,9 @@ class Log_Analysis:
     def check_utmp(self):
         suspicious, malice = False, False
         try:
-            if not os.path.exists('/var/run/utmp'): return suspicious, malice
-            p1 = Popen("who", stdout=PIPE, shell=True)
+            p1 = Popen("who 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("awk '{print $1\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
-            utmp_infos = p2.stdout.readlines()
+            utmp_infos = p2.stdout.read().splitlines()
             for utmp_info in utmp_infos:
                 if utmp_info:
                     if len(utmp_info.split(' ')) != 2: continue
@@ -68,9 +67,9 @@ class Log_Analysis:
         suspicious, malice = False, False
         try:
             if not os.path.exists('/var/log/lastlog'): return suspicious, malice
-            p1 = Popen("lastlog", stdout=PIPE, shell=True)
+            p1 = Popen("lastlog 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("awk '{if (NR>1){print $1\" \"$3}}'", stdin=p1.stdout, stdout=PIPE, shell=True)
-            lastlogs = p2.stdout.readlines()
+            lastlogs = p2.stdout.read().splitlines()
             for lastlog in lastlogs:
                 if lastlog:
                     if len(lastlog.split(' ')) != 2: continue

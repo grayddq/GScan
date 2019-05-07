@@ -1,9 +1,9 @@
 # coding:utf-8
 from __future__ import print_function
 import os, optparse, time, sys, json, re
-from lib.common import *
+from lib.core.common import *
 from subprocess import Popen, PIPE
-from lib.ip.ip import *
+from lib.core.ip.ip import *
 
 
 # 作者：咚咚呛
@@ -47,7 +47,17 @@ class Proc_Analysis:
     def shell_analysis(self):
         suspicious, malice = False, False
         try:
-
+            p1 = Popen("ps -efwww 2>/dev/null", stdout=PIPE, shell=True)
+            p2 = Popen("grep -v 'grep'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            p3 = Popen("awk '{print $1\" \"$2\" \"$3\" \"$8}'", stdin=p2.stdout, stdout=PIPE, shell=True)
+            process = p3.stdout.read().splitlines()
+            for pro in process:
+                pro_info = pro.strip().split(' ', 3)
+                if check_shell(pro_info[3]):
+                    self.process_backdoor.append(
+                        {u'异常类型': u'进程恶意程序', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': pro_info[2],
+                         u'进程cmd': pro_info[3].replace("\n", "")})
+                    malice = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -56,7 +66,7 @@ class Proc_Analysis:
     def work_analysis(self):
         suspicious, malice = False, False
         try:
-            p1 = Popen("ps aux", stdout=PIPE, shell=True)
+            p1 = Popen("ps aux 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen('grep -v PID', stdin=p1.stdout, stdout=PIPE, shell=True)
             p3 = Popen('sort -rn -k3', stdin=p2.stdout, stdout=PIPE, shell=True)
             p4 = Popen('head', stdin=p3.stdout, stdout=PIPE, shell=True)
@@ -64,7 +74,7 @@ class Proc_Analysis:
             p6 = Popen(
                 "grep -v 'systemd|rsyslogd|mysqld|redis|apache||nginx|mongodb|docker|memcached|tomcat|jboss|java|php|python'",
                 stdin=p5.stdout, stdout=PIPE, shell=True)
-            cpu_process = p6.stdout.readlines()
+            cpu_process = p6.stdout.read().splitlines()
             # cpu_process = os.popen(
             #    "ps aux|grep -v PID|sort -rn -k +3|head|awk '{print $1\" \"$2\" \"$3\" \"$4\" \"$11}'|grep -v 'systemd|rsyslogd|mysqld|redis|apache||nginx|mongodb|docker|memcached|tomcat|jboss|java|php|python'").readlines()
             for pro in cpu_process:
@@ -94,9 +104,9 @@ class Proc_Analysis:
         suspicious, malice = False, False
         try:
             # ps获取所有pid
-            p1 = Popen("ps -ef", stdout=PIPE, shell=True)
+            p1 = Popen("ps -ef 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("awk 'NR>1{print $2}'", stdin=p1.stdout, stdout=PIPE, shell=True)
-            pid_process = p2.stdout.splitlines()
+            pid_process = p2.stdout.read().splitlines()
 
             # 所有/proc目录的pid
             pid_pro_file = []
@@ -119,14 +129,11 @@ class Proc_Analysis:
     def keyi_analysis(self):
         suspicious, malice = False, False
         try:
-            p1 = Popen("ps -efwww", stdout=PIPE, shell=True)
+            p1 = Popen("ps -efwww 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("grep -E 'minerd|r00t|sqlmap|nmap|hydra|aircrack'", stdin=p1.stdout, stdout=PIPE, shell=True)
             p3 = Popen("grep -v 'grep'", stdin=p2.stdout, stdout=PIPE, shell=True)
             p4 = Popen("awk '{print $1\" \"$2\" \"$3\" \"$8}'", stdin=p3.stdout, stdout=PIPE, shell=True)
-            process = p4.stdout.readlines()
-
-            # process = os.popen(
-            #    "ps -ef | grep -E 'minerd|r00t|sqlmap|nmap|hydra|aircrack'|grep -v 'grep'|awk '{print $1\" \"$2\" \"$3\" \"$8}'").readlines()
+            process = p4.stdout.read().splitlines()
             for pro in process:
                 pro_info = pro.strip().split(' ', 3)
                 self.process_backdoor.append(

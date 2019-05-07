@@ -1,8 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
-import os, optparse, time, re, sys, json
-from lib.ip.ip import *
-from lib.common import *
+import os
+from lib.core.ip.ip import *
+from lib.core.common import *
 
 
 # 作者：咚咚呛

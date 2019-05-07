@@ -1,9 +1,9 @@
 # coding:utf-8
 from __future__ import print_function
-from lib.common import *
+from lib.core.common import *
 import os, platform, sys
-from lib.Webserver import *
-from lib.globalvar import *
+from lib.plugins.Webserver import *
+from lib.core.globalvar import *
 
 
 # 作者：咚咚呛
@@ -23,7 +23,7 @@ class Webshell_Analysis:
         # WEB目录
         self.webroot_list = []
         # yara的webshell规则
-        self.rule = sys.path[0] + '/lib/webshell_rule/'
+        self.rule = os.path.dirname(os.path.abspath(__file__)) + '/webshell_rule/'
         # 恶意webshell列表
         self.webshell_list = []
 

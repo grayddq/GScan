@@ -1,6 +1,6 @@
 # coding:utf-8
 import socket, os, time, platform, sys
-from lib.common import *
+from lib.core.common import *
 
 
 # 作者：咚咚呛

@@ -1,7 +1,6 @@
 # coding:utf-8
 from __future__ import print_function
-# from lib.common import *
-# from common import *
+from lib.core.common import *
 import os, platform, sys, glob
 from subprocess import Popen, PIPE
 
@@ -34,7 +33,7 @@ class Webserver:
     def getWebserverConf(self):
         webserver = ['nginx', 'tomcat', 'jetty', 'httpd', 'resin', 'jboss', 'weblogic', 'jenkins']
         for name in webserver:
-            p1 = Popen("ps -efwww", stdout=PIPE, shell=True)
+            p1 = Popen("ps -efwww 2>/dev/null", stdout=PIPE, shell=True)
             p2 = Popen("grep " + name, stdin=p1.stdout, stdout=PIPE, shell=True)
             p3 = Popen("grep -v grep", stdin=p2.stdout, stdout=PIPE, shell=True)
             p4 = Popen("awk '{for(i=8;i<=NF;i++)printf\"%s \",$i;printf\"\\n\"}'", stdin=p3.stdout, stdout=PIPE,

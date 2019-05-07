@@ -1,8 +1,8 @@
 # coding:utf-8
 from __future__ import print_function
 import os, optparse, time, subprocess, sys, json
-from lib.ip.ip import *
-from lib.common import *
+from lib.core.ip.ip import *
+from lib.core.common import *
 
 
 # 作者：咚咚呛
@@ -47,7 +47,8 @@ class Network_Analysis:
     def check_network_abroad(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("netstat -an | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
+            shell_process = os.popen(
+                "netstat -an 2>/dev/null| grep ESTABLISHED | awk '{print $1\" \"$5}'").read().splitlines()
             for nets in shell_process:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
@@ -64,7 +65,8 @@ class Network_Analysis:
     def check_net_suspicious(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("netstat -an | grep ESTABLISHED | awk '{print $1\" \"$5}'").readlines()
+            shell_process = os.popen(
+                "netstat -an 2>/dev/null| grep ESTABLISHED | awk '{print $1\" \"$5}'").read().splitlines()
             for nets in shell_process:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
@@ -82,7 +84,7 @@ class Network_Analysis:
     def check_promisc(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("ifconfig | grep PROMISC | grep RUNNING").read().splitlines()
+            shell_process = os.popen("ifconfig 2>/dev/null| grep PROMISC | grep RUNNING").read().splitlines()
             if len(shell_process) > 0:
                 self.network_malware.append(
                     {u'异常类型': u'网卡开启混杂模式', u'确认参考命令': u'ifconfig | grep PROMISC | grep RUNNING'})
