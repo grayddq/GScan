@@ -16,6 +16,7 @@ class Network_Analysis:
         # 可疑网络连接列表
         # 远程ip、远程端口、可疑描述
         self.network_malware = []
+        self.name = u'网络链接类安全检测'
         self.port_malware = [
             {'protocol': 'tcp', 'port': '1524', 'description': 'Possible FreeBSD (FBRK) Rootkit backdoor'},
             {'protocol': 'tcp', 'port': '1984', 'description': 'Fuckit Rootkit'},
@@ -48,14 +49,16 @@ class Network_Analysis:
         suspicious, malice = False, False
         try:
             shell_process = os.popen(
-                "netstat -an 2>/dev/null| grep ESTABLISHED | awk '{print $1\" \"$5}'").read().splitlines()
+                "netstat -anp 2>/dev/null| grep ESTABLISHED | awk '{print $1\" \"$5\" \"$7}'").read().splitlines()
             for nets in shell_process:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
                 remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
+                pid, pname = netinfo[2].replace("\n", "").split("/")
                 if check_ip(ip):
-                    self.network_malware.append(
-                        {u'异常类型': u'境外IP链接', u'远程ip': remote_ip, u'远程port': remote_port})
+                    malice_result(self.name, u'境外IP网络链接', '', pid,
+                                  u'进程 %s 境外IP %s 通过%s于主机建立链接' % (pname, remote_ip, protocol), u'[1]netstat -ano',
+                                  u'可疑')
                     suspicious = True
             return suspicious, malice
         except:
@@ -66,28 +69,28 @@ class Network_Analysis:
         suspicious, malice = False, False
         try:
             shell_process = os.popen(
-                "netstat -an 2>/dev/null| grep ESTABLISHED | awk '{print $1\" \"$5}'").read().splitlines()
+                "netstat -anp 2>/dev/null| grep ESTABLISHED | awk '{print $1\" \"$5\" \"$7}'").read().splitlines()
             for nets in shell_process:
                 netinfo = nets.strip().split(' ')
                 protocol = netinfo[0]
                 remote_ip, remote_port = netinfo[1].replace("\n", "").split(":")
+                pid, pname = netinfo[2].replace("\n", "").split("/")
                 for malware in self.port_malware:
                     if malware['port'] == remote_port:
-                        self.network_malware.append(
-                            {u'异常类型': u'恶意链接特征', u'远程ip': remote_ip, u'远程port': remote_port,
-                             u'异常特征': malware['description']})
+                        malice_result(self.name, u'可疑端口的链接', '', pid, u'进程%s 主机链接了远程IP%s的可疑的端口%s，此端口通常被用于%s' % (
+                            pname, remote_ip, remote_port, malware['description']), u'[1]netstat -ano', u'可疑')
                         suspicious = True
             return suspicious, malice
         except:
             return suspicious, malice
 
+    # 网卡混杂模式检测
     def check_promisc(self):
         suspicious, malice = False, False
         try:
             shell_process = os.popen("ifconfig 2>/dev/null| grep PROMISC | grep RUNNING").read().splitlines()
             if len(shell_process) > 0:
-                self.network_malware.append(
-                    {u'异常类型': u'网卡开启混杂模式', u'确认参考命令': u'ifconfig | grep PROMISC | grep RUNNING'})
+                malice_result(self.name, u'网卡混杂模式检测', '', '', u'网卡开启混杂模式', u'ifconfig | grep PROMISC | grep RUNNING',u'可疑')
                 suspicious = True
             return suspicious, malice
         except:
@@ -110,7 +113,7 @@ class Network_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'可疑网络连接：', self.network_malware)
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':

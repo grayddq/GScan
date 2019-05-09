@@ -75,6 +75,10 @@ class SSH_Analysis:
         correct_infos = []
         # C端ip登陆错误日志
         failed_c_ips = []
+        filename = os.path.basename(log)
+        year = ''
+        if 'secure-' in filename and len(filename) == 15:
+            year = filename[7:11]
         # 打开日志文件
         f = open(log, 'r')
 
@@ -86,7 +90,8 @@ class SSH_Analysis:
             elif username_password_correct in i and ('sshd' in i):
                 ip = i.split(': ')[1].split()[5]
                 user = i.split(': ')[1].split()[3]
-                time = i.split(' sshd[')[0]
+                # time = i.split(' sshd[')[0]
+                time = ' '.join(i.replace('  ', ' ').split(' ', 4)[:3]) + " " + year
                 # 获取所有登陆成功的记录
                 correct_infos.append({'ip': ip, 'user': user, 'time': time})
         # 记录登陆失败攻击源IP地址和尝试次数
@@ -114,6 +119,7 @@ if __name__ == '__main__':
     parser.add_option("-d", "--dir", dest="dir", help=u"target dir，demo: -d /var/log/")
     parser.add_option("-f", "--file", dest="file", help=u"target file，demo: -p /var/log/secure")
     options, _ = parser.parse_args()
+    options.file = 'secure'
     if options.dir or options.file:
         print(u'存在爆破且成功的信息：')
         print(SSH_Analysis(log=options.file, log_dir=options.dir).correct_baopo_infos)

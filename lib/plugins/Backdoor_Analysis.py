@@ -30,16 +30,64 @@ class Backdoor_Analysis:
         # 异常后门列表
         self.backdoor = []
 
+    # 检测配置文件是否存在恶意配置
+    def check_conf(self, tag, file, mode='only'):
+        try:
+            if not os.path.exists(file): return ""
+            if os.path.isdir(file): return ""
+            if mode == 'only':
+                with open(file) as f:
+                    for line in f:
+                        if len(line) < 3: continue
+                        if line[0] == '#': continue
+                        if 'export ' + tag in line:
+                            return line
+            else:
+                return analysis_file(file)
+            return ""
+        except:
+            return ""
+
+    # 检测所有环境变量，是否存在恶意配置
+    def check_tag(self, name, tag, mode='only'):
+        suspicious, malice = False, False
+        try:
+            files = ['/root/.bashrc', '/root/.tcshrc', '/root/.bash_profile', '/root/.cshrc', '/root/.tcshrc',
+                     '/etc/bashrc', '/etc/profile', '/etc/profile.d/', '/etc/csh.login', '/etc/csh.cshrc']
+            home_files = ['/.bashrc', '/.bash_profile', '/.tcshrc', '/.cshrc', '/.tcshrc']
+
+            # 循环用户目录查看环境设置
+            for dir in os.listdir('/home/'):
+                for home_file in home_files:
+                    file = os.path.join('%s%s%s' % ('/home/', dir, home_file))
+                    info = self.check_conf(tag, file, mode)
+                    if info:
+                        malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file), u'可疑')
+                        suspicious = True
+            # 检查系统目录的配置
+            for file in files:
+                # 如果为目录形式，则遍历目录下所有文件
+                if os.path.isdir(file):
+                    for file in gci(file):
+                        info = self.check_conf(tag, file, mode)
+                        if info:
+                            malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file),
+                                          u'可疑')
+                            suspicious = True
+                else:
+                    info = self.check_conf(tag, file, mode)
+                    if info:
+                        malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file), u'可疑')
+                        suspicious = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
     # LD_PRELOAD后门检测
     def check_LD_PRELOAD(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("echo $LD_PRELOAD").read().splitlines()
-            for info in infos:
-                if not len(info) > 3: continue
-                self.backdoor.append(
-                    {u'异常类型': u'LD_PRELOAD 后门', u'异常信息': info, u'手工确认': u'[1]echo $LD_PRELOAD [2]unset LD_PRELOAD'})
-                malice = True
+            suspicious, malice = self.check_tag(u'LD_PRELOAD 后门', 'LD_PRELOAD')
             return suspicious, malice
         except:
             return suspicious, malice
@@ -48,13 +96,7 @@ class Backdoor_Analysis:
     def check_LD_AOUT_PRELOAD(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("echo $LD_AOUT_PRELOAD").read().splitlines()
-            for info in infos:
-                if not len(info) > 3: continue
-                self.backdoor.append(
-                    {u'异常类型': u'LD_AOUT_PRELOAD 后门', u'异常信息': info,
-                     u'手工确认': u'[1]echo $LD_AOUT_PRELOAD [2]unset LD_AOUT_PRELOAD'})
-                malice = True
+            suspicious, malice = self.check_tag(u'LD_AOUT_PRELOAD 后门', 'LD_AOUT_PRELOAD')
             return suspicious, malice
         except:
             return suspicious, malice
@@ -63,13 +105,7 @@ class Backdoor_Analysis:
     def check_LD_ELF_PRELOAD(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("echo $LD_ELF_PRELOAD").read().splitlines()
-            for info in infos:
-                if not len(info) > 3: continue
-                self.backdoor.append(
-                    {u'异常类型': u'LD_ELF_PRELOAD 后门', u'异常信息': info,
-                     u'手工确认': u'[1]echo $LD_ELF_PRELOAD [2]unset LD_ELF_PRELOAD'})
-                malice = True
+            suspicious, malice = self.check_tag(u'LD_ELF_PRELOAD 后门', 'LD_ELF_PRELOAD')
             return suspicious, malice
         except:
             return suspicious, malice
@@ -78,13 +114,25 @@ class Backdoor_Analysis:
     def check_LD_LIBRARY_PATH(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("echo $LD_LIBRARY_PATH").read().splitlines()
-            for info in infos:
-                if not len(info) > 3: continue
-                self.backdoor.append(
-                    {u'异常类型': u'LD_LIBRARY_PATH 后门', u'异常信息': info,
-                     u'手工确认': u'[1]echo $LD_LIBRARY_PATH [2]unset LD_LIBRARY_PATH'})
-                malice = True
+            suspicious, malice = self.check_tag(u'LD_LIBRARY_PATH 后门', 'LD_LIBRARY_PATH')
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # PROMPT_COMMAND后门检测
+    def check_PROMPT_COMMAND(self):
+        suspicious, malice = False, False
+        try:
+            suspicious, malice = self.check_tag(u'PROMPT_COMMAND 后门', 'PROMPT_COMMAND')
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
+    # 未知环境变量后门
+    def check_export(self):
+        suspicious, malice = False, False
+        try:
+            suspicious, malice = self.check_tag(u'未知环境变量 后门', 'PATH', mode='all')
             return suspicious, malice
         except:
             return suspicious, malice
@@ -98,22 +146,11 @@ class Backdoor_Analysis:
                 for line in f:
                     if not len(line) > 3: continue
                     if line[0] != '#':
-                        self.backdoor.append({u'异常类型': u'ld.so.preload 后门', u'异常信息': line.replace("\n", ""),
-                                              u'文件': u'/etc/ld.so.preload', u'手工确认': u'[1]cat /etc/ld.so.preload'})
-                        malice = True
-                        break
-            return suspicious, malice
-        except:
-            return suspicious, malice
-
-    # PROMPT_COMMAND后门检测
-    def check_PROMPT_COMMAND(self):
-        suspicious, malice = False, False
-        try:
-            infos = os.popen("echo $PROMPT_COMMAND").read().splitlines()
-            for info in infos:
-                suspicious, malice = self.analysis_strings('PROMPT_COMMAND backdoor', 'ROMPT_COMMAND', info,
-                                                           '[1]echo $PROMPT_COMMAND')
+                        content = analysis_strings(line)
+                        if content:
+                            malice_result(u'常规后门检测', u'ld.so.preload 后门', '/etc/ld.so.preload', '', content,
+                                          '[1]cat /etc/ld.so.preload', u'风险')
+                            malice = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -125,21 +162,14 @@ class Backdoor_Analysis:
             cron_dir_list = ['/var/spool/cron/', '/etc/cron.d/', '/etc/cron.daily/', '/etc/cron.weekly/',
                              '/etc/cron.hourly/', '/etc/cron.monthly/']
             for cron in cron_dir_list:
-                files = [os.path.join(cron, i) for i in os.listdir(cron) if (not os.path.isdir(os.path.join(cron, i)))]
-                for file in files:
+                for file in gci(cron):
+                    if not os.path.exists(file): continue
+                    if os.path.isdir(file): continue
                     for i in open(file, 'r'):
-                        suspicious, malice = self.analysis_strings('cron backdoor', file, i, '[1]cat %s' % file)
-            return suspicious, malice
-        except:
-            return suspicious, malice
-
-    # 分析alias后门
-    def check_alias(self):
-        suspicious, malice = False, False
-        try:
-            infos = os.popen("alias 2>/dev/null").read().splitlines()
-            for info in infos:
-                suspicious, malice = self.analysis_strings('alias backdoor', "", info, '[1]alias')
+                        content = analysis_strings(i)
+                        if content:
+                            malice_result(u'常规后门检测', u'cron 后门', file, '', content, '[1]cat %s' % file, u'风险')
+                            malice = True
             return suspicious, malice
         except:
             return suspicious, malice
@@ -148,14 +178,14 @@ class Backdoor_Analysis:
     def check_SSH(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen("netstat -ntpl 2>/dev/null |grep -v ':22 '| awk '{if (NR>2){print $7}}'").read().splitlines()
+            infos = os.popen(
+                "netstat -ntpl 2>/dev/null |grep -v ':22 '| awk '{if (NR>2){print $7}}'").read().splitlines()
             for info in infos:
                 pid = info.split("/")[0]
                 if os.path.exists('/proc/%s/exe' % pid):
                     if 'sshd' in os.readlink('/proc/%s/exe' % pid):
-                        self.backdoor.append(
-                            {u'异常类型': u'SSH 后门', u'异常信息': u'/porc/%s/exe' % pid, u'异常文件': u'/proc/%s/exe' % pid,
-                             u'手工确认': u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid)})
+                        malice_result(u'常规后门检测', u'SSH 后门', u'/porc/%s/exe' % pid, pid, u"非22端口的sshd服务",
+                                      u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid), u'风险')
                         malice = True
             return suspicious, malice
         except:
@@ -168,9 +198,8 @@ class Backdoor_Analysis:
             infos = os.popen("file /usr/sbin/sshd 2>/dev/null").read().splitlines()
             if not len(infos): return suspicious, malice
             if ('ELF' not in infos[0]) and ('executable' not in infos[0]):
-                self.backdoor.append(
-                    {u'异常类型': u'SSHwrapper 后门', u'异常信息': infos[0], u'文件': u'/usr/sbin/sshd',
-                     u'手工确认': u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd'})
+                malice_result(u'常规后门检测', u'SSHwrapper 后门', u'/usr/sbin/sshd', "", u"/usr/sbin/sshd被篡改,文件非可执行文件",
+                              u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd', u'风险')
                 malice = True
             return suspicious, malice
         except:
@@ -183,10 +212,10 @@ class Backdoor_Analysis:
             if not os.path.exists('/etc/inetd.conf'): return suspicious, malice
             with open('/etc/inetd.conf') as f:
                 for line in f:
-                    if '/bin/bash' in line:
-                        self.backdoor.append(
-                            {u'异常类型': u'inetd.conf 后门', u'异常信息': line, u'文件': u'/etc/inetd.conf',
-                             u'手工确认': u'[1]cat /etc/inetd.conf'})
+                    content = analysis_strings(line)
+                    if content:
+                        malice_result(u'常规后门检测', u'inetd.conf 后门', u'/etc/inetd.conf', '', content,
+                                      u'[1]cat /etc/inetd.conf', u'风险')
                         malice = True
             return suspicious, malice
         except:
@@ -200,11 +229,10 @@ class Backdoor_Analysis:
             for file in os.listdir('/etc/xinetd.conf/'):
                 with open(os.path.join('%s%s' % ('/etc/xinetd.conf/', file))) as f:
                     for line in f:
-                        if '/bin/bash' in line:
-                            fpath = os.path.join('%s%s' % ('/etc/xinetd.conf/', file))
-                            self.backdoor.append(
-                                {u'异常类型': u'xinetd.conf 后门', u'异常信息': line, u'文件': u'/etc/xinetd.conf/%s' % file,
-                                 u'手工确认': u'[1]cat /etc/xinetd.conf/%s' % file})
+                        content = analysis_strings(line)
+                        if content:
+                            malice_result(u'常规后门检测', u'xinetd.conf 后门', u'/etc/xinetd.conf', '', content,
+                                          u'[1]cat /etc/xinetd.conf', u'风险')
                             malice = True
             return suspicious, malice
         except:
@@ -217,10 +245,8 @@ class Backdoor_Analysis:
             file_infos = os.popen(
                 "find / ! -path '/proc/*' -type f -perm -4000 2>/dev/null | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec|top|Xorg|nvidia-modprobe|quota|login|security_authtrampoline|authopen|traceroute6|traceroute|ps'").read().splitlines()
             for info in file_infos:
-                self.backdoor.append(
-                    {u'异常类型': u'setuid后门', u'异常信息': u'文件被设置setuid属性', u'文件': info,
-                     u'手工确认': u"[1]ls -l %s [2]判断是否存在setuid设置" % info,
-                     u'风险说明': u'通常此类被设置权限的文件执行后会给予普通用户root权限，通常利用会使用ld-linux类或者自己编写程序类'})
+                malice_result(u'常规后门检测', u'setuid 后门', info, '',
+                              u'文件%s 被设置setuid属性，通常此类被设置权限的文件执行后会给予普通用户root权限' % info, u'[1]ls -l %s' % info, u'风险')
                 suspicious = True
             return suspicious, malice
         except:
@@ -235,46 +261,15 @@ class Backdoor_Analysis:
             for path in init_path:
                 if not os.path.exists(path): continue
                 if os.path.isfile(path):
-                    malware = analysis_file(path)
-                    if malware:
-                        self.backdoor.append(
-                            {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
-                             u'手工确认': u'[1]cat %s' % path})
+                    content = analysis_file(path)
+                    if content:
+                        malice_result(u'常规后门检测', u'系统启动项后门', path, '', content, u'[1]cat %s' % path, u'风险')
                         malice = True
                     continue
                 for file in gci(path):
-                    malware = analysis_file(file)
-                    if malware:
-                        self.backdoor.append(
-                            {u'异常类型': u'系统启动项后门', u'文件': path, u'异常信息': malware,
-                             u'手工确认': u'[1]cat %s' % file})
-                        malice = True
-            return suspicious, malice
-        except:
-            return suspicious, malice
-
-    # 分析一串字符串是否包含反弹shell、获取对应字串内可能存在的文件，并判断文件是否存在恶意特征。
-    def analysis_strings(self, name, file, contents, solve):
-        suspicious, malice = False, False
-        try:
-            content = contents.replace('\n', '')
-            # 反弹shell类
-            if check_shell(content):
-                self.backdoor.append(
-                    {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'反弹shell类', u'手工确认': solve})
-                malice = True
-            # 境外IP操作类
-            elif check_contents_ip(content):
-                self.backdoor.append(
-                    {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': u'境外IP信息', u'手工确认': solve})
-                malice = True
-            else:
-                for file in content.split(' '):
-                    if not os.path.exists(file): continue
-                    malware = analysis_file(file)
-                    if malware:
-                        self.backdoor.append(
-                            {u'异常类型': name, u'文件': file, u'异常信息': content, u'类型特征': malware, u'手工确认': solve})
+                    content = analysis_file(file)
+                    if content:
+                        malice_result(u'常规后门检测', u'系统启动项后门', path, '', content, u'[1]cat %s' % path, u'风险')
                         malice = True
             return suspicious, malice
         except:
@@ -312,8 +307,8 @@ class Backdoor_Analysis:
         suspicious, malice = self.check_cron()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [8]alias 后门检测')
-        suspicious, malice = self.check_alias()
+        string_output(u' [8]未知环境变量 后门检测')
+        suspicious, malice = self.check_export()
         result_output_tag(suspicious, malice)
 
         string_output(u' [9]ssh 后门检测')
@@ -341,12 +336,9 @@ class Backdoor_Analysis:
         result_output_tag(suspicious, malice)
 
         # 结果内容输出到文件
-        result_output_file(u'后门检查异常如下：', self.backdoor)
+        result_output_file(u'常规后门检测')
 
 
 if __name__ == '__main__':
     infos = Backdoor_Analysis()
     infos.run()
-    print(u"后门检查异常如下：")
-    for info in infos.backdoor:
-        print(info)

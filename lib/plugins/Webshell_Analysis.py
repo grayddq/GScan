@@ -20,6 +20,7 @@ from lib.core.globalvar import *
 
 class Webshell_Analysis:
     def __init__(self):
+        self.name = u'Webshell安全检测'
         # WEB目录
         self.webroot_list = []
         # yara的webshell规则
@@ -59,6 +60,8 @@ class Webshell_Analysis:
                     matches = self.yararule.match(data=fp.read())
                     if len(matches):
                         self.webshell_list.append(file)
+                        malice_result(self.name, u'webshell安全检测', file, '', u'文件匹配上webshell特征，规则：%s' % matches[0],
+                                      u'[1]cat %s' % file, u'可疑')
                 except:
                     continue
 
@@ -97,8 +100,6 @@ class Webshell_Analysis:
 
             if len(self.webshell_list) > 0:
                 malice = True
-            # 内容去重
-            self.webshell_list = list(set(self.webshell_list))
             return suspicious, malice, skip
         except:
             return suspicious, malice, skip
@@ -112,12 +113,8 @@ class Webshell_Analysis:
         suspicious, malice, skip = self.init_scan()
         result_output_tag(suspicious, malice, skip)
 
-        if len(self.webshell_list) > 0:
-            file_write('-' * 30 + '\n')
-            file_write(u'可疑webshell文件如下：\n')
-            for file in self.webshell_list:
-                file_write(file + '\n')
-            file_write('-' * 30 + '\n')
+        # 检测结果输出到文件
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':

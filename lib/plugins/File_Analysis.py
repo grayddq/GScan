@@ -16,6 +16,7 @@ class File_Analysis:
     def __init__(self):
         # 恶意文件列表
         self.file_malware = []
+        self.name = u'文件类安全检测'
 
     # 检查系统文件完整性
     # 由于速度的问题，故只检测指定重要文件
@@ -44,9 +45,8 @@ class File_Analysis:
                     if not filename in system_file: continue
                     malware = analysis_file(file)
                     if malware:
-                        self.file_malware.append(
-                            {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
-                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (file, file)})
+                        malice_result(self.name, u'系统可执行文件安全扫描', file, '', malware,
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险')
                         malice = True
             return suspicious, malice
         except:
@@ -62,9 +62,8 @@ class File_Analysis:
                 for file in gci(dir):
                     malware = analysis_file(file)
                     if malware:
-                        self.file_malware.append(
-                            {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
-                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (file, file)})
+                        malice_result(self.name, u'临时目录文件安全扫描', file, '', malware,
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险')
                         malice = True
             return suspicious, malice
         except:
@@ -80,9 +79,8 @@ class File_Analysis:
                 for file in gci(dir):
                     malware = analysis_file(file)
                     if malware:
-                        self.file_malware.append(
-                            {u'异常类型': u'文件恶意特征', u'文件路径': file, u'恶意特征': malware,
-                             u'手工确认': u'[1]rpm -qa %s [2]strings %s' % (file, file)})
+                        malice_result(self.name, u'用户目录文件安全扫描', file, '', malware,
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险')
                         malice = True
             return suspicious, malice
         except:
@@ -92,10 +90,11 @@ class File_Analysis:
     def check_hide(self):
         suspicious, malice = False, False
         try:
-            infos = os.popen('find / ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/private/*" -name "..*" 2>/dev/null').read().splitlines()
+            infos = os.popen(
+                'find / ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/private/*" -name "..*" 2>/dev/null').read().splitlines()
             for file in infos:
-                self.file_malware.append(
-                    {u'异常类型': u'文件异常隐藏', u'文件路径': file, u'手工确认': u'[1]ls -l %s [2]strings %s' % (file, file)})
+                malice_result(self.name, u'可疑隐藏文件安全扫描', file, '', u"文件 %s 属于可疑隐藏文件" % file,
+                              u'[1]ls -l %s [2]strings %s' % (file, file), u'可疑')
                 suspicious = True
             return suspicious, malice
         except:
@@ -122,13 +121,11 @@ class File_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'文件检查异常如下：', self.file_malware)
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':
     # File_Analysis().run()
     info = File_Analysis()
     info.run()
-    print(u"文件检查异常如下：")
-    for info in info.file_malware:
-        print(info)
+

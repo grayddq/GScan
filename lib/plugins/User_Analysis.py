@@ -16,6 +16,7 @@ from lib.core.common import *
 class User_Analysis:
     def __init__(self):
         self.user_malware = []
+        self.name = u'账户类安全检测'
 
     # 检测root权限用户
     def check_user(self):
@@ -24,8 +25,8 @@ class User_Analysis:
             shell_process = os.popen("awk -F: '$3==0 {print $1}' /etc/passwd 2>/dev/null").read().splitlines()
             for user in shell_process:
                 if user.replace("\n", "") != 'root':
-                    self.user_malware.append(
-                        {u'用户': user.replace("\n", ""), u'异常描述': u'属于特权用户'})
+                    malice_result(self.name, u'root权限账户安全扫描', '/etc/passwd', '', u'存在特权用户%s' % user.replace("\n", ""),
+                                  u'[1]cat /etc/passwd', u'可疑')
                     suspicious = False
             return suspicious, malice
         except:
@@ -36,10 +37,11 @@ class User_Analysis:
         suspicious, malice = False, False
         try:
             if os.path.exists('/etc/shadow'):
-                shell_process2 = os.popen("awk -F: 'length($2)==0 {print $1}' /etc/shadow 2>/dev/null").read().splitlines()
+                shell_process2 = os.popen(
+                    "awk -F: 'length($2)==0 {print $1}' /etc/shadow 2>/dev/null").read().splitlines()
                 for user in shell_process2:
-                    self.user_malware.append(
-                        {u'用户': user.replace("\n", ""), u'异常描述': u'当前用户存在空口令'})
+                    malice_result(self.name, u'空口令账户安全扫描', '/etc/shadow', '', u'存在空口令用户 %s' % user.replace("\n", ""),
+                                  u'[1]cat /etc/shadow', u'风险')
                     malice = True
             return suspicious, malice
         except:
@@ -54,8 +56,8 @@ class User_Analysis:
                     "cat /etc/sudoers 2>/dev/null |grep -v '#'|grep 'ALL=(ALL)'|awk '{print $1}'").read().splitlines()
                 for user in shell_process3:
                     if user.replace("\n", "") != 'root' and user[0] != '%':
-                        self.user_malware.append(
-                            {u'用户': user.replace("\n", ""), u'异常描述': u'可通过sudo命令获取特权'})
+                        malice_result(self.name, u'sudoers权限安全扫描', '/etc/sudoers', '',
+                                      u'用户 %s 可通过sudo命令获取特权 %s' % user.replace("\n", ""), u'[1]cat /etc/sudoers', u'风险')
                         suspicious = True
             return suspicious, malice
         except:
@@ -86,8 +88,8 @@ class User_Analysis:
                 shell_process = os.popen("cat " + file + " 2>/dev/null |awk '{print $3}'").read().splitlines()
                 if len(shell_process):
                     authorized_key = ' & '.join(shell_process).replace("\n", "")
-                    self.user_malware.append({u'用户': user.replace("\n", ""), u'异常描述': u'存在免密登录的证书',
-                                              u'证书客户端名称': authorized_key})
+                    malice_result(self.name, u'账户免密码证书安全扫描', file, '',
+                                  u'存在免密登录的证书，证书客户端名称：%s' % authorized_key, u'[1]cat %s' % file, u'可疑')
                 suspicious = True
             return suspicious, malice
         except:
@@ -103,12 +105,12 @@ class User_Analysis:
                 shell_process = os.popen("ls -l " + file + " 2>/dev/null |awk '{print $1}'").read().splitlines()
                 if len(shell_process) != 1: continue
                 if file == '/etc/passwd' and shell_process[0] != '-rw-r--r--':
-                    self.user_malware.append(
-                        {u'文件': file, u'异常描述': u'passwd文件权限变更，不为-rw-r--r--', u'排查参考命令': u'ls -l /etc/passwd'})
+                    malice_result(self.name, u'账户密码文件扫描', file, '',
+                                  u'passwd文件权限变更，不为-rw-r--r--', u'ls -l /etc/passwd', u'可疑')
                     suspicious = True
                 elif file == '/etc/shadow' and shell_process[0] != '----------':
-                    self.user_malware.append(
-                        {u'文件': file, u'异常描述': u'shadow文件权限变更，不为----------', u'排查参考命令': u'ls -l /etc/shadow'})
+                    malice_result(self.name, u'账户密码文件扫描', file, '',
+                                  u'shadow文件权限变更，不为----------', u'ls -l /etc/shadow', u'可疑')
                     suspicious = True
             return suspicious, malice
         except:
@@ -126,7 +128,7 @@ class User_Analysis:
         suspicious, malice = self.check_empty()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [3]sudoers文件权限账户安全扫描')
+        string_output(u' [3]sudoers权限安全扫描')
         suspicious, malice = self.check_sudo()
         result_output_tag(suspicious, malice)
 
@@ -139,7 +141,7 @@ class User_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'可疑账户类信息如下：', self.user_malware)
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':

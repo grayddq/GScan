@@ -14,6 +14,7 @@ from subprocess import Popen, PIPE
 class Log_Analysis:
     def __init__(self):
         self.log_malware = []
+        self.name = u'日志类安全检测'
 
     # wtmp日志登陆分析，排查境外IP的登陆日志
     def check_wtmp(self):
@@ -21,19 +22,19 @@ class Log_Analysis:
         try:
             if not os.path.exists('/var/log/wtmp'): return suspicious, malice
             p1 = Popen("who /var/log/wtmp 2>/dev/null", stdout=PIPE, shell=True)
-            p2 = Popen("awk '{print $1\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            p2 = Popen("awk '{print $1\" \"$3\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
             wtmp_infos = p2.stdout.read().splitlines()
             for wtmp_info in wtmp_infos:
                 if wtmp_info:
-                    if len(wtmp_info.split(' ')) != 2: continue
+                    if len(wtmp_info.split(' ')) != 3: continue
                     user = wtmp_info.split(' ')[0]
-                    ips = wtmp_info.split(' ')[1]
+                    time = wtmp_info.split(' ')[1]
+                    ips = wtmp_info.split(' ')[2]
                     if ips[0] != '(': continue
                     ip = ips.replace('(', '').replace(')', '').replace('\n', '')
                     if check_ip(ip):
-                        self.log_malware.append(
-                            {u'日志类型': u'wtmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                             u'排查参考命令': u'[1]who /var/log/wtmp'})
+                        malice_result(self.name, u'wtmp登陆历史排查', u'/var/log/wtmp', '', u'境外IP登陆主机：%s' % ip,
+                                      u'[1]who /var/log/wtmp', u'可疑', time, user)
                         suspicious = True
             return suspicious, malice
         except:
@@ -44,19 +45,19 @@ class Log_Analysis:
         suspicious, malice = False, False
         try:
             p1 = Popen("who 2>/dev/null", stdout=PIPE, shell=True)
-            p2 = Popen("awk '{print $1\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
+            p2 = Popen("awk '{print $1\" \"$3\" \"$5}'", stdin=p1.stdout, stdout=PIPE, shell=True)
             utmp_infos = p2.stdout.read().splitlines()
             for utmp_info in utmp_infos:
                 if utmp_info:
-                    if len(utmp_info.split(' ')) != 2: continue
+                    if len(utmp_info.split(' ')) != 3: continue
                     user = utmp_info.split(' ')[0]
-                    ips = utmp_info.split(' ')[1]
+                    time = utmp_info.split(' ')[1]
+                    ips = utmp_info.split(' ')[2]
                     if ips[0] != '(': continue
                     ip = ips.replace('(', '').replace(')', '').replace('\n', '')
                     if check_ip(ip):
-                        self.log_malware.append(
-                            {u'日志类型': u'utmp登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                             u'排查参考命令': u'[1]who'})
+                        malice_result(self.name, u'utmp登陆历史排查', u'/run/utmp', '', u'境外IP登陆主机：%s' % ip,
+                                      u'[1]who', u'可疑', time, user)
                         suspicious = True
             return suspicious, malice
         except:
@@ -72,13 +73,12 @@ class Log_Analysis:
             lastlogs = p2.stdout.read().splitlines()
             for lastlog in lastlogs:
                 if lastlog:
-                    if len(lastlog.split(' ')) != 2: continue
+                    if len(lastlog.split(' ', 3)) != 3: continue
                     user = lastlog.split(' ')[0].strip()
                     ip = lastlog.split(' ')[1].replace(' ', '').replace('\n', '')
                     if check_ip(ip):
-                        self.log_malware.append(
-                            {u'日志类型': u'lastlog登陆历史记录', u'境外IP': ip, u'用户': user, u'可疑特征': u'境外IP登陆主机',
-                             u'排查参考命令': u'[1]lastlog'})
+                        malice_result(self.name, u'lastlog登陆历史排查', u'/var/log/lastlog', '', u'境外IP登陆主机：%s' % ip,
+                                      u'[1]who', u'可疑', "", user)
                         suspicious = True
             return suspicious, malice
         except:
@@ -91,8 +91,13 @@ class Log_Analysis:
             correct_baopo_infos = SSH_Analysis(log_dir='/var/log/').correct_baopo_infos
             if len(correct_baopo_infos) > 0:
                 for info in correct_baopo_infos:
-                    self.log_malware.append(
-                        {u'日志类型': u'SSH被成功爆破', u'来源IP': info['ip'], u'用户': info['user'], u'爆破时间': info['time']})
+                    user = correct_baopo_infos['user']
+                    time = os.popen('date -d ' + correct_baopo_infos[
+                        'time'] + " '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
+                    ip = correct_baopo_infos['ip']
+                    malice_result(self.name, u'secure日志排查', u'/var/log/secure', '',
+                                  u'主机SSH被外部爆破且成功登陆，时间：%s，ip：%s，用户：%s' % (time, ip, user), u'[1]cat /var/secure', u'风险',
+                                  time, user)
                     malice = True
             return suspicious, malice
         except:
@@ -119,12 +124,9 @@ class Log_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'日志分析结果如下：', self.log_malware)
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':
     infos = Log_Analysis()
     infos.run()
-    print(u"日志分析如下：")
-    for info in infos.log_malware:
-        print(info)

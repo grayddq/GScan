@@ -21,6 +21,7 @@ class Proc_Analysis:
         self.cpu, self.mem = cpu, mem
         # 可疑的进程列表
         self.process_backdoor = []
+        self.name = u'进程类安全检测'
 
     # 判断进程的可执行文件是否具备恶意特征
     def exe_analysis(self):
@@ -34,11 +35,9 @@ class Proc_Analysis:
                     malware = analysis_file(filepath)
                     if malware:
                         lnstr = os.readlink(filepath)
-                        self.process_backdoor.append(
-                            {u'异常类型': u'进程程序恶意特征', u'进程pid': file, u'进程cmd': lnstr, u'恶意特征': malware,
-                             u'手工确认': u'[1]ls -a %s [2]strings %s' % (filepath, filepath)})
+                        malice_result(self.name, u'exe程序进程安全扫描', lnstr, file, malware,
+                                      u'[1]ls -a %s [2]strings %s' % (filepath, filepath), u'风险')
                         malice = True
-
             return suspicious, malice
         except:
             return suspicious, malice
@@ -54,9 +53,8 @@ class Proc_Analysis:
             for pro in process:
                 pro_info = pro.strip().split(' ', 3)
                 if check_shell(pro_info[3]):
-                    self.process_backdoor.append(
-                        {u'异常类型': u'进程恶意程序', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': pro_info[2],
-                         u'进程cmd': pro_info[3].replace("\n", "")})
+                    malice_result(self.name, u'反弹shell类进程安全扫描', '', pro_info[1], u'对应进程信息：%s' % pro_info[3].replace("\n", ""),
+                                  u'[1]ps -efwww', u'风险')
                     malice = True
             return suspicious, malice
         except:
@@ -81,19 +79,13 @@ class Proc_Analysis:
                 pro_info = pro.strip().split(' ', 4)
                 # cpu使用超过标准
                 if float(pro_info[2]) > self.cpu:
-                    self.process_backdoor.append(
-                        {u'异常类型': u'CPU过载', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': "",
-                         u'CPU': pro_info[2],
-                         u'内存': pro_info[3],
-                         u'进程cmd': pro_info[4].replace("\n", "")})
+                    malice_result(self.name, u'CPU过载扫描', '', pro_info[1], u'进程使用CPU过大，对应进程信息：%s' % pro_info[4].replace("\n", ""),
+                                  u'[1]ps -efwww', u'风险')
                     suspicious = True
                 # 内存使用超过标准
                 if float(pro_info[3]) > self.mem:
-                    self.process_backdoor.append(
-                        {u'异常类型': u'内存过载', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': "",
-                         u"CPU": pro_info[2],
-                         u"内存": pro_info[3],
-                         u'进程cmd': pro_info[4].replace("\n", "")})
+                    malice_result(self.name, u'内存过载扫描', '', pro_info[1], u'进程使用内存过大，对应进程信息：%s' % pro_info[4].replace("\n", ""),
+                                  u'[1]ps -efwww', u'风险')
                     suspicious = True
             return suspicious, malice
         except:
@@ -114,12 +106,10 @@ class Proc_Analysis:
             for file in os.listdir('/proc/'):
                 if file.isdigit():
                     pid_pro_file.append(file)
-
             hids_pid = list(set(pid_pro_file).difference(set(pid_process)))
             for pid in hids_pid:
-                self.process_backdoor.append(
-                    {u'异常类型': u'进程隐藏', u'进程pid': pid,
-                     u'手工确认': u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid)})
+                malice_result(self.name, u'隐藏进程扫描', '', pid, u'进程ID %s 了隐藏进程信息，未出现在进程列表中' % pid,
+                              u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid), u'风险')
                 malice = True
             return suspicious, malice
         except:
@@ -136,9 +126,7 @@ class Proc_Analysis:
             process = p4.stdout.read().splitlines()
             for pro in process:
                 pro_info = pro.strip().split(' ', 3)
-                self.process_backdoor.append(
-                    {u'异常类型': u'进程恶意程序', u'进程用户': pro_info[0], u'进程pid': pro_info[1], u'进程ppid': pro_info[2],
-                     u'进程cmd': pro_info[3].replace("\n", "")})
+                malice_result(self.name, u'可疑进程信息扫描', '', pro_info[1], pro_info[3].replace("\n", ""),u'[1]ps -efwww', u'风险')
                 suspicious = True
             return suspicious, malice
         except:
@@ -169,12 +157,9 @@ class Proc_Analysis:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'恶意进程如下：', self.process_backdoor)
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':
     infos = Proc_Analysis()
     infos.run()
-    print(u"恶意进程如下：")
-    for info in infos.process_backdoor:
-        print(info)

@@ -3091,6 +3091,46 @@ rule webshell_webshells_new_xxxx2 {
 	condition:
 		all of them
 }
+rule webshell_webshells_new_xxxx3 {
+	meta:
+		description = "Web shells - generated from file xxxx2.php"
+		author = "Florian Roth"
+		date = "2014/03/28"
+	strings:
+		$s0 = "<?php @eval($_GET"
+	condition:
+		all of them
+}
+rule webshell_webshells_new_xxxx4 {
+	meta:
+		description = "Web shells - generated from file xxxx2.php"
+		author = "Florian Roth"
+		date = "2014/03/28"
+	strings:
+		$s0 = "<?php @system($_POST"
+	condition:
+		all of them
+}
+rule webshell_webshells_new_xxxx5 {
+	meta:
+		description = "Web shells - generated from file xxxx2.php"
+		author = "Florian Roth"
+		date = "2014/03/28"
+	strings:
+		$s0 = "<?php @eval($_post"
+	condition:
+		all of them
+}
+rule webshell_webshells_new_xxxx6 {
+	meta:
+		description = "Web shells - generated from file xxxx2.php"
+		author = "Florian Roth"
+		date = "2014/03/28"
+	strings:
+		$s0 = "<?php @system($_GET"
+	condition:
+		all of them
+}
 rule webshell_webshells_new_JJjsp3 {
 	meta:
 		description = "Web shells - generated from file JJjsp3.jsp"

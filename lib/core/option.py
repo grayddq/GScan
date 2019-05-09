@@ -17,6 +17,7 @@ from lib.plugins.Rootkit_Analysis import *
 from lib.plugins.Webshell_Analysis import *
 from lib.plugins.Sys_Init import *
 from lib.plugins.Search_File import *
+from lib.core.data_aggregation import *
 
 
 def main(path):
@@ -38,8 +39,6 @@ def main(path):
 
     options, _ = parser.parse_args()
 
-    options.time = '2019-05-07 12:00:00~2019-05-07 17:00:00'
-
     # 初始化全局模块
     init()
     # 设置调试模式
@@ -50,7 +49,7 @@ def main(path):
     set_value('SCAN_TYPE', 2 if options.full_scan else 1)
     set_value('SYS_PATH', path)
     set_value('LOG_PATH', path + "/log/gscan.log")
-
+    set_value('RESULT_INFO', [])
 
     if options.logdir:
         print(u'\033[1;32m开始备份整个系统安全日志...\033[0m\n')
@@ -95,6 +94,9 @@ def main(path):
         # WEBShell类扫描
         Webshell_Analysis().run()
         # 漏洞扫描
+
+        #路径追溯
+        Data_Aggregation().run()
 
         # 输出报告
         print(u'-' * 30)

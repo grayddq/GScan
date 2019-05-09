@@ -14,18 +14,20 @@ class SYS_INIT:
     def __init__(self):
         # 异常信息
         self.backdoor_info = []
+        self.name = u'系统初始化检测'
 
     def check_alias_conf(self):
         suspicious, malice = False, False
         try:
-            files = ['/root/.bashrc', '/root/.bash_profile', '/etc/bashrc']
+            files = ['/root/.bashrc', '/root/.bash_profile', '/etc/bashrc', '/etc/profile']
 
             for dir in os.listdir('/home/'):
                 suspicious2, malice2 = self.alias_file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.bashrc')))
                 if suspicious2: suspicious = True
                 if malice2: malice = True
 
-                suspicious2, malice2 = self.alias_file_analysis(os.path.join('%s%s%s' % ('/home/', dir, '/.bash_profile')))
+                suspicious2, malice2 = self.alias_file_analysis(
+                    os.path.join('%s%s%s' % ('/home/', dir, '/.bash_profile')))
                 if suspicious2: suspicious = True
                 if malice2: malice = True
 
@@ -50,9 +52,8 @@ class SYS_INIT:
                     if line[:5] == 'alias':
                         for syscmd in syscmds:
                             if 'alias ' + syscmd + '=' in line:
-                                self.backdoor_info.append(
-                                    {u'异常类型': u'系统重要命令被设置alias', u'异常信息': line,
-                                     u'排查参考命令': u'[1]alias [2]cat %s' % file})
+                                malice_result(self.name, u'初始化alias检查', file, '', u'存在可疑的alias的设置：%s' % line,
+                                              u'[1]alias [2]cat %s' % file, u'可疑')
                                 suspicious = True
             return suspicious, malice
         except:
@@ -67,13 +68,9 @@ class SYS_INIT:
         result_output_tag(suspicious, malice)
 
         # 检测结果输出到文件
-        result_output_file(u'系统初始化检查：', self.backdoor_info)
-
+        result_output_file(self.name)
 
 
 if __name__ == '__main__':
     init = SYS_INIT()
     init.run()
-    print(u"可疑alias配置如下：")
-    for info in init.backdoor_info:
-        print(info)

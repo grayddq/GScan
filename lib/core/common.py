@@ -1,6 +1,6 @@
 # coding:utf-8
 from __future__ import print_function
-import os, sys, json, re, time
+import os, sys, json, re, time, pwd
 from imp import reload
 from lib.core.ip.ip import *
 from lib.core.globalvar import *
@@ -23,7 +23,8 @@ lan_ip = r'(127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[
 malware_infos = []
 
 
-# 颜色打印
+# 颜色打印前端，根据特征赋予字符不同的颜色
+# 用于用户端视觉效果的打印。
 def pringf(strings, security=False, suspicious=False, malice=False):
     if security:
         # 安全显示绿色
@@ -40,7 +41,8 @@ def pringf(strings, security=False, suspicious=False, malice=False):
     file_write((u'%s ' % strings) + ' ]\n')
 
 
-# 获取字符串宽度
+# 获取字符串宽度，包含汉语、字符、数字等
+# 返回：字符串长度大小
 def get_str_width(string):
     widths = [
         (126, 1), (159, 0), (687, 1), (710, 0), (711, 1),
@@ -72,7 +74,8 @@ def get_str_width(string):
     return width
 
 
-# 对齐字符串，返回对齐后字符串
+# 对齐字符串，用于用户视觉上的打印
+# 返回：对其后字符串
 def align(string, width=40):
     width = 40
     string_width = get_str_width(string)
@@ -88,7 +91,8 @@ def string_output(string):
     file_write(align(string, 30) + u'[ ')
 
 
-# 数组去重
+# 数组去重功能
+# 返回：去重后数组
 def reRepeat(old):
     new_li = []
     for i in old:
@@ -97,11 +101,75 @@ def reRepeat(old):
     return new_li
 
 
+# 获取文件的最近的改动时间
+# 返回:文件更改时间戳
+def get_file_attribute(file):
+    try:
+        # 文件最近修改时间
+        ctime = os.stat(file).st_mtime
+        cctime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ctime))
+        # 文件所属者uid
+        uid = os.stat(file).st_uid
+        username = pwd.getpwuid(uid).pw_name
+        return cctime, username
+    except:
+        return "", ""
+
+
+# 获取进程的开始时间
+# 返回：进程开始时间
+def get_process_start_time(pid):
+    try:
+        pro_info = os.popen("ps -eo pid,user,lstart 2>/dev/null| grep -v 'grep'|grep " + pid).read().splitlines()
+        for infos in pro_info:
+            info = infos.strip()
+            if pid == info.split(' ')[0].strip():
+                user = info.split(' ', 2)[1].strip()
+                stime = info.split(' ', 2)[2].strip()
+                sstime = os.popen("date -d " + stime + " '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
+                return user, sstime[0]
+        return "",""
+    except:
+        return "",""
+
+
+# 检测风险结果，进行全局变量结果录入
+# 每个风险详情包含几项
+# 1、风险检测大项 checkname
+# 2、风险名称 vulname
+# 3、异常文件 file
+# 4、异常进程 pid
+# 4、所属用户 user
+# 4、异常信息 info
+# 6、异常时间 mtime
+# 7、风险等级 level 存在风险-可疑
+# 7、建议手工确认步骤 consult
+# 返回：检测项恶意信息数组
+def malice_result(checkname, vulname, file, pid, info, consult, level, mtime='', user=''):
+    mtime_temp, user_temp = '', ''
+    if file:
+        mtime_temp, user_temp = get_file_attribute(file)
+    if pid:
+        mtime_temp, user_temp = get_process_start_time(pid)
+    if not mtime: mtime = mtime_temp
+    if not user: user = user_temp
+    malice_info = {u'检测项': checkname, u'风险名称': vulname, u'异常文件': file, u'进程PID': pid, u'异常时间': mtime, u'所属用户': user,
+                   u'异常信息': info, u'手工排查确认': consult, u'风险级别': level}
+    result_info = get_value('RESULT_INFO')
+    result_info.append(malice_info)
+    set_value('RESULT_INFO', result_info)
+
+
 # 结果内容输出到文件
-def result_output_file(tag, result):
+def result_output_file(tag):
     DEBUG = get_value('DEBUG')
-    if len(result) > 0:
-        new = reRepeat(result)
+    RESULT_INFO = get_value('RESULT_INFO')
+    info = []
+    for result in RESULT_INFO:
+        if result[u'检测项'] == tag:
+            info.append(result)
+    if len(info) > 0:
+        new = reRepeat(info)
         file_write('-' * 30 + '\n')
         file_write(tag + '\n')
         if DEBUG: print(tag)
@@ -111,6 +179,7 @@ def result_output_file(tag, result):
     if DEBUG: print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 
+# 分析结果输出，用于用户视觉效果
 def result_output_tag(suspicious=False, malice=False, skip=False):
     if malice:
         pringf(u'存在风险', malice=True)
@@ -251,14 +320,24 @@ def check_ip(ip):
         return False
 
 
-# 分析字符是否包含反弹shell特征、境外ip类信息
+# 分析一串字符串是否包含反弹shell、获取对应字串内可能存在的文件，并判断文件是否存在恶意特征。
 # 匹配成功则返回恶意特征信息
 # 否则返回空
-def analysis_strings(strings):
+def analysis_strings(contents):
     try:
-        mal = check_shell(strings)
-        if mal: return mal
-        if check_contents_ip(strings): return strings
+        content = contents.replace('\n', '')
+        # 反弹shell类
+        if check_shell(content):
+            return u"反弹shell类：%s" % content
+        # 境外IP操作类
+        elif check_contents_ip(content):
+            return u"境外ip操作类：%s" % content
+        else:
+            for file in content.split(' '):
+                if not os.path.exists(file): continue
+                if os.path.isdir(file): continue
+                malware = analysis_file(file)
+                if malware: return u"引用恶意文件%s，可疑内容：%s" % (file, malware)
         return ""
     except:
         return ""
@@ -267,7 +346,7 @@ def analysis_strings(strings):
 # 分析文件是否包含恶意特征、反弹shell特征、境外ip类信息
 # 存在返回恶意特征
 # 不存在返回空
-def analysis_file(file):
+def analysis_file(file, mode='fast'):
     try:
         SCAN_TYPE = get_value('SCAN_TYPE')
         DEBUG = get_value('DEBUG')
@@ -283,21 +362,20 @@ def analysis_file(file):
 
         time.sleep(0.01)
         for str in strings:
-            mal = check_shell(str)
-            if mal:
-                if DEBUG: print(u'文件：%s ，bash shell :%s' % file, mal)
-                return mal
+            if check_shell(str):
+                if DEBUG: print(u'文件：%s ，bash shell :%s' % file, str)
+                return u"反弹shell类：%s" % str
             # 完全扫描会带入恶意特征扫描
             if SCAN_TYPE == 2:
                 time.sleep(0.01)
                 for malware in malware_infos:
                     if malware.replace('\n', '') in str:
                         if DEBUG: print(u'文件：%s ，恶意特征 :%s' % file, malware)
-                        return malware
+                        return u"恶意特征类：%s，匹配规则:%s" % (str, malware)
             if Overseas: continue
             if check_contents_ip(str):
                 if DEBUG: print(u'文件：%s ，境外IP操作类 :%s' % file, str)
-                return str
+                return u"境外ip操作类：%s" % str
         return ""
     except:
         return ""
