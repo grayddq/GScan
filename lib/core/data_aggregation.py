@@ -31,45 +31,45 @@ class Data_Aggregation:
         self.result_infos.sort(cmp=self.cmp_datetime, key=operator.itemgetter(u'异常时间'))
         for result_info in self.result_infos:
             if result_info[u'检测项'] == u'常规后门检测':
-                say_info += u"[%s][%d] 黑客在%s时间，进行了%s植入,%s \n    排查参考：%s" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'风险名称'], result_info[u'异常信息'],
-                result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，进行了%s植入,%s \n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'风险名称'], result_info[u'异常信息'],
+                    result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'配置类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，进行了%s变更，%s\n    排查参考：%s" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'风险名称'], result_info[u'异常信息'],
-                result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，进行了%s变更，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'风险名称'], result_info[u'异常信息'],
+                    result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'文件类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，植入了恶意文件%s，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常文件'], result_info[u'异常信息'],
-                result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，植入了恶意文件%s，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常文件'], result_info[u'异常信息'],
+                    result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'主机历史操作类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，进行了恶意操作，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，进行了恶意操作，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'日志类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，进行了主机登陆，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，进行了主机登陆，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'网络链接类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'进程类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，启动进程%s，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'进程PID'], result_info[u'异常信息'],
-                result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，启动进程%s，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'进程PID'], result_info[u'异常信息'],
+                    result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'Rootkit类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，植入Rootkit后门，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，植入Rootkit后门，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'系统初始化检测':
-                say_info += u"[%s][%d] 黑客在%s时间，设置了系统命令别名，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，设置了系统命令别名，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'账户类安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，进行了账户修改设置，%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，进行了账户修改设置，%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常信息'], result_info[u'手工排查确认'])
             if result_info[u'检测项'] == u'Webshell安全检测':
-                say_info += u"[%s][%d] 黑客在%s时间，植入了webshell文件%s\n    排查参考：%s\n" % (
-                result_info[u'风险级别'], i, result_info[u'异常时间'], result_info[u'异常文件'], result_info[u'手工排查确认'])
+                say_info += u"[%d][%s] 黑客在%s时间，植入了webshell文件%s\n    排查参考：%s\n" % (
+                    i, result_info[u'风险级别'], result_info[u'异常时间'], result_info[u'异常文件'], result_info[u'手工排查确认'])
             i += 1
         file_write(say_info)
-        print(say_info.replace(u'[风险]', u'\033[1;31m[风险] \033[0m').replace(u'[可疑]', u'\033[1;33m[可疑] \033[0m'))
+        print(say_info.replace(u'[风险]', u'\033[1;31m[风险]\033[0m').replace(u'[可疑]', u'\033[1;33m[可疑]\033[0m'))
 
     def run(self):
         self.result_infos = get_value('RESULT_INFO')
