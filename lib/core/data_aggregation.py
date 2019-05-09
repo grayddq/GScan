@@ -27,6 +27,7 @@ class Data_Aggregation:
 
     def run(self):
         self.result_infos = get_value('RESULT_INFO')
+        self.result_infos = reRepeat(self.result_infos)
         print(u'-' * 30)
         say_info = u'根据系统分析的情况，溯源后的行动轨迹为：'
         print(u'\033[1;31m根据系统分析的情况，溯源后的行动轨迹为：\033[0m')
