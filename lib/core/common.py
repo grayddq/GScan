@@ -154,7 +154,7 @@ def malice_result(checkname, vulname, file, pid, info, consult, level, mtime='',
     if not mtime: mtime = mtime_temp
     if not user: user = user_temp
     malice_info = {u'检测项': checkname, u'风险名称': vulname, u'异常文件': file, u'进程PID': pid, u'异常时间': mtime, u'所属用户': user,
-                   u'异常信息': info.strip().replace('\n', ''), u'手工排查确认': consult, u'风险级别': level}
+                   u'异常信息': ' '.join(info.split()), u'手工排查确认': consult, u'风险级别': level}
     result_info = get_value('RESULT_INFO')
     result_info.append(malice_info)
     set_value('RESULT_INFO', result_info)
