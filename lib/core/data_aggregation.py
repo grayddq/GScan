@@ -32,7 +32,7 @@ class Data_Aggregation:
         say_info, i = u'-' * 30 + u'\n', 1
         say_info += u'根据系统分析的情况，溯源后的攻击行动轨迹为：\n'
 
-        programme_info = u'\n初步处理方案如下(注：请在信息核实后操作)：\n'
+        programme_info = u'\n初步处理方案如下(请在信息核实后操作)：\n'
 
         self.result_infos.sort(cmp=self.cmp_datetime, key=operator.itemgetter(u'异常时间'))
         for result_info in self.result_infos:

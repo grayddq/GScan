@@ -263,6 +263,10 @@
 
 ![Screenshot](pic/3.png)
 
+![Screenshot](pic/4.png)
+
+![Screenshot](pic/5.png)
+
 ## 参考链接 ##
 http://www.chkrootkit.org
 
