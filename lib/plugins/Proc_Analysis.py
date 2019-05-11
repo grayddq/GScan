@@ -36,7 +36,8 @@ class Proc_Analysis:
                     if malware:
                         lnstr = os.readlink(filepath)
                         malice_result(self.name, u'exe程序进程安全扫描', lnstr, file, malware,
-                                      u'[1]ls -a %s [2]strings %s' % (filepath, filepath), u'风险')
+                                      u'[1]ls -a %s [2]strings %s' % (filepath, filepath), u'风险',
+                                      programme=u'kill %s #关闭恶意进程' % lnstr)
                         malice = True
             return suspicious, malice
         except:
@@ -53,8 +54,9 @@ class Proc_Analysis:
             for pro in process:
                 pro_info = pro.strip().split(' ', 3)
                 if check_shell(pro_info[3]):
-                    malice_result(self.name, u'反弹shell类进程安全扫描', '', pro_info[1], u'对应进程信息：%s' % pro_info[3].replace("\n", ""),
-                                  u'[1]ps -efwww', u'风险')
+                    malice_result(self.name, u'反弹shell类进程安全扫描', '', pro_info[1],
+                                  u'对应进程信息：%s' % pro_info[3].replace("\n", ""),
+                                  u'[1]ps -efwww', u'风险', programme=u'kill %s #关闭恶意进程' % pro_info[1])
                     malice = True
             return suspicious, malice
         except:
@@ -79,13 +81,15 @@ class Proc_Analysis:
                 pro_info = pro.strip().split(' ', 4)
                 # cpu使用超过标准
                 if float(pro_info[2]) > self.cpu:
-                    malice_result(self.name, u'CPU过载扫描', '', pro_info[1], u'进程使用CPU过大，对应进程信息：%s' % pro_info[4].replace("\n", ""),
-                                  u'[1]ps -efwww', u'风险')
+                    malice_result(self.name, u'CPU过载扫描', '', pro_info[1],
+                                  u'进程使用CPU过大，对应进程信息：%s' % pro_info[4].replace("\n", ""),
+                                  u'[1]ps -efwww', u'风险', programme=u'kill %s #关闭恶意进程' % pro_info[1])
                     suspicious = True
                 # 内存使用超过标准
                 if float(pro_info[3]) > self.mem:
-                    malice_result(self.name, u'内存过载扫描', '', pro_info[1], u'进程使用内存过大，对应进程信息：%s' % pro_info[4].replace("\n", ""),
-                                  u'[1]ps -efwww', u'风险')
+                    malice_result(self.name, u'内存过载扫描', '', pro_info[1],
+                                  u'进程使用内存过大，对应进程信息：%s' % pro_info[4].replace("\n", ""),
+                                  u'[1]ps -efwww', u'风险', programme=u'kill %s #关闭恶意进程' % pro_info[1])
                     suspicious = True
             return suspicious, malice
         except:
@@ -109,7 +113,8 @@ class Proc_Analysis:
             hids_pid = list(set(pid_pro_file).difference(set(pid_process)))
             for pid in hids_pid:
                 malice_result(self.name, u'隐藏进程扫描', '', pid, u'进程ID %s 了隐藏进程信息，未出现在进程列表中' % pid,
-                              u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid), u'风险')
+                              u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid), u'风险',
+                              programme=u'umount /proc/%s & kill %s #关闭隐藏进程并结束进程' % (pid, pid))
                 malice = True
             return suspicious, malice
         except:
@@ -126,7 +131,8 @@ class Proc_Analysis:
             process = p4.stdout.read().splitlines()
             for pro in process:
                 pro_info = pro.strip().split(' ', 3)
-                malice_result(self.name, u'可疑进程信息扫描', '', pro_info[1], pro_info[3].replace("\n", ""),u'[1]ps -efwww', u'风险')
+                malice_result(self.name, u'可疑进程信息扫描', '', pro_info[1], pro_info[3].replace("\n", ""), u'[1]ps -efwww',
+                              u'风险', programme=u'kill %s #关闭恶意进程' % pro_info[1])
                 suspicious = True
             return suspicious, malice
         except:

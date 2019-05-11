@@ -61,7 +61,7 @@ class Webshell_Analysis:
                     if len(matches):
                         self.webshell_list.append(file)
                         malice_result(self.name, u'webshell安全检测', file, '', u'文件匹配上webshell特征，规则：%s' % matches[0],
-                                      u'[1]cat %s' % file, u'可疑')
+                                      u'[1]cat %s' % file, u'可疑',programme=u'rm %s #删除webshell文件' % file)
                 except:
                     continue
 

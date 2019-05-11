@@ -27,8 +27,9 @@ class Config_Analysis:
                     'cat /etc/resolv.conf 2>/dev/null| grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"').read().splitlines()
                 for ip in shell_process:
                     if not check_ip(ip): continue
+                    if ip == '8.8.8.8': continue
                     malice_result(self.name, u'DNS安全配置', u'/etc/resolv.conf', '', u'DNS设置为境外IP: %s' % ip,
-                                  u'[1]cat /etc/resolv.conf', u'可疑')
+                                  u'[1]cat /etc/resolv.conf', u'可疑', programme=u'vi /etc/resolv.conf #删除或者更改DNS境外配置')
                     suspicious = True
             return suspicious, malice
         except:
@@ -44,7 +45,8 @@ class Config_Analysis:
                     if len(line) < 5: continue
                     if line[0] != '#' and 'ACCEPT' in line:
                         malice_result(self.name, u'防火墙安全配置', u'/etc/sysconfig/iptables', '',
-                                      u'存在iptables ACCEPT策略: %s' % line, u'[1]cat /etc/sysconfig/iptables', u'可疑')
+                                      u'存在iptables ACCEPT策略: %s' % line, u'[1]cat /etc/sysconfig/iptables', u'可疑',
+                                      programme=u'vi /etc/sysconfig/iptables #删除或者更改ACCEPT配置')
                         suspicious = True
             return suspicious, malice
         except:
@@ -61,7 +63,7 @@ class Config_Analysis:
                 if not re.search(self.ip_re, ip_info): continue
                 if not check_ip(ip_info.strip().replace('\n', '')): continue
                 malice_result(self.name, u'HOSTS安全配置', u'/etc/hosts', '', u'存在境外IP设置: %s' % ip_info,
-                              u'[1]cat /etc/hosts', u'可疑')
+                              u'[1]cat /etc/hosts', u'可疑', programme=u'vi /etc/hosts #删除或者更改境外hosts配置')
                 suspicious = True
             return suspicious, malice
         except:
@@ -90,4 +92,3 @@ class Config_Analysis:
 if __name__ == '__main__':
     infos = Config_Analysis()
     infos.run()
-

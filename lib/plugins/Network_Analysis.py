@@ -58,7 +58,7 @@ class Network_Analysis:
                 if check_ip(ip):
                     malice_result(self.name, u'境外IP网络链接', '', pid,
                                   u'进程 %s 境外IP %s 通过%s于主机建立链接' % (pname, remote_ip, protocol), u'[1]netstat -ano',
-                                  u'可疑')
+                                  u'可疑', programme=u'kill %s #关闭异常链接进程' % pid)
                     suspicious = True
             return suspicious, malice
         except:
@@ -78,7 +78,8 @@ class Network_Analysis:
                 for malware in self.port_malware:
                     if malware['port'] == remote_port:
                         malice_result(self.name, u'可疑端口的链接', '', pid, u'进程%s 主机链接了远程IP%s的可疑的端口%s，此端口通常被用于%s' % (
-                            pname, remote_ip, remote_port, malware['description']), u'[1]netstat -ano', u'可疑')
+                            pname, remote_ip, remote_port, malware['description']), u'[1]netstat -ano', u'可疑',
+                                      programme=u'kill %s #关闭异常链接进程' % pid)
                         suspicious = True
             return suspicious, malice
         except:
@@ -90,7 +91,8 @@ class Network_Analysis:
         try:
             shell_process = os.popen("ifconfig 2>/dev/null| grep PROMISC | grep RUNNING").read().splitlines()
             if len(shell_process) > 0:
-                malice_result(self.name, u'网卡混杂模式检测', '', '', u'网卡开启混杂模式', u'ifconfig | grep PROMISC | grep RUNNING',u'可疑')
+                malice_result(self.name, u'网卡混杂模式检测', '', '', u'网卡开启混杂模式', u'ifconfig | grep PROMISC | grep RUNNING',
+                              u'可疑', programme=u'ifconfig eth0 -promisc #关闭网卡混杂模式')
                 suspicious = True
             return suspicious, malice
         except:

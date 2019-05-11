@@ -690,13 +690,14 @@ class Rootkit_Analysis:
                 if os.path.exists(file):
                     malice_result(self.name, rootkit_info['name'], file, '',
                                   u'匹配到名为%s的rootkit文件规则 %s' % (rootkit_info['name'], file),
-                                  u'[1]strings %s' % file, u'风险')
+                                  u'[1]strings %s' % file, u'风险', programme=u'rm %s #删除rootkit恶意文件' % file)
                     malice = True
                     return suspicious, malice
             for dir in rootkit_info['dir']:
                 if os.path.exists(dir):
                     malice_result(self.name, rootkit_info['name'], dir, '',
-                                  u'匹配到名为%s的rootkit目录规则 %s' % (rootkit_info['name'], dir), u'[1]ls -a %s' % dir, u'风险')
+                                  u'匹配到名为%s的rootkit目录规则 %s' % (rootkit_info['name'], dir), u'[1]ls -a %s' % dir, u'风险',
+                                  programme=u'rm -rf %s #删除rootkit恶意文件' % dir)
                     malice = True
                     return suspicious, malice
 
@@ -724,7 +725,7 @@ class Rootkit_Analysis:
                 for lkm in self.LKM_BADNAMES:
                     if lkm == os.path.basename(file):
                         malice_result(self.name, u'LKM内核模块检测', file, '', u'匹配文件 %s 具备恶意特征 %s' % (file, lkm),
-                                      u'[1]cat /proc/kallsyms', u'风险')
+                                      u'[1]cat /proc/kallsyms', u'风险', programme=u'rm %s #删除rootkit恶意文件' % file)
                         malice = True
                         return suspicious, malice
             return suspicious, malice

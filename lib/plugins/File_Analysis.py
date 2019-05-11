@@ -46,7 +46,7 @@ class File_Analysis:
                     malware = analysis_file(file)
                     if malware:
                         malice_result(self.name, u'系统可执行文件安全扫描', file, '', malware,
-                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险')
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险', programme=u'rm %s #删除恶意文件' % file)
                         malice = True
             return suspicious, malice
         except:
@@ -63,7 +63,7 @@ class File_Analysis:
                     malware = analysis_file(file)
                     if malware:
                         malice_result(self.name, u'临时目录文件安全扫描', file, '', malware,
-                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险')
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险', programme=u'rm %s #删除恶意文件' % file)
                         malice = True
             return suspicious, malice
         except:
@@ -80,7 +80,7 @@ class File_Analysis:
                     malware = analysis_file(file)
                     if malware:
                         malice_result(self.name, u'用户目录文件安全扫描', file, '', malware,
-                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险')
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险', programme=u'rm %s #删除恶意文件' % file)
                         malice = True
             return suspicious, malice
         except:
@@ -94,7 +94,7 @@ class File_Analysis:
                 'find / ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/private/*" -name "..*" 2>/dev/null').read().splitlines()
             for file in infos:
                 malice_result(self.name, u'可疑隐藏文件安全扫描', file, '', u"文件 %s 属于可疑隐藏文件" % file,
-                              u'[1]ls -l %s [2]strings %s' % (file, file), u'可疑')
+                              u'[1]ls -l %s [2]strings %s' % (file, file), u'可疑', programme=u'rm %s #删除恶意文件' % file)
                 suspicious = True
             return suspicious, malice
         except:

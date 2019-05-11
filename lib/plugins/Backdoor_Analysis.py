@@ -62,7 +62,8 @@ class Backdoor_Analysis:
                     file = os.path.join('%s%s%s' % ('/home/', dir, home_file))
                     info = self.check_conf(tag, file, mode)
                     if info:
-                        malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file), u'可疑')
+                        malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file), u'可疑',
+                                      programme=u'vi %s #删除%s设置' % (file, tag))
                         suspicious = True
             # 检查系统目录的配置
             for file in files:
@@ -77,7 +78,8 @@ class Backdoor_Analysis:
                 else:
                     info = self.check_conf(tag, file, mode)
                     if info:
-                        malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file), u'可疑')
+                        malice_result(u'常规后门检测', name, file, '', info, u'[1]echo $%s [2]cat %s' % (tag, file), u'可疑',
+                                      programme=u'vi %s #删除%s设置' % (file, tag))
                         suspicious = True
             return suspicious, malice
         except:
@@ -149,7 +151,7 @@ class Backdoor_Analysis:
                         content = analysis_strings(line)
                         if content:
                             malice_result(u'常规后门检测', u'ld.so.preload 后门', '/etc/ld.so.preload', '', content,
-                                          '[1]cat /etc/ld.so.preload', u'风险')
+                                          '[1]cat /etc/ld.so.preload', u'风险', programme=u'vi ld.so.preload #删除所有so设置')
                             malice = True
             return suspicious, malice
         except:
@@ -168,7 +170,8 @@ class Backdoor_Analysis:
                     for i in open(file, 'r'):
                         content = analysis_strings(i)
                         if content:
-                            malice_result(u'常规后门检测', u'cron 后门', file, '', content, '[1]cat %s' % file, u'风险')
+                            malice_result(u'常规后门检测', u'cron 后门', file, '', content, '[1]cat %s' % file, u'风险',
+                                          programme=u'vi %s #删除定时任务设置' % file)
                             malice = True
             return suspicious, malice
         except:
@@ -185,7 +188,8 @@ class Backdoor_Analysis:
                 if os.path.exists('/proc/%s/exe' % pid):
                     if 'sshd' in os.readlink('/proc/%s/exe' % pid):
                         malice_result(u'常规后门检测', u'SSH 后门', u'/porc/%s/exe' % pid, pid, u"非22端口的sshd服务",
-                                      u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid), u'风险')
+                                      u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid), u'风险',
+                                      programme=u'kill %s #关闭异常sshd进程' % pid)
                         malice = True
             return suspicious, malice
         except:
@@ -199,7 +203,8 @@ class Backdoor_Analysis:
             if not len(infos): return suspicious, malice
             if ('ELF' not in infos[0]) and ('executable' not in infos[0]):
                 malice_result(u'常规后门检测', u'SSHwrapper 后门', u'/usr/sbin/sshd', "", u"/usr/sbin/sshd被篡改,文件非可执行文件",
-                              u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd', u'风险')
+                              u'[1]file /usr/sbin/sshd [2]cat /usr/sbin/sshd', u'风险',
+                              programme=u'rm /usr/sbin/sshd & yum -y install openssh-server & service sshd start #删除sshd异常文件，并重新安装ssh服务')
                 malice = True
             return suspicious, malice
         except:
@@ -215,7 +220,7 @@ class Backdoor_Analysis:
                     content = analysis_strings(line)
                     if content:
                         malice_result(u'常规后门检测', u'inetd.conf 后门', u'/etc/inetd.conf', '', content,
-                                      u'[1]cat /etc/inetd.conf', u'风险')
+                                      u'[1]cat /etc/inetd.conf', u'风险', programme=u'vi /etc/inetd.conf #删除异常点')
                         malice = True
             return suspicious, malice
         except:
@@ -232,7 +237,7 @@ class Backdoor_Analysis:
                         content = analysis_strings(line)
                         if content:
                             malice_result(u'常规后门检测', u'xinetd.conf 后门', u'/etc/xinetd.conf', '', content,
-                                          u'[1]cat /etc/xinetd.conf', u'风险')
+                                          u'[1]cat /etc/xinetd.conf', u'风险', programme=u'vi /etc/xinetd.conf #删除异常点')
                             malice = True
             return suspicious, malice
         except:
@@ -246,7 +251,8 @@ class Backdoor_Analysis:
                 "find / ! -path '/proc/*' -type f -perm -4000 2>/dev/null | grep -vE 'pam_timestamp_check|unix_chkpwd|ping|mount|su|pt_chown|ssh-keysign|at|passwd|chsh|crontab|chfn|usernetctl|staprun|newgrp|chage|dhcp|helper|pkexec|top|Xorg|nvidia-modprobe|quota|login|security_authtrampoline|authopen|traceroute6|traceroute|ps'").read().splitlines()
             for info in file_infos:
                 malice_result(u'常规后门检测', u'setuid 后门', info, '',
-                              u'文件%s 被设置setuid属性，通常此类被设置权限的文件执行后会给予普通用户root权限' % info, u'[1]ls -l %s' % info, u'风险')
+                              u'文件%s 被设置setuid属性，通常此类被设置权限的文件执行后会给予普通用户root权限' % info, u'[1]ls -l %s' % info, u'风险',
+                              programme=u'chmod u-s %s #去掉setuid曲线' % info)
                 suspicious = True
             return suspicious, malice
         except:
@@ -263,13 +269,15 @@ class Backdoor_Analysis:
                 if os.path.isfile(path):
                     content = analysis_file(path)
                     if content:
-                        malice_result(u'常规后门检测', u'系统启动项后门', path, '', content, u'[1]cat %s' % path, u'风险')
+                        malice_result(u'常规后门检测', u'系统启动项后门', path, '', content, u'[1]cat %s' % path, u'风险',
+                                      programme=u'vi %s #删除异常点' % path)
                         malice = True
                     continue
                 for file in gci(path):
                     content = analysis_file(file)
                     if content:
-                        malice_result(u'常规后门检测', u'系统启动项后门', path, '', content, u'[1]cat %s' % path, u'风险')
+                        malice_result(u'常规后门检测', u'系统启动项后门', path, '', content, u'[1]cat %s' % path, u'风险',
+                                      programme=u'vi %s #删除异常点' % path)
                         malice = True
             return suspicious, malice
         except:

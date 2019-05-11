@@ -28,6 +28,8 @@ def main(path):
     group.add_option("--overseas", dest="overseas", default=False, action='store_true', help=u"境外模式，此参数将不进行境外ip的匹配")
     group.add_option("--full", dest="full_scan", default=False, action='store_true', help=u"完全模式，此参数将启用完全扫描")
     group.add_option("--debug", dest="debug", default=False, action='store_true', help=u"调试模式，进行程序的调试数据输出")
+    group.add_option("--sug", dest="suggestion", default=False, action='store_true', help=u"排查建议，用于对异常点的手工排查建议")
+    group.add_option("--pro", dest="programme", default=False, action='store_true', help=u"处理方案，根据异常风险生成初步的处理方案")
     parser.add_option_group(group)
 
     group = optparse.OptionGroup(parser, "Optimization", "Optimization options")
@@ -45,6 +47,10 @@ def main(path):
     set_value('DEBUG', True if options.debug else False)
     # 设置国内ip模式
     set_value('Overseas', True if options.overseas else False)
+    # 设置手工排查建议
+    set_value('suggestion', True if options.suggestion else False)
+    # 设置风险处理方案
+    set_value('programme', True if options.programme else False)
     # 设置扫描模式为完全扫描
     set_value('SCAN_TYPE', 2 if options.full_scan else 1)
     set_value('SYS_PATH', path)

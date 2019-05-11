@@ -53,7 +53,7 @@ class SYS_INIT:
                         for syscmd in syscmds:
                             if 'alias ' + syscmd + '=' in line:
                                 malice_result(self.name, u'初始化alias检查', file, '', u'存在可疑的alias的设置：%s' % line,
-                                              u'[1]alias [2]cat %s' % file, u'可疑')
+                                              u'[1]alias [2]cat %s' % file, u'可疑', programme=u'vi %s #删除alias恶意配置' % file)
                                 suspicious = True
             return suspicious, malice
         except:

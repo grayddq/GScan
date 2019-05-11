@@ -26,7 +26,7 @@ class User_Analysis:
             for user in shell_process:
                 if user.replace("\n", "") != 'root':
                     malice_result(self.name, u'root权限账户安全扫描', '/etc/passwd', '', u'存在特权用户%s' % user.replace("\n", ""),
-                                  u'[1]cat /etc/passwd', u'可疑')
+                                  u'[1]cat /etc/passwd', u'可疑', programme=u'vi /etc/passwd #删除用户root权限')
                     suspicious = False
             return suspicious, malice
         except:
@@ -41,7 +41,8 @@ class User_Analysis:
                     "awk -F: 'length($2)==0 {print $1}' /etc/shadow 2>/dev/null").read().splitlines()
                 for user in shell_process2:
                     malice_result(self.name, u'空口令账户安全扫描', '/etc/shadow', '', u'存在空口令用户 %s' % user.replace("\n", ""),
-                                  u'[1]cat /etc/shadow', u'风险')
+                                  u'[1]cat /etc/shadow', u'风险',
+                                  programme=u'userdel %s #删除空口令用户' % user.replace("\n", ""))
                     malice = True
             return suspicious, malice
         except:
@@ -57,7 +58,8 @@ class User_Analysis:
                 for user in shell_process3:
                     if user.replace("\n", "") != 'root' and user[0] != '%':
                         malice_result(self.name, u'sudoers权限安全扫描', '/etc/sudoers', '',
-                                      u'用户 %s 可通过sudo命令获取特权 %s' % user.replace("\n", ""), u'[1]cat /etc/sudoers', u'风险')
+                                      u'用户 %s 可通过sudo命令获取特权' % user.replace("\n", ""), u'[1]cat /etc/sudoers', u'风险',
+                                      programme=u'vi /etc/sudoers #删除sudo设置')
                         suspicious = True
             return suspicious, malice
         except:
@@ -89,7 +91,8 @@ class User_Analysis:
                 if len(shell_process):
                     authorized_key = ' & '.join(shell_process).replace("\n", "")
                     malice_result(self.name, u'账户免密码证书安全扫描', file, '',
-                                  u'存在免密登录的证书，证书客户端名称：%s' % authorized_key, u'[1]cat %s' % file, u'可疑')
+                                  u'存在免密登录的证书，证书客户端名称：%s' % authorized_key, u'[1]cat %s' % file, u'可疑',
+                                  programme=u'vi %s #删除证书设置' % file)
                 suspicious = True
             return suspicious, malice
         except:
