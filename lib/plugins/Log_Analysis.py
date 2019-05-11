@@ -35,7 +35,7 @@ class Log_Analysis:
                     if check_ip(ip):
                         malice_result(self.name, u'wtmp登陆历史排查', u'/var/log/wtmp', '', u'境外IP使用%s登陆主机：%s' % (user, ip),
                                       u'[1]who /var/log/wtmp', u'可疑', time, user,
-                                      programme=u'passwd %s #更改某用户密码' % user)
+                                      programme=u'passwd %s #更改%s用户密码' % (user, user))
                         suspicious = True
             return suspicious, malice
         except:
@@ -58,7 +58,7 @@ class Log_Analysis:
                     ip = ips.replace('(', '').replace(')', '').replace('\n', '')
                     if check_ip(ip):
                         malice_result(self.name, u'utmp登陆历史排查', u'/run/utmp', '', u'境外IP使用%s登陆主机：%s' % (user, ip),
-                                      u'[1]who', u'可疑', time, user, programme=u'passwd %s #更改某用户密码' % user)
+                                      u'[1]who', u'可疑', time, user, programme=u'passwd %s #更改%s用户密码' % (user, user))
                         suspicious = True
             return suspicious, malice
         except:
@@ -80,7 +80,7 @@ class Log_Analysis:
                     if check_ip(ip):
                         malice_result(self.name, u'lastlog登陆历史排查', u'/var/log/lastlog', '',
                                       u'境外IP使用%s登陆主机：%s' % (user, ip), u'[1]who', u'可疑', "", user,
-                                      programme=u'passwd %s #更改某用户密码' % user)
+                                      programme=u'passwd %s #更改%s用户密码' % (user, user))
                         suspicious = True
             return suspicious, malice
         except:
@@ -99,7 +99,7 @@ class Log_Analysis:
                     ip = correct_baopo_infos['ip']
                     malice_result(self.name, u'secure日志排查', u'/var/log/secure', '',
                                   u'主机SSH被外部爆破且成功登陆，时间：%s，ip：%s，用户：%s' % (time, ip, user), u'[1]cat /var/secure', u'风险',
-                                  time, user, programme=u'passwd %s #更改某用户密码' % user)
+                                  time, user, programme=u'passwd %s #更改%s用户密码' % (user, user))
                     malice = True
             return suspicious, malice
         except:

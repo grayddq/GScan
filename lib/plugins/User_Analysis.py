@@ -59,7 +59,7 @@ class User_Analysis:
                     if user.replace("\n", "") != 'root' and user[0] != '%':
                         malice_result(self.name, u'sudoers权限安全扫描', '/etc/sudoers', '',
                                       u'用户 %s 可通过sudo命令获取特权' % user.replace("\n", ""), u'[1]cat /etc/sudoers', u'风险',
-                                      programme=u'vi /etc/sudoers #删除sudo设置')
+                                      programme=u'vi /etc/sudoers #更改sudo设置')
                         suspicious = True
             return suspicious, malice
         except:
