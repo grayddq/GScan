@@ -41,61 +41,61 @@ class Data_Aggregation:
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'风险名称'],
                 result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'配置类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，进行了%s变更，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'风险名称'],
                 result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'文件类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，植入了恶意文件%s，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常文件'],
                 result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'主机历史操作类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，进行了恶意操作，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'日志类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，通过用户%s进行了主机登陆，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'所属用户'],
                 result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'网络链接类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'进程类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，启动进程%s，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'进程PID'],
                 result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'Rootkit类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，植入Rootkit后门，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'系统初始化检测':
                 say_info += u"[%d][%s] 黑客在%s时间，设置了系统命令别名，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'账户类安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，进行了账户修改设置，%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常信息'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             if result_info[u'检测项'] == u'Webshell安全检测':
                 say_info += u"[%d][%s] 黑客在%s时间，植入了webshell文件%s\n" % (
                 i, result_info[u'风险级别'], result_info[u'异常时间'] if result_info[u'异常时间'] else u'未知', result_info[u'异常文件'])
                 if suggestion: say_info = say_info + u"           排查参考：%s\n" % result_info[u'手工排查确认']
-                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s" % (i, result_info[u'处理方案'])
+                if programme and result_info[u'处理方案']: programme_info += u"[%d] %s\n" % (i, result_info[u'处理方案'])
             i += 1
         if programme:
             say_info += programme_info
