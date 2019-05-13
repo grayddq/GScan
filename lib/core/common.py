@@ -119,18 +119,19 @@ def get_file_attribute(file):
 # 获取进程的开始时间
 # 返回：进程开始时间
 def get_process_start_time(pid):
+    user, stime = '', ''
     try:
         pro_info = os.popen("ps -eo pid,user,lstart 2>/dev/null| grep -v 'grep'|grep " + pid).read().splitlines()
         for infos in pro_info:
             info = infos.strip()
             if pid == info.split(' ')[0].strip():
                 user = info.split(' ', 2)[1].strip()
-                stime = info.split(' ', 2)[2].strip()
-                sstime = os.popen("date -d " + stime + " '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
-                return user, sstime[0]
-        return "", ""
+                sstime = info.split(' ', 2)[2].strip()
+                stime = os.popen("date -d " + sstime + " '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
+                return user, stime[0]
+        return user, stime
     except:
-        return "", ""
+        return user, stime
 
 
 # 检测风险结果，进行全局变量结果录入

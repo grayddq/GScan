@@ -111,9 +111,10 @@ class Proc_Analysis:
                 if file.isdigit():
                     pid_pro_file.append(file)
             hids_pid = list(set(pid_pro_file).difference(set(pid_process)))
+            if len(hids_pid) > 10: return suspicious, malice
             for pid in hids_pid:
-                malice_result(self.name, u'隐藏进程扫描', '', pid, u'进程ID %s 了隐藏进程信息，未出现在进程列表中' % pid,
-                              u"[1] cat /proc/$$/mountinfo|grep %s \n[2] umount /proc/%s" % (pid, pid), u'风险',
+                malice_result(self.name, u'隐藏进程扫描', '', pid, u'进程ID %s 隐藏了进程信息，未出现在进程列表中' % pid,
+                              u"[1] cat /proc/$$/mountinfo [2] umount /proc/%s [3]ps -ef |grep %s" % (pid, pid), u'风险',
                               programme=u'umount /proc/%s & kill %s #关闭隐藏进程并结束进程' % (pid, pid))
                 malice = True
             return suspicious, malice
