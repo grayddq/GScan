@@ -1,6 +1,6 @@
 # coding:utf-8
 from __future__ import print_function
-import os, sys, json, re, time, pwd
+import os, sys, json, re, time, pwd, logging
 from imp import reload
 from lib.core.ip.ip import *
 from lib.core.globalvar import *
@@ -212,13 +212,17 @@ def gci(filepath):
 def mkfile():
     SYS_PATH = get_value('SYS_PATH')
     LOG_PATH = get_value('LOG_PATH')
-    if os.path.exists(LOG_PATH):
-        f = open(LOG_PATH, "r+")
-        f.truncate()
-        f.close()
-    else:
-        if not os.path.exists(SYS_PATH + '/log/'): os.mkdir(SYS_PATH + '/log/')
-        f = open(LOG_PATH, "w")
+    DB_PATH = get_value('DB_PATH')
+    # 判断日志目录是否存在，不存在则创建日志目录
+    if not os.path.exists(SYS_PATH + '/log/'): os.mkdir(SYS_PATH + '/log/')
+    if not os.path.exists(SYS_PATH + '/db/'): os.mkdir(SYS_PATH + '/db/')
+    # 判断日志文件是否存在，不存在则创建,存在则情况
+    f = open(LOG_PATH, "w")
+    f.truncate()
+    f.close()
+    # 判断本地数据文件是否存在，不存在则创建
+    if not os.path.exists(DB_PATH):
+        f = open(DB_PATH, "w")
         f.truncate()
         f.close()
 
@@ -380,3 +384,41 @@ def analysis_file(file, mode='fast'):
         return ""
     except:
         return ""
+
+
+# 写定时任务信息
+def cron_write(hour='0'):
+    SYS_PATH = get_value('SYS_PATH')
+    if not os.path.exists('/var/spool/cron/'): return False
+    if os.path.exists('/var/spool/cron/root'):
+        f = open('/var/spool/cron/root', 'a+')
+        # 每N小时执行一次
+        if hour != '0':
+            f.write('* */' + hour + ' * * * python ' + SYS_PATH + '/GScan.py --dif\n')
+        else:
+            f.write('0 0 * * * python ' + SYS_PATH + '/GScan.py --dif\n')
+        f.close()
+    else:
+        f = open('/var/spool/cron/root', 'w')
+        # 每N小时执行一次
+        if hour != '0':
+            f.write('* */' + hour + ' * * * python ' + SYS_PATH + '/GScan.py --dif\n')
+        else:
+            f.write('0 0 * * * python ' + SYS_PATH + '/GScan.py --dif\n')
+        f.close()
+    return True
+
+
+# 日志输出到指定文件，用于syslog打印
+def loging():
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger('GScan')
+    SYS_PATH = get_value('SYS_PATH')
+    logfile = SYS_PATH + '/log/log.log'
+    fh = logging.FileHandler(logfile)
+    fh.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    logger.propagate = False
+    return logger

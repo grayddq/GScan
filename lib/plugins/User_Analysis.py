@@ -91,7 +91,7 @@ class User_Analysis:
                 if len(shell_process):
                     authorized_key = ' & '.join(shell_process).replace("\n", "")
                     malice_result(self.name, u'账户免密码证书安全扫描', file, '',
-                                  u'存在免密登录的证书，证书客户端名称：%s' % authorized_key, u'[1]cat %s' % file, u'可疑',
+                                  u'用户%s存在免密登录的证书，证书客户端名称：%s' % (user, authorized_key), u'[1]cat %s' % file, u'可疑',
                                   programme=u'vi %s #删除证书设置' % file)
                 suspicious = True
             return suspicious, malice

@@ -2,12 +2,13 @@
 from __future__ import print_function
 import os
 from lib.core.common import *
-from lib.core.ip.ip import *
+from lib.plugins.File_Check import *
 
 
 # 作者：咚咚呛
 # 分析主机文件类异常
-# 1、系统可执行文件扫描
+# 1、系统可执行文件hash对比
+# 2、系统可执行文件扫描
 # 3、临时目录文件扫描
 # 4、用户目录文件扫描
 # 5、可疑隐藏文件扫描
@@ -18,7 +19,24 @@ class File_Analysis:
         self.file_malware = []
         self.name = u'文件类安全检测'
 
-    # 检查系统文件完整性
+    def check_system_hash(self):
+        suspicious, malice = False, False
+        try:
+            file_infos = File_Check().file_malware
+            if len(file_infos) > 15: return suspicious, malice
+            for info in file_infos:
+                if info['action'] == 'Create':
+                    malware = u'此操作创建文件%s，文件名称较为敏感，当前hash库中并未记录此信息，文件hash：%s' % (info['file'], info['newMD5'])
+                else:
+                    malware = u'此操作修改了重要可执行文件%s，文件hash：%s' % (info['file'], info['newMD5'])
+                malice_result(self.name, u'系统重要文件hash对比', info['file'], '', malware,
+                              u'[1]strings %s [2] cat %s' % (info['file'], info['file']), u'风险',
+                              programme=u'rm %s #删除恶意文件' % info['file'])
+                malice = True
+            return suspicious, malice
+        except:
+            return suspicious, malice
+
     # 由于速度的问题，故只检测指定重要文件
     def check_system_integrity(self):
         suspicious, malice = False, False
@@ -46,7 +64,8 @@ class File_Analysis:
                     malware = analysis_file(file)
                     if malware:
                         malice_result(self.name, u'系统可执行文件安全扫描', file, '', malware,
-                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险', programme=u'rm %s #删除恶意文件' % file)
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险',
+                                      programme=u'rm %s #删除恶意文件' % file)
                         malice = True
             return suspicious, malice
         except:
@@ -63,7 +82,8 @@ class File_Analysis:
                     malware = analysis_file(file)
                     if malware:
                         malice_result(self.name, u'临时目录文件安全扫描', file, '', malware,
-                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险', programme=u'rm %s #删除恶意文件' % file)
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险',
+                                      programme=u'rm %s #删除恶意文件' % file)
                         malice = True
             return suspicious, malice
         except:
@@ -80,7 +100,8 @@ class File_Analysis:
                     malware = analysis_file(file)
                     if malware:
                         malice_result(self.name, u'用户目录文件安全扫描', file, '', malware,
-                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险', programme=u'rm %s #删除恶意文件' % file)
+                                      u'[1]rpm -qa %s [2]strings %s' % (file, file), u'风险',
+                                      programme=u'rm %s #删除恶意文件' % file)
                         malice = True
             return suspicious, malice
         except:
@@ -104,19 +125,23 @@ class File_Analysis:
         print(u'\n开始文件类安全扫描')
         file_write(u'\n开始文件类安全扫描\n')
 
-        string_output(u' [1]系统可执行文件安全扫描')
+        string_output(u' [1]系统重要文件hash对比')
+        suspicious, malice = self.check_system_hash()
+        result_output_tag(suspicious, malice)
+
+        string_output(u' [2]系统可执行文件安全扫描')
         suspicious, malice = self.check_system_integrity()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [2]系统临时目录安全扫描')
+        string_output(u' [3]系统临时目录安全扫描')
         suspicious, malice = self.check_tmp()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [3]各用户目录安全扫描')
+        string_output(u' [4]各用户目录安全扫描')
         suspicious, malice = self.check_user_dir()
         result_output_tag(suspicious, malice)
 
-        string_output(u' [4]可疑隐藏文件扫描')
+        string_output(u' [5]可疑隐藏文件扫描')
         suspicious, malice = self.check_hide()
         result_output_tag(suspicious, malice)
 
@@ -128,4 +153,3 @@ if __name__ == '__main__':
     # File_Analysis().run()
     info = File_Analysis()
     info.run()
-

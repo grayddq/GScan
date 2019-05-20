@@ -8,16 +8,17 @@ import os
 
 
 if __name__ == '__main__':
+    version = 'v0.1'
     progam = u'''
   _______      _______.  ______      ___      .__   __. 
- /  _____|    /       | /      |    /   \     |  \ |  |    {version:v0.1}
+ /  _____|    /       | /      |    /   \     |  \ |  |    {version:%s}
 |  |  __     |   (----`|  ,----'   /  ^  \    |   \|  | 
 |  | |_ |     \   \    |  |       /  /_\  \   |  . `  |    {author:咚咚呛}
 |  |__| | .----)   |   |  `----. /  _____  \  |  |\   | 
  \______| |_______/     \______|/__/     \__\ |__| \__|    http://grayddq.top
                                                         
     
-    '''
+    ''' % version
     print(progam)
 
     main(os.path.dirname(os.path.abspath(__file__)))
