@@ -187,7 +187,7 @@ class Backdoor_Analysis:
                 pid = info.split("/")[0]
                 if os.path.exists('/proc/%s/exe' % pid):
                     if 'sshd' in os.readlink('/proc/%s/exe' % pid):
-                        malice_result(u'常规后门检测', u'SSH 后门', u'/porc/%s/exe' % pid, pid, u"非22端口的sshd服务",
+                        malice_result(u'常规后门检测', u'SSH 后门', os.readlink('/proc/%s/exe' % pid), pid, u"非22端口的sshd服务",
                                       u'[1]ls -l /porc/%s [2]ps -ef|grep %s|grep -v grep' % (pid, pid), u'风险',
                                       programme=u'kill %s #关闭异常sshd进程' % pid)
                         malice = True

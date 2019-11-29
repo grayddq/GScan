@@ -127,11 +127,11 @@ def get_process_start_time(pid):
             if pid == info.split(' ')[0].strip():
                 user = info.split(' ', 2)[1].strip()
                 sstime = info.split(' ', 2)[2].strip()
-                stime = os.popen("date -d " + sstime + " '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
+                stime = os.popen("date -d '" + sstime + "' '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
                 return user, stime[0]
-        return user, stime
+        return stime, user
     except:
-        return user, stime
+        return stime, user
 
 
 # 检测风险结果，进行全局变量结果录入
