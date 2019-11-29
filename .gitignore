@@ -2,5 +2,5 @@
 .idea/
 .DS_Store
 target
-.pyc
+*.pyc
 
