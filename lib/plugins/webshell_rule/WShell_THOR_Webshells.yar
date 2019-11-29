@@ -8636,3 +8636,32 @@ rule Webshell_zehir {
 	condition:
 		filesize < 200KB and 1 of them
 }
+rule webshells_grayddq_shell1 {
+	meta:
+		description = "Web shells"
+		author = "grayddq"
+		date = "2019/11/29"
+	strings:
+		$s0 = "Response.Write(eval"
+		$s1 = "eval(Request.Item"
+		$s2 = "eval request("
+		$s3 = "eval(GET"
+		$s4 = "eval(POST"
+		$s5 = "exec(request.getParameter"
+		$s6 = "Response.Write(eval("
+		$s7 = "eval($_POST"
+		$s8 = "eval($_GET"
+	condition:
+		filesize < 10KB and any of them
+}
+rule webshells_grayddq_shell2 {
+	meta:
+		description = "Web shellss"
+		author = "grayddq"
+		date = "2019/11/29"
+	strings:
+		$s0 = "Request.Form(\"pass\")"
+		$s1 = "eval(fun()"
+	condition:
+		filesize < 10KB and all of them
+}
