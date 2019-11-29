@@ -26,7 +26,8 @@ class Data_Aggregation:
             for line in f:
                 old_db.append(line.strip())
         for info in self.result_infos:
-            hash_txt = info[u'检测项'] + info[u'风险名称'] + info[u'异常文件'] + info[u'进程PID'] + info[u'异常时间'] + info[u'异常信息']
+            hash_txt = "%s%s%s%s%s%s" % (info[u'检测项'],info[u'风险名称'],info[u'异常文件'] ,info[u'进程PID'] , info[u'异常时间'] , info[u'异常信息'])
+            #hash_txt = info[u'检测项'] + info[u'风险名称'] + info[u'异常文件'] + info[u'进程PID'] + info[u'异常时间'] + info[u'异常信息']
             md5obj = hashlib.md5()
             md5obj.update(hash_txt.encode("utf8"))
             hashinfo = md5obj.hexdigest()
@@ -41,7 +42,8 @@ class Data_Aggregation:
         # 写结果文件到db
         with open(DB_PATH, 'w') as f:
             for info in self.result_infos:
-                hash_txt = info[u'检测项'] + info[u'风险名称'] + info[u'异常文件'] + info[u'进程PID'] + info[u'异常时间'] + info[u'异常信息']
+                hash_txt = "%s%s%s%s%s%s" % (info[u'检测项'], info[u'风险名称'], info[u'异常文件'], info[u'进程PID'] , info[u'异常时间'] , info[u'异常信息'])
+                #hash_txt = info[u'检测项'] + info[u'风险名称'] + info[u'异常文件'] + info[u'进程PID'] + info[u'异常时间'] + info[u'异常信息']
                 md5obj = hashlib.md5()
                 md5obj.update(hash_txt.encode("utf8"))
                 hashinfo = md5obj.hexdigest()

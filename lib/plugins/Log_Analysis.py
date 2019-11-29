@@ -94,7 +94,7 @@ class Log_Analysis:
             if len(correct_baopo_infos) > 0:
                 for info in correct_baopo_infos:
                     user = info['user']
-                    time = os.popen("date -d '" + info['time'] + "' '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
+                    time = os.popen("date -d '" + info['time'] + "' '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()[0]
                     ip = info['ip']
                     malice_result(self.name, u'secure日志排查', u'/var/log/secure', '',
                                   u'主机SSH被外部爆破且成功登陆，时间：%s，ip：%s，用户：%s' % (time, ip, user), u'[1]cat /var/secure', u'风险',
