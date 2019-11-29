@@ -36,7 +36,7 @@ class User_Analysis:
     def check_gid(self):
         suspicious, malice = False, False
         try:
-            shell_process = os.popen("awk -F: '$4==0 {print $1}' /etc/passwd 2>/dev/null").read().splitlines()
+            shell_process = os.popen("cat /etc/passwd | grep '/bin/bash' | awk -F: '$4==0 {print $1}' 2>/dev/null").read().splitlines()
             for user in shell_process:
                 if user.replace("\n", "") != 'root':
                     malice_result(self.name, u'特权组账户安全扫描', '/etc/passwd', '',
