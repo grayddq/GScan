@@ -240,11 +240,10 @@ def file_write(content):
 def check_shell(content):
     try:
         # 反弹shell类
-        if (('bash' in content) and (
-                ('/dev/tcp/' in content) or ('telnet ' in content) or ('nc ' in content) or (
-                ('exec ' in content) and ('socket' in content)) or ('curl ' in content) or (
-                        'wget ' in content) or (
-                        'lynx ' in content))) or (".decode('base64')" in content):
+        if (('bash' in content) and (('/dev/tcp/' in content) or ('telnet ' in content) or ('nc ' in content) or (
+                ('exec ' in content) and ('socket' in content)) or ('curl ' in content) or ('wget ' in content) or (
+                                             'lynx ' in content) or ('bash -i' in content))) or (
+                ".decode('base64')" in content) or ("exec(base64.b64decode" in content):
             return content
         elif ('/dev/tcp/' in content) and (('exec ' in content) or ('ksh -c' in content)):
             return content

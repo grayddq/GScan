@@ -84,9 +84,15 @@ class SSH_Analysis:
 
         for i in f:
             if (username_error in i) and ('from' in i) and ('sshd' in i):
-                failed_ip.append(i.split(': ')[1].split()[4])
+                try:
+                    failed_ip.append(i.split(': ')[1].split()[4])
+                except:
+                    continue
             elif (username_correct in i) and ('from' in i) and ('sshd' in i):
-                failed_ip.append(i.split(': ')[1].rsplit()[-4])
+                try:
+                    failed_ip.append(i.split(': ')[1].rsplit()[-4])
+                except:
+                    continue
             elif username_password_correct in i and ('sshd' in i):
                 ip = i.split(': ')[1].split()[5]
                 user = i.split(': ')[1].split()[3]
