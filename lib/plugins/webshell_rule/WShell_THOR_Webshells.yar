@@ -8636,7 +8636,7 @@ rule Webshell_zehir {
 	condition:
 		filesize < 200KB and 1 of them
 }
-rule webshell_webshells_new_shell1 {
+rule webshells_grayddq_shell1 {
 	meta:
 		description = "Web shells"
 		author = "grayddq"
@@ -8652,9 +8652,9 @@ rule webshell_webshells_new_shell1 {
 		$s7 = "eval($_POST"
 		$s8 = "eval($_GET"
 	condition:
-		any of them
+		filesize < 10KB and any of them
 }
-rule webshell_webshells_new_shell2 {
+rule webshells_grayddq_shell2 {
 	meta:
 		description = "Web shellss"
 		author = "grayddq"
@@ -8663,7 +8663,5 @@ rule webshell_webshells_new_shell2 {
 		$s0 = "Request.Form(\"pass\")"
 		$s1 = "eval(fun()"
 	condition:
-		all of them
+		filesize < 10KB and all of them
 }
-
-
