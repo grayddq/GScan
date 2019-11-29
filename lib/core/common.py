@@ -128,7 +128,7 @@ def get_process_start_time(pid):
                 user = info.split(' ', 2)[1].strip()
                 sstime = info.split(' ', 2)[2].strip()
                 stime = os.popen("date -d '" + sstime + "' '+%Y-%m-%d %H:%M:%S' 2>/dev/null").read().splitlines()
-                return user, stime[0]
+                return stime[0], user
         return stime, user
     except:
         return stime, user

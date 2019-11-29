@@ -8656,7 +8656,7 @@ rule webshell_webshells_new_shell1 {
 }
 rule webshell_webshells_new_shell2 {
 	meta:
-		description = "Web shells"
+		description = "Web shellss"
 		author = "grayddq"
 		date = "2019/11/29"
 	strings:
