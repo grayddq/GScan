@@ -114,6 +114,8 @@ class File_Analysis:
             infos = os.popen(
                 'find / ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/private/*" -name "..*" 2>/dev/null').read().splitlines()
             for file in infos:
+                if file == '/usr/share/man/man1/..1.gz':
+                    continue
                 malice_result(self.name, u'可疑隐藏文件安全扫描', file, '', u"文件 %s 属于可疑隐藏文件" % file,
                               u'[1]ls -l %s [2]strings %s' % (file, file), u'可疑', programme=u'rm %s #删除恶意文件' % file)
                 suspicious = True
