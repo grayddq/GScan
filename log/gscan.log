@@ -1,7 +1,0 @@
-开始扫描当前系统安全状态...
-
-开始Webshell安全扫描
- [1]Webshell安全扫描                    [ 存在风险  ]
-------------------------------
-Webshell安全检测
-{"进程PID": "", "手工排查确认": "[1]cat /tmp/1.php", "异常时间": "2019-11-29 20:30:37", "异常文件": "/tmp/1.php", "风险名称": "webshell安全检测", "处理方案": "rm /tmp/1.php #删除webshell文件", "异常信息": "文件匹配上webshell特征，规则：webshells_grayddq_shell1", "检测项": "Webshell安全检测", "风险级别": "风险", "所属用户": "grayddq"}
