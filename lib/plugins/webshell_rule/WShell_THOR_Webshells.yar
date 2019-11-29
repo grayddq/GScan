@@ -8651,8 +8651,6 @@ rule webshell_webshells_new_shell1 {
 		$s6 = "Response.Write(eval("
 		$s7 = "eval($_POST"
 		$s8 = "eval($_GET"
-		$s9 = "eval($_GET"
-
 	condition:
 		any of them
 }

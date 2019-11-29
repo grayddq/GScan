@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4a322f15-69a8-408d-b119-a0906e74dd58" name="Default" comment="" />
+    <list default="true" id="4a322f15-69a8-408d-b119-a0906e74dd58" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar" afterPath="$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,8 +16,8 @@
       <file leaf-file-name="WShell_THOR_Webshells.yar" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="517">
-              <caret line="8664" column="38" lean-forward="true" selection-start-line="8664" selection-start-column="38" selection-end-line="8664" selection-end-column="38" />
+            <state relative-caret-position="366">
+              <caret line="8652" column="26" lean-forward="false" selection-start-line="8652" selection-start-column="26" selection-end-line="8652" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -294,7 +296,7 @@
         <state relative-caret-position="220">
           <caret line="96" column="125" lean-forward="false" selection-start-line="96" selection-start-column="125" selection-end-line="96" selection-end-column="125" />
           <folding>
-            <element signature="e#15#52#0" expanded="true" />
+            <element signature="e#15#52#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -405,8 +407,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="517">
-          <caret line="8664" column="38" lean-forward="true" selection-start-line="8664" selection-start-column="38" selection-end-line="8664" selection-end-column="38" />
+        <state relative-caret-position="366">
+          <caret line="8652" column="26" lean-forward="false" selection-start-line="8652" selection-start-column="26" selection-end-line="8652" selection-end-column="26" />
           <folding />
         </state>
       </provider>
