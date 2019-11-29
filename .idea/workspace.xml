@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4a322f15-69a8-408d-b119-a0906e74dd58" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar" afterPath="$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar" />
-    </list>
+    <list default="true" id="4a322f15-69a8-408d-b119-a0906e74dd58" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +14,8 @@
       <file leaf-file-name="WShell_THOR_Webshells.yar" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="382">
-              <caret line="8655" column="14" lean-forward="true" selection-start-line="8655" selection-start-column="14" selection-end-line="8655" selection-end-column="14" />
+            <state relative-caret-position="517">
+              <caret line="8664" column="38" lean-forward="true" selection-start-line="8664" selection-start-column="38" selection-end-line="8664" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -407,8 +405,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/plugins/webshell_rule/WShell_THOR_Webshells.yar">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="382">
-          <caret line="8655" column="14" lean-forward="true" selection-start-line="8655" selection-start-column="14" selection-end-line="8655" selection-end-column="14" />
+        <state relative-caret-position="517">
+          <caret line="8664" column="38" lean-forward="true" selection-start-line="8664" selection-start-column="38" selection-end-line="8664" selection-end-column="38" />
           <folding />
         </state>
       </provider>
