@@ -122,11 +122,11 @@ class User_Analysis:
                 if not os.path.exists(file): continue
                 shell_process = os.popen("ls -l " + file + " 2>/dev/null |awk '{print $1}'").read().splitlines()
                 if len(shell_process) != 1: continue
-                if file == '/etc/passwd' and shell_process[0] != '-rw-r--r--':
+                if file == '/etc/passwd' and shell_process[0].strip('.') != '-rw-r--r--':
                     malice_result(self.name, u'账户密码文件扫描', file, '',
                                   u'passwd文件权限变更，不为-rw-r--r--', u'ls -l /etc/passwd', u'可疑')
                     suspicious = True
-                elif file == '/etc/shadow' and shell_process[0] != '----------':
+                elif file == '/etc/shadow' and shell_process[0].strip('.') != '----------':
                     malice_result(self.name, u'账户密码文件扫描', file, '',
                                   u'shadow文件权限变更，不为----------', u'ls -l /etc/shadow', u'可疑')
                     suspicious = True
