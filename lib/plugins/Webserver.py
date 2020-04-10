@@ -53,6 +53,7 @@ class Webserver:
                     conf = self.getStrPath(' -Dcatalina.home=', pro)
                     if conf:
                         self.webconf.append({'name': 'tomcat', 'home': conf, 'conf': '', 'webroot': conf + '/webapp'})
+                        self.webconf.append({'name': 'tomcat', 'home': conf, 'conf': '', 'webroot': conf + '/webapps'})
                         self.webconf.append({'name': 'tomcat', 'home': conf, 'conf': '', 'webroot': conf + '/work'})
                     conf = self.getStrPath(' -Djava.io.tmpdir=', pro)
                     if conf: self.webconf.append({'name': 'tomcat', 'conf': '', 'webroot': conf})
