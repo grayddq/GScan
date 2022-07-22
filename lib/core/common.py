@@ -196,13 +196,12 @@ def result_output_tag(suspicious=False, malice=False, skip=False):
 def gci(filepath):
     filename = []
     try:
-        files = os.listdir(filepath)
-        for fi in files:
-            fi_d = os.path.join(filepath, fi)
-            if os.path.isdir(fi_d):
-                filename = filename + gci(fi_d)
-            else:
-                filename.append(os.path.join(filepath, fi_d))
+        for root, dirs, files in os.walk(filepath):
+            for fi in files:
+                if os.path.isdir(fi):
+                    continue
+                else:
+                    filename.append(os.path.join(filepath, fi))
         return filename
     except:
         return filename
